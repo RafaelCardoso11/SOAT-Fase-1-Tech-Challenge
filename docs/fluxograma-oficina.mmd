@@ -1,0 +1,95 @@
+%%{init: {"flowchart": {"nodeSpacing": 20, "rankSpacing": 25, "padding": 8}}}%%
+flowchart LR
+    subgraph S1["1. Recepção"]
+        direction LR
+        ATD1["Atendente"] --> B["Criar Ordem de Serviço"]
+        B --> C["Ordem de Serviço Criada"]
+        C --> RM1["Status da OS: Aberta"]
+    end
+
+    subgraph S2["2. Diagnóstico"]
+        direction LR
+        MEC1["Mecânico"] --> D["Iniciar Diagnóstico"]
+        D --> E["Diagnóstico Iniciado"]
+        E --> F["Realizar Diagnóstico"]
+        F --> G{"Peça identificada?"}
+        G -- "Sim" --> H["Diagnóstico Realizado"]
+        G -- "Não" --> HS1["Peça não identificada: o que fazer?"]
+        HS1 -.-> F
+        H --> I["Finalizar Diagnóstico"]
+        I --> J["Diagnóstico Finalizado"]
+    end
+
+    subgraph S3["3. Orçamento"]
+        direction LR
+        MEC2["Mecânico"] --> K["Gerar Orçamento"]
+        K --> L["Orçamento Gerado"]
+        L --> M["Reservar Peça"]
+        M --> POL0["Verificar disponibilidade"]
+        POL0 --> EXT1["Sistema de Estoque"]
+        EXT1 --> O{"Peça disponível?"}
+        O -- "Sim" --> P["Peça Reservada"]
+        O -- "Não" --> Q["Peça Indisponível"]
+        Q --> HS2["Aguardar reposição, trocar peça ou revisar orçamento?"]
+        HS2 -.-> K
+    end
+
+    subgraph S4["4. Aprovação"]
+        direction LR
+        CLI["Cliente"] --> R["Consultar Status"]
+        R --> S{"Decisão do cliente"}
+        S -- "Aprova" --> CA["Aprovar Orçamento"]
+        CA --> T["Orçamento Aprovado"]
+        S -- "Rejeita" --> CR["Rejeitar Orçamento"]
+        CR --> U["Orçamento Rejeitado"]
+        U --> POL1["Se rejeitado, revisar"]
+        POL1 --> V["Revisar Orçamento"]
+        S -- "Pede revisão" --> V
+        V --> X["Orçamento Revisado"]
+        X -.-> R
+        S -- "Sem resposta no prazo" --> POL2["Verificar validade"]
+        POL2 --> W["Orçamento Expirado"]
+        W --> HS3["Qual o prazo? Libera reserva? Encerra a OS?"]
+    end
+
+    subgraph S5["5. Execução"]
+        direction LR
+        MEC3["Mecânico"] --> Y["Iniciar Execução"]
+        Y --> Z["Execução Iniciada"]
+        Z --> EXT2["Sistema de Estoque"]
+        EXT2 --> AB["Peças Baixadas"]
+        AB --> AC["Finalizar Execução"]
+        AC --> AD["Execução Finalizada"]
+    end
+
+    subgraph S6["6. Entrega"]
+        direction LR
+        ATD2["Atendente"] --> AE["Entregar Veículo"]
+        AE --> AF["Veículo Entregue"]
+        AF --> AH["OS Encerrada"]
+        AH --> AG["Comprovante"]
+    end
+
+    %% Ligações entre frames (e não entre nós) deixam o Mermaid respeitar o "direction" de cada subgraph,
+    %% que é ignorado quando um nó do subgraph liga para fora.
+    S1 -- "OS Criada" --> S2
+    S2 -- "Diagnóstico Finalizado" --> S3
+    S3 -- "Peça Reservada" --> S4
+    S4 -- "Orçamento Aprovado" --> S5
+    S5 -- "Execução Finalizada" --> S6
+
+    classDef evento fill:#FFB77B,stroke:#C97A3A,color:#000
+    classDef comando fill:#8AB6F9,stroke:#3F74C4,color:#000
+    classDef ator fill:#FFE871,stroke:#C4A92A,color:#000
+    classDef politica fill:#BBADF9,stroke:#7563C4,color:#000
+    classDef readmodel fill:#6CDB8B,stroke:#2E9950,color:#000
+    classDef externo fill:#F59BE6,stroke:#B8509F,color:#000
+    classDef hotspot fill:#F79C98,stroke:#C24F4A,color:#000
+
+    class C,E,H,J,L,P,Q,T,U,W,X,Z,AB,AD,AF,AH evento
+    class B,D,F,I,K,M,CA,CR,V,Y,AC,AE comando
+    class ATD1,ATD2,MEC1,MEC2,MEC3,CLI ator
+    class POL0,POL1,POL2 politica
+    class RM1,R,AG readmodel
+    class EXT1,EXT2 externo
+    class HS1,HS2,HS3 hotspot

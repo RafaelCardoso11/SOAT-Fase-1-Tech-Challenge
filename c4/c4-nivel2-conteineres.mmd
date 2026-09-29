@@ -1,0 +1,25 @@
+%% C4 Nível 2 - Contêineres. Feito como flowchart (e não C4Container) para importar no Miro.
+flowchart TB
+    CLI["Cliente - Pessoa"]
+    ATD["Atendente - Pessoa"]
+    MEC["Mecânico - Pessoa"]
+
+    subgraph SYS["Sistema Oficina - docker-compose"]
+        API["API Monolítica - Contêiner Docker - API RESTful em camadas, documentada com Swagger, autenticação JWT"]
+        DB[("Banco de Dados - Contêiner Docker - Clientes, veículos, OS, orçamentos, peças e estoque")]
+    end
+
+    NOT["Serviço de Notificação - Sistema Externo"]
+
+    CLI -- "Consulta status, aprova ou rejeita orçamento [HTTPS/JSON]" --> API
+    ATD -- "Cria OS, cadastros, entrega [HTTPS/JSON + JWT]" --> API
+    MEC -- "Diagnóstico, orçamento, execução [HTTPS/JSON + JWT]" --> API
+    API -- "Lê e grava [driver do banco]" --> DB
+    API -- "Envia notificações [HTTPS]" --> NOT
+
+    classDef pessoa fill:#08427B,stroke:#052E56,color:#fff
+    classDef conteiner fill:#438DD5,stroke:#2E6295,color:#fff
+    classDef externo fill:#999999,stroke:#6B6B6B,color:#fff
+    class CLI,ATD,MEC pessoa
+    class API,DB conteiner
+    class NOT externo
