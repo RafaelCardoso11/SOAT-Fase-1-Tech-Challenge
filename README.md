@@ -27,11 +27,13 @@ Monolito em camadas, rodando em Docker:
 Controllers → Use Cases → Domain (Entities / Domain Services) → Repositories → Banco de Dados
 ```
 
-Diagramas C4 em [`c4/`](c4/):
+Documento de arquitetura: [`docs/arquitetura.md`](docs/arquitetura.md)
 
-- [Nível 1 — Contexto](c4/c4-nivel1-contexto.mmd)
-- [Nível 2 — Contêineres](c4/c4-nivel2-conteineres.mmd)
-- [Nível 3 — Componentes](c4/c4-nivel3-componentes.mmd)
+Diagramas C4 em [`docs/c4/`](docs/c4/):
+
+- [Nível 1 — Contexto](docs/c4/c4-nivel1-contexto.mmd)
+- [Nível 2 — Contêineres](docs/c4/c4-nivel2-conteineres.mmd)
+- [Nível 3 — Componentes](docs/c4/c4-nivel3-componentes.mmd)
 
 ## Tecnologias
 
@@ -52,19 +54,31 @@ _A definir: banco escolhido e justificativa._
 
 ## Execução
 
+Ambiente completo (app + PostgreSQL + MailHog) via Docker:
+
 ```bash
-docker compose up --build
+cp .env.example .env            # ajuste os valores
+docker compose -f docker/docker-compose.yml up --build
 ```
+
+Ou localmente (sobe só a aplicação, sem banco):
+
+```bash
+./gradlew :bootstrap:bootRun
+```
+
+Sanidade: `curl http://localhost:8080/api/ping` → `{"aplicacao":"oficina","status":"ok"}`
+e `http://localhost:8080/actuator/health` → `{"status":"UP"}`.
 
 ## Testes
 
 _A definir: comando para rodar os testes e gerar a cobertura._
 
-Cenários BDD em [`bdd/`](bdd/), um arquivo `.feature` por caso de uso (UC01 a UC12).
+Cenários BDD em [`specs/001-mvp-gestao-os/bdd/`](specs/001-mvp-gestao-os/bdd/), um arquivo `.feature` por caso de uso (UC01 a UC13).
 
 ## Documentação da API
 
-Swagger disponível em: _a definir (ex.: `http://localhost:8080/swagger-ui`)_
+Swagger UI: `http://localhost:8080/swagger-ui.html` · OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
 ## Autenticação
 
@@ -74,16 +88,20 @@ _A definir: usuários e credenciais de demonstração ou procedimento para obter
 
 ```
 .
-├── bdd/     # Cenários BDD (Gherkin) dos casos de uso
-├── c4/      # Diagramas C4 (Mermaid)
-├── docs/    # Enunciado do desafio e fluxograma do Event Storming
+├── bootstrap/      # Aplicação Spring Boot (deployable único)
+├── shared-kernel/  # VOs e base de domínio compartilhados
+├── modules/        # Bounded contexts: autenticacao, cadastro, estoque, ordemservico
+├── specs/          # Spec-Driven Development (spec/plan/tasks) + cenários BDD
+├── docs/           # arquitetura.md, adr/, ddd/, c4/ e enunciado
+├── docker/         # Dockerfile e docker-compose
 └── README.md
 ```
 
 ## Documentação DDD
 
 - Event Storming: _link do Miro_
-- Fluxograma do Event Storming: [`docs/fluxograma-oficina.mmd`](docs/fluxograma-oficina.mmd)
+- Fluxograma do Event Storming: [`docs/ddd/fluxograma-oficina.mmd`](docs/ddd/fluxograma-oficina.mmd)
+- Mapa de contexto: [`docs/ddd/mapa-de-contexto.jpg`](docs/ddd/mapa-de-contexto.jpg)
 
 ## Vídeo da entrega
 
