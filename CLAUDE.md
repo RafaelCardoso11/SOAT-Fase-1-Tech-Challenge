@@ -29,3 +29,9 @@ Todo trabalho começa por uma issue. Nada vai para a `main` sem PR vinculado a u
 - Event Storming e casos de uso: board **Tech01** no Miro, acessível pelo plugin `miro@claude-plugins-official`
 - Fluxo SDD: skills `/spec-driven-development`, `/spec-specify`, `/spec-plan`, `/spec-tasks`
 - Gate de qualidade: `./gradlew build` (testes + cobertura Jacoco ≥ 80%)
+
+## Ferramentas de agente
+
+- **rtk**: proxy de CLI que corta tokens da saída de `git`, `gradle` etc. Instale (`brew install rtk`) e rode `rtk init -g`; o hook reescreve os comandos sozinho. `rtk gain` mostra a economia.
+- **codegraph**: grafo do código local (SQLite em `.codegraph/`, fora do git) exposto via MCP em `.mcp.json`. Instale o CLI (`npm i -g @colbymchenry/codegraph`) e rode `codegraph init` na raiz uma vez; o índice se atualiza sozinho. Prefira as ferramentas do codegraph a ler arquivo por arquivo para achar símbolos, chamadores e impacto de mudanças.
+- **ponytail**: plugin habilitado em `.claude/settings.json`; o Claude Code oferece instalar ao abrir o projeto. Escreva o mínimo que resolve. `/ponytail-review` revisa o diff antes do PR.

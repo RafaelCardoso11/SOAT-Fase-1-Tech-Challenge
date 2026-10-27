@@ -48,3 +48,6 @@ Thumbs.db
 coverage/
 jacoco.exec
 *.hprof
+
+# ---- Ferramentas de agente ----
+.codegraph/
