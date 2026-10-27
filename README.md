@@ -1,5 +1,7 @@
 # Sistema de Gestão de Oficina Mecânica
 
+[![CI](https://github.com/RafaelCardoso11/SOAT-Fase-1-Tech-Challenge/actions/workflows/ci.yml/badge.svg)](https://github.com/RafaelCardoso11/SOAT-Fase-1-Tech-Challenge/actions/workflows/ci.yml)
+
 Tech Challenge — Fase 1 (FIAP SOAT)
 
 ## Objetivo
