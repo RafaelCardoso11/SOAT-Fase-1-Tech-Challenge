@@ -99,7 +99,29 @@ Relatório em `build/reports/dependency-check-report.html`. Detalhes em [`docs/s
 
 ## Autenticação
 
-_A definir: usuários e credenciais de demonstração ou procedimento para obter o token JWT._
+As APIs administrativas exigem um token **JWT** no cabeçalho `Authorization: Bearer <token>`. A consulta pública de status da OS (`/api/public/**`) não exige token.
+
+Usuários de demonstração (semeados na inicialização):
+
+| Usuário | Senha |
+|---------|-------|
+| `admin` | `admin@123` |
+| `mecanico` | `mecanico@123` |
+
+Obter o token e usá-lo:
+
+```bash
+# login
+curl -s -X POST http://localhost:8080/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"nomeUsuario":"admin","senha":"admin@123"}'
+# → {"token":"<jwt>","tipo":"Bearer","expiraEmSegundos":3600}
+
+# chamar rota administrativa com o token
+curl -H "Authorization: Bearer <jwt>" http://localhost:8080/api/admin/...
+```
+
+O segredo de assinatura e a expiração vêm do ambiente (`JWT_SECRET`, `JWT_EXPIRATION_MINUTES`).
 
 ## Estrutura do projeto
 
