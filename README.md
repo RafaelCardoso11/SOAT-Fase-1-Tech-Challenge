@@ -82,6 +82,16 @@ Cenários BDD em [`specs/001-mvp-gestao-os/bdd/`](specs/001-mvp-gestao-os/bdd/),
 
 Swagger UI: `http://localhost:8080/swagger-ui.html` · OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
+## Análise de vulnerabilidades
+
+Scan de dependências com OWASP Dependency-Check:
+
+```bash
+./gradlew dependencyCheckAggregate
+```
+
+Relatório em `build/reports/dependency-check-report.html`. Detalhes em [`docs/security/`](docs/security/README.md).
+
 ## Autenticação
 
 _A definir: usuários e credenciais de demonstração ou procedimento para obter o token JWT._
