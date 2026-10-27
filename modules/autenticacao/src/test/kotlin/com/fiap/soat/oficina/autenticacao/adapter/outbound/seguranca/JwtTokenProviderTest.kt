@@ -1,6 +1,5 @@
-package com.fiap.soat.oficina.autenticacao.seguranca
+package com.fiap.soat.oficina.autenticacao.adapter.outbound.seguranca
 
-import com.fiap.soat.oficina.autenticacao.adapter.outbound.seguranca.JwtTokenProvider
 import com.fiap.soat.oficina.autenticacao.domain.model.Usuario
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

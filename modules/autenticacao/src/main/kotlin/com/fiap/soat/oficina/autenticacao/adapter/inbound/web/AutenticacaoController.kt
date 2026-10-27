@@ -1,5 +1,7 @@
 package com.fiap.soat.oficina.autenticacao.adapter.inbound.web
 
+import com.fiap.soat.oficina.autenticacao.adapter.inbound.web.dto.LoginRequest
+import com.fiap.soat.oficina.autenticacao.adapter.inbound.web.dto.LoginResponse
 import com.fiap.soat.oficina.autenticacao.domain.port.inbound.AutenticarUseCase
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -18,7 +20,3 @@ class AutenticacaoController(
         return LoginResponse(emitido.token, "Bearer", emitido.expiraEmSegundos)
     }
 }
-
-data class LoginRequest(val nomeUsuario: String, val senha: String)
-
-data class LoginResponse(val token: String, val tipo: String, val expiraEmSegundos: Long)
