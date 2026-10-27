@@ -63,9 +63,10 @@ cp .env.example .env            # ajuste os valores
 docker compose -f docker/docker-compose.yml up --build
 ```
 
-Ou localmente (sobe só a aplicação, sem banco):
+Localmente, a aplicação precisa de um PostgreSQL acessível (via `SPRING_DATASOURCE_*`). Suba só o banco pelo compose e rode a app:
 
 ```bash
+docker compose -f docker/docker-compose.yml up -d postgres
 ./gradlew :bootstrap:bootRun
 ```
 
@@ -74,7 +75,11 @@ e `http://localhost:8080/actuator/health` → `{"status":"UP"}`.
 
 ## Testes
 
-_A definir: comando para rodar os testes e gerar a cobertura._
+```bash
+./gradlew build
+```
+
+Roda testes unitários e de integração e aplica o gate de cobertura (Jacoco ≥ 80% nos módulos de domínio). Os testes de integração usam Testcontainers e sobem um PostgreSQL efêmero — exigem Docker em execução (são pulados automaticamente quando o Docker não está disponível).
 
 Cenários BDD em [`specs/001-mvp-gestao-os/bdd/`](specs/001-mvp-gestao-os/bdd/), um arquivo `.feature` por caso de uso (UC01 a UC13).
 
