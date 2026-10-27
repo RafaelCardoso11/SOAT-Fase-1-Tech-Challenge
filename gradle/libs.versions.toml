@@ -3,6 +3,9 @@ kotlin = "1.9.25"
 springBoot = "3.3.5"
 springDependencyManagement = "1.1.6"
 springdoc = "2.6.0"
+junit = "5.11.3"
+mockk = "1.13.13"
+assertj = "3.26.3"
 
 [libraries]
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
@@ -11,6 +14,14 @@ spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-star
 springdoc-openapi-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
+
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+
+[bundles]
+testing = ["junit-jupiter", "mockk", "assertj-core"]
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
