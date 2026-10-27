@@ -1,5 +1,6 @@
-package com.fiap.soat.oficina.autenticacao.adapter.inbound.web
+package com.fiap.soat.oficina.config
 
+import com.fiap.soat.oficina.autenticacao.adapter.inbound.web.JwtAuthenticationFilter
 import com.fiap.soat.oficina.autenticacao.domain.port.outbound.TokenProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
