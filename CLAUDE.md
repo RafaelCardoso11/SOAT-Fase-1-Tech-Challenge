@@ -35,3 +35,6 @@ Todo trabalho começa por uma issue. Nada vai para a `main` sem PR vinculado a u
 - **rtk**: proxy de CLI que corta tokens da saída de `git`, `gradle` etc. Instale (`brew install rtk`) e rode `rtk init -g`; o hook reescreve os comandos sozinho. `rtk gain` mostra a economia.
 - **codegraph**: grafo do código local (SQLite em `.codegraph/`, fora do git) exposto via MCP em `.mcp.json`. Instale o CLI (`npm i -g @colbymchenry/codegraph`) e rode `codegraph init` na raiz uma vez; o índice se atualiza sozinho. Prefira as ferramentas do codegraph a ler arquivo por arquivo para achar símbolos, chamadores e impacto de mudanças.
 - **ponytail**: plugin habilitado em `.claude/settings.json`; o Claude Code oferece instalar ao abrir o projeto. Escreva o mínimo que resolve. `/ponytail-review` revisa o diff antes do PR.
+- **kotlin-lsp**: diagnósticos de compilação/tipo do Kotlin a cada edição. Precisa do servidor: `brew install JetBrains/utils/kotlin-lsp`.
+- **context7**: documentação atualizada das bibliotecas (Spring Boot, Spring Security, JJWT, Flyway, Testcontainers). Consulte antes de usar APIs que mudam entre versões.
+- **security-guidance**: alerta padrões inseguros durante as edições e revisa o diff ao final.
