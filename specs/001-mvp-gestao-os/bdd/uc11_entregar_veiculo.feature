@@ -8,8 +8,9 @@ Funcionalidade: UC11 - Entregar Veículo ao Cliente
     Dado que existe uma OS com status "Finalizada"
     Quando o atendente confirmar a entrega do veículo
     Então o evento "Veículo entregue" deve ser registrado
+    E o status da OS deve ser "Entregue"
     E o evento "OS encerrada" deve ser registrado depois de "Veículo entregue"
-    E o status da OS deve ser "Encerrada"
+    E o comprovante de entrega deve ser disponibilizado
 
   Esquema do Cenário: Impedir entrega de OS não finalizada
     Dado que existe uma OS com status "<status>"
@@ -21,3 +22,4 @@ Funcionalidade: UC11 - Entregar Veículo ao Cliente
       | status               |
       | Aguardando aprovação |
       | Em execução          |
+      | Entregue             |

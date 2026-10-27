@@ -8,8 +8,8 @@ Funcionalidade: UC10 - Finalizar Execução da OS
     Dado que existe uma OS com status "Em execução"
     E todos os serviços e peças do orçamento foram aplicados
     Quando o mecânico registrar a conclusão
-    Então o status da OS deve ser "Finalizada"
-    E o evento "Execução finalizada" deve ser registrado
+    Então o evento "Execução finalizada" deve ser registrado
+    E o status da OS deve ser "Finalizada"
     E o cliente deve ser notificado de que o veículo está pronto para retirada
 
   Cenário: Impedir finalização com itens pendentes
@@ -20,6 +20,6 @@ Funcionalidade: UC10 - Finalizar Execução da OS
     E o mecânico deve ser informado dos itens pendentes
 
   Cenário: Impedir finalização de OS que não está em execução
-    Dado que existe uma OS com status "Aguardando execução"
+    Dado que existe uma OS com status "Aguardando aprovação"
     Quando o mecânico tentar registrar a conclusão
-    Então a OS deve continuar com status "Aguardando execução"
+    Então a OS deve continuar com status "Aguardando aprovação"

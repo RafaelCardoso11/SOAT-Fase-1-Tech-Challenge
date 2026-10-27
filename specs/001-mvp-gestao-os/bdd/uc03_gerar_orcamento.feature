@@ -5,23 +5,34 @@ Funcionalidade: UC03 - Gerar Orçamento
   Para que o cliente possa aprovar o serviço
 
   Cenário: Gerar orçamento a partir de diagnóstico finalizado
-    Dado que existe uma OS com status "Diagnóstico finalizado"
+    Dado que existe uma OS com status "Em diagnóstico"
+    E o evento "Diagnóstico finalizado" foi registrado para a OS
     Quando o mecânico montar o orçamento com os itens:
       | tipo    | descrição             | valor  |
       | serviço | Troca de pastilhas    | 150.00 |
       | peça    | Pastilha de freio     | 200.00 |
     Então o valor total do orçamento deve ser 350.00
     E o orçamento deve estar associado à OS
+    E o evento "Orçamento gerado" deve ser registrado
     E o status da OS deve ser "Aguardando aprovação"
+    E a reserva da peça "Pastilha de freio" deve ser solicitada ao estoque
     E o cliente deve ser notificado do orçamento gerado
 
-  Esquema do Cenário: Impedir orçamento sem diagnóstico finalizado
+  Cenário: Impedir orçamento com diagnóstico ainda não finalizado
+    Dado que existe uma OS com status "Em diagnóstico"
+    E o evento "Diagnóstico finalizado" não foi registrado para a OS
+    Quando o mecânico tentar gerar o orçamento
+    Então o orçamento não deve ser gerado
+    E o status da OS deve continuar "Em diagnóstico"
+
+  Esquema do Cenário: Impedir orçamento fora da etapa de diagnóstico
     Dado que existe uma OS com status "<status>"
     Quando o mecânico tentar gerar o orçamento
     Então o orçamento não deve ser gerado
     E o status da OS deve continuar "<status>"
 
     Exemplos:
-      | status         |
-      | Recebida       |
-      | Em diagnóstico |
+      | status      |
+      | Recebida    |
+      | Em execução |
+      | Finalizada  |
