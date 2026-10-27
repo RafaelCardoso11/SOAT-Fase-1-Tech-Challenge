@@ -1,6 +1,6 @@
 # language: pt
 Funcionalidade: UC04 - Reservar Peça
-  Como sistema de estoque
+  Como sistema (módulo de Estoque)
   Quero reservar as peças do orçamento
   Para garantir disponibilidade até a execução
 
@@ -20,6 +20,15 @@ Funcionalidade: UC04 - Reservar Peça
     Então a reserva não deve ser criada
     E o evento "Peça indisponível" deve ser registrado
     E o atendente e o mecânico devem ser notificados
+    E o orçamento deve ficar disponível para revisão
+
+  Cenário: Encerrar a OS quando não há alternativa de fornecimento
+    Dado que o evento "Peça indisponível" foi registrado para a OS
+    E não há alternativa de fornecimento para a peça "Pastilha de freio"
+    Quando o atendente encerrar a OS
+    Então o evento "OS encerrada" deve ser registrado
+    E o status da OS deve ser "Finalizada"
+    E as demais peças reservadas para a OS devem ser liberadas
 
   Cenário: Peça reservada não pode ser usada por outra OS
     Dado que o estoque possui 1 unidade disponível da peça "Pastilha de freio"
@@ -27,6 +36,3 @@ Funcionalidade: UC04 - Reservar Peça
     Quando o sistema tentar reservar a mesma peça para outra OS
     Então a reserva da outra OS não deve ser criada
     E o evento "Peça indisponível" deve ser registrado para a outra OS
-
-  # Hotspot: o UC diz que peça indisponível "pode levar ao encerramento da OS
-  # caso não haja alternativa de fornecimento" — regra ainda não definida.

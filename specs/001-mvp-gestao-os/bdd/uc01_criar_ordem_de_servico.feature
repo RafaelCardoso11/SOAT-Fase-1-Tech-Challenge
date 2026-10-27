@@ -10,6 +10,7 @@ Funcionalidade: UC01 - Criar Ordem de Serviço
     E registrou o relato "Barulho ao frear"
     Quando o atendente solicitar a criação da OS
     Então a OS deve ser criada com status "Recebida"
+    E o evento "Ordem de serviço criada" deve ser registrado
     E o atendente deve receber a confirmação da criação
 
   Esquema do Cenário: Bloquear criação com dados inválidos

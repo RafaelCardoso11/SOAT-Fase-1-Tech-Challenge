@@ -19,9 +19,16 @@ Funcionalidade: UC02 - Realizar Diagnóstico
     Dado que existe uma OS com status "Em diagnóstico"
     E o mecânico registrou as observações da inspeção
     Quando o mecânico concluir a análise informando serviços e peças necessários
-    Então o status da OS deve ser "Diagnóstico finalizado"
-    E o evento "Diagnóstico finalizado" deve ser registrado
+    Então o evento "Diagnóstico finalizado" deve ser registrado
+    E o status da OS deve continuar "Em diagnóstico"
     E a OS deve ficar liberada para geração de orçamento
+
+  Cenário: Encerrar a OS quando a peça não for identificada
+    Dado que existe uma OS com status "Em diagnóstico"
+    Quando o mecânico concluir a inspeção sem identificar a peça necessária
+    Então o evento "Diagnóstico realizado" não deve ser registrado
+    E o evento "OS encerrada" deve ser registrado
+    E o status da OS deve ser "Finalizada"
 
   Esquema do Cenário: Impedir início de diagnóstico fora do status "Recebida"
     Dado que existe uma OS com status "<status>"
@@ -30,10 +37,9 @@ Funcionalidade: UC02 - Realizar Diagnóstico
     E o status da OS deve continuar "<status>"
 
     Exemplos:
-      | status                 |
-      | Em diagnóstico         |
-      | Aguardando aprovação   |
-      | Em execução            |
-      | Finalizada             |
-
-  # Hotspot do Event Storming: "E se a peça não for identificada?" ainda sem regra definida.
+      | status               |
+      | Em diagnóstico       |
+      | Aguardando aprovação |
+      | Em execução          |
+      | Finalizada           |
+      | Entregue             |
