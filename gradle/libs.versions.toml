@@ -6,6 +6,7 @@ springdoc = "2.6.0"
 junit = "5.11.3"
 mockk = "1.13.13"
 assertj = "3.26.3"
+dependencyCheck = "10.0.4"
 
 [libraries]
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
@@ -28,3 +29,4 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
+owasp-dependencycheck = { id = "org.owasp.dependencycheck", version.ref = "dependencyCheck" }
