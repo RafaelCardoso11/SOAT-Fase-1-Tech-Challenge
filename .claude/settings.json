@@ -1,5 +1,17 @@
 {
+  "extraKnownMarketplaces": {
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    }
+  },
   "enabledPlugins": {
-    "miro@claude-plugins-official": true
+    "miro@claude-plugins-official": true,
+    "ponytail@ponytail": true,
+    "kotlin-lsp@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true
   }
 }
