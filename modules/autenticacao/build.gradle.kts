@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.kotlin.jpa)
     alias(libs.plugins.spring.dependency.management)
-    jacoco
+    id("oficina.jacoco-convention")
 }
 
 kotlin {
@@ -33,40 +33,4 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport)
-}
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-    }
-}
-
-tasks.jacocoTestCoverageVerification {
-    classDirectories.setFrom(
-        files(
-            classDirectories.files.map {
-                fileTree(it) {
-                    include(
-                        "**/com/fiap/soat/oficina/autenticacao/domain/**",
-                        "**/com/fiap/soat/oficina/autenticacao/application/**",
-                    )
-                }
-            },
-        ),
-    )
-    violationRules {
-        rule {
-            limit {
-                counter = "LINE"
-                minimum = "0.80".toBigDecimal()
-            }
-        }
-    }
-}
-
-tasks.check {
-    dependsOn(tasks.jacocoTestCoverageVerification)
 }
