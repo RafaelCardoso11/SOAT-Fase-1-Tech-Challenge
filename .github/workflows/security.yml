@@ -31,15 +31,19 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build fat jar (para análise de dependências)
-        run: ./gradlew :bootstrap:bootJar --no-daemon
+      - name: Build e extração das dependências do fat jar
+        run: |
+          ./gradlew :bootstrap:bootJar --no-daemon
+          jar=$(ls bootstrap/build/libs/*.jar | grep -v -- '-plain')
+          mkdir -p build/scan
+          unzip -qo "$jar" 'BOOT-INF/lib/*' -d build/scan
 
       # SHA pinado (v0.36.0): tags 0.0.1–0.34.2 foram comprometidas no incidente de supply-chain de mar/2026
       - name: Trivy — vulnerabilidades em dependências
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
           scan-type: fs
-          scan-ref: bootstrap/build/libs
+          scan-ref: build/scan
           scanners: vuln
           severity: HIGH,CRITICAL
           format: table
