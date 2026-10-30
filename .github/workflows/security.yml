@@ -22,31 +22,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Build e extração das dependências do fat jar
-        run: |
-          ./gradlew :bootstrap:bootJar --no-daemon
-          ls -la bootstrap/build/libs/
-          jar=$(ls bootstrap/build/libs/*.jar | grep -v -- '-plain')
-          echo "jar=$jar"
-          mkdir -p build/scan
-          unzip -qo "$jar" 'BOOT-INF/lib/*' -d build/scan
-          echo "jars_extraidos=$(find build/scan -name '*.jar' | wc -l)"
+      - name: Build da imagem
+        run: docker build -t oficina:scan -f docker/Dockerfile .
 
       # SHA pinado (v0.36.0): tags 0.0.1–0.34.2 foram comprometidas no incidente de supply-chain de mar/2026
-      - name: Trivy — vulnerabilidades em dependências
+      - name: Trivy — vulnerabilidades (OS + dependências)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
-          scan-type: fs
-          scan-ref: build/scan
+          scan-type: image
+          image-ref: oficina:scan
           scanners: vuln
           severity: HIGH,CRITICAL
           format: table
