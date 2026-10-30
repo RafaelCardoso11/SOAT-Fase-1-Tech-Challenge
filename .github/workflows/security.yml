@@ -34,9 +34,12 @@ jobs:
       - name: Build e extração das dependências do fat jar
         run: |
           ./gradlew :bootstrap:bootJar --no-daemon
+          ls -la bootstrap/build/libs/
           jar=$(ls bootstrap/build/libs/*.jar | grep -v -- '-plain')
+          echo "jar=$jar"
           mkdir -p build/scan
           unzip -qo "$jar" 'BOOT-INF/lib/*' -d build/scan
+          echo "jars_extraidos=$(find build/scan -name '*.jar' | wc -l)"
 
       # SHA pinado (v0.36.0): tags 0.0.1–0.34.2 foram comprometidas no incidente de supply-chain de mar/2026
       - name: Trivy — vulnerabilidades em dependências
