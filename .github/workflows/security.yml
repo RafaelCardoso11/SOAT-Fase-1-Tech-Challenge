@@ -8,15 +8,15 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: security-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  dependency-check:
-    name: OWASP Dependency-Check
+  trivy:
+    name: Trivy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,22 +31,25 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Cache NVD data
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle/dependency-check-data
-          key: dependency-check-data-${{ runner.os }}
+      - name: Build fat jar (para análise de dependências)
+        run: ./gradlew :bootstrap:bootJar --no-daemon
 
-      - name: Run OWASP Dependency-Check
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: ./gradlew dependencyCheckAggregate --no-daemon --stacktrace
-
-      - name: Upload report
-        if: always()
-        uses: actions/upload-artifact@v4
+      # SHA pinado (v0.36.0): tags 0.0.1–0.34.2 foram comprometidas no incidente de supply-chain de mar/2026
+      - name: Trivy — vulnerabilidades em dependências
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
-          name: dependency-check-report
-          path: build/reports/dependency-check-report.*
-          if-no-files-found: warn
-          retention-days: 30
+          scan-type: fs
+          scan-ref: bootstrap/build/libs
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          format: table
+          output: docs/security/trivy-report.txt
+          exit-code: '0'
+
+      - name: Commit do relatório (evidência no repo)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/security/trivy-report.txt
+          git diff --staged --quiet || git commit -m "chore(security): atualiza relatório Trivy [skip ci]"
+          git push

@@ -6,7 +6,6 @@ springdoc = "2.6.0"
 junit = "5.11.3"
 mockk = "1.13.13"
 assertj = "3.26.3"
-dependencyCheck = "10.0.4"
 jjwt = "0.12.6"
 
 [libraries]
@@ -43,4 +42,3 @@ kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotl
 kotlin-jpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
-owasp-dependencycheck = { id = "org.owasp.dependencycheck", version.ref = "dependencyCheck" }

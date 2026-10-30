@@ -89,13 +89,14 @@ Swagger UI: `http://localhost:8080/swagger-ui.html` · OpenAPI JSON: `http://loc
 
 ## Análise de vulnerabilidades
 
-Scan de dependências com OWASP Dependency-Check:
+Scan de dependências com Trivy:
 
 ```bash
-./gradlew dependencyCheckAggregate
+./gradlew :bootstrap:bootJar
+trivy fs --scanners vuln --severity HIGH,CRITICAL bootstrap/build/libs
 ```
 
-Relatório em `build/reports/dependency-check-report.html`. Detalhes em [`docs/security/`](docs/security/README.md).
+Roda também no CI (workflow `Security`). Detalhes em [`docs/security/`](docs/security/README.md).
 
 ## Autenticação
 
