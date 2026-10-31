@@ -1,0 +1,18 @@
+package com.fiap.soat.oficina.ordemservico.adapter.config
+
+import com.fiap.soat.oficina.ordemservico.application.usecase.CriarOrdemServicoService
+import com.fiap.soat.oficina.ordemservico.domain.port.inbound.CriarOrdemServicoUseCase
+import com.fiap.soat.oficina.ordemservico.domain.port.outbound.OrdemServicoRepository
+import com.fiap.soat.oficina.ordemservico.domain.port.outbound.PublicadorDeEventos
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+
+@Configuration
+class OrdemServicoBeanConfig {
+
+    @Bean
+    fun criarOrdemServicoUseCase(
+        repositorio: OrdemServicoRepository,
+        eventos: PublicadorDeEventos,
+    ): CriarOrdemServicoUseCase = CriarOrdemServicoService(repositorio, eventos)
+}
