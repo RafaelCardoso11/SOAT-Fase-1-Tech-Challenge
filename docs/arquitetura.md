@@ -323,8 +323,8 @@ modules/ordemservico/
 ## 8. Transversais
 
 **APIs REST + OpenAPI** — springdoc-openapi gera o Swagger a partir dos controllers; contratos também
-versionados em `specs/.../contracts/openapi.yaml`. Convenção de rotas: `/api/admin/**` (protegidas) e
-`/api/os/{id}/status` (consulta pública do cliente — UC12).
+versionados em `specs/.../contracts/openapi.yaml`. Convenção de rotas: `/api/v1/admin/**` (protegidas,
+versionadas no caminho) e `/api/os/{id}/status` (consulta pública do cliente — UC12).
 
 **Segurança (JWT)** — filtro do Spring Security valida o token nas rotas administrativas; `autenticacao`
 emite/valida. Validação de dados sensíveis (CPF/CNPJ, placa) acontece nos **VOs** do `shared-kernel`,

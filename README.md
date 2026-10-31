@@ -119,10 +119,37 @@ curl -s -X POST http://localhost:8080/api/auth/login \
 # → {"token":"<jwt>","tipo":"Bearer","expiraEmSegundos":3600}
 
 # chamar rota administrativa com o token
-curl -H "Authorization: Bearer <jwt>" http://localhost:8080/api/admin/...
+curl -H "Authorization: Bearer <jwt>" http://localhost:8080/api/v1/admin/...
 ```
 
 O segredo de assinatura e a expiração vêm do ambiente (`JWT_SECRET`, `JWT_EXPIRATION_MINUTES`).
+
+## Cadastro de clientes, veículos e serviços
+
+APIs administrativas versionadas (`/api/v1/admin/**`), protegidas por JWT e documentadas no Swagger UI
+(botão **Authorize** com o token do login). Especificação em [`specs/cadastro/`](specs/cadastro/).
+
+| Recurso | Rotas |
+|---------|-------|
+| Clientes | `POST/GET /api/v1/admin/clientes` · `GET/PUT /{id}` · `GET /documento/{cpf-ou-cnpj}` · `POST /{id}/inativar` |
+| Veículos | `POST/GET /api/v1/admin/veiculos` (`?clienteId=`) · `GET/PUT /{id}` · `GET /placa/{placa}` · `POST /{id}/inativar` |
+| Serviços | `POST/GET /api/v1/admin/servicos` · `GET/PUT /{id}` · `POST /{id}/inativar` |
+
+Regras principais:
+
+- CPF/CNPJ e placa são validados e **únicos** (inclusive entre cadastros inativos); o documento do cliente e a placa do veículo não podem ser alterados.
+- O veículo pertence a um cliente **ativo** e o dono pode ser trocado.
+- Não há exclusão: cadastros são **inativados** (`POST /{id}/inativar`), e um cliente só é inativado sem veículos ativos.
+- As listagens e buscas aceitam `?ativo=true|false`; nas buscas por chave, `?ativo=true` trata cadastro inativo como não encontrado.
+- Erros: `400` dado inválido · `404` não encontrado · `409` duplicidade ou regra de negócio, com corpo `{"erro": "...", "campo": "..."}`.
+
+Exemplo:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/admin/clientes \
+  -H "Authorization: Bearer <jwt>" -H 'Content-Type: application/json' \
+  -d '{"documento":"123.456.789-09","nome":"Maria Silva","email":"maria@email.com"}'
+```
 
 ## Estrutura do projeto
 
