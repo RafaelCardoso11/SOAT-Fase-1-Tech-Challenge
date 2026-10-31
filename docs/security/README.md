@@ -1,47 +1,27 @@
 # Análise de Vulnerabilidades
 
-A análise de dependências do projeto usa o **OWASP Dependency-Check**, que cruza as dependências
-(transitivas incluídas) com a base de CVEs da NVD e gera um relatório.
+A análise de dependências usa o **Trivy**, que varre as dependências (incluindo transitivas,
+dentro do fat jar) contra a base de vulnerabilidades e gera um relatório.
 
 ## Rodar localmente
 
 ```bash
-./gradlew dependencyCheckAggregate
+./gradlew :bootstrap:bootJar
+trivy fs --scanners vuln --severity HIGH,CRITICAL bootstrap/build/libs
 ```
 
-O relatório é gerado em:
-
-```
-build/reports/dependency-check-report.html   # leitura humana
-build/reports/dependency-check-report.json   # máquina
-build/reports/dependency-check-report.sarif  # integração com GitHub Security
-```
-
-## Chave da NVD (recomendado)
-
-Sem chave, a NVD limita severamente as requisições e a primeira execução fica muito lenta.
-Gere uma chave gratuita em https://nvd.nist.gov/developers/request-an-api-key e exporte:
-
-```bash
-export NVD_API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-./gradlew dependencyCheckAggregate
-```
-
-No CI, cadastre a chave como secret do repositório com o nome `NVD_API_KEY`.
+(Instale o Trivy: https://trivy.dev — ex.: `brew install trivy`.)
 
 ## CI
 
-O workflow `.github/workflows/security.yml` roda o scan em push para `main`, semanalmente e sob demanda
-(`workflow_dispatch`), publicando o relatório como artifact. Não roda em cada PR para manter o pipeline
-de PR rápido.
+O workflow `.github/workflows/security.yml` roda o Trivy em push para `main`, semanalmente e sob demanda
+(`workflow_dispatch`), e **commita o resultado em `docs/security/trivy-report.txt`** como evidência no
+repositório (entregável do desafio). Não precisa de chave/segredo.
+
+> A action é pinada no commit SHA da v0.36.0 — as tags 0.0.1–0.34.2 do `trivy-action` foram comprometidas
+> num ataque de supply-chain (mar/2026).
 
 ## Política
 
-A verificação é informativa por padrão (não quebra o build). Para transformar em gate bloqueante,
-defina um limite de severidade em `build.gradle.kts`:
-
-```kotlin
-dependencyCheck {
-    failBuildOnCVSS = 7.0f
-}
-```
+A verificação é informativa por padrão (`exit-code: 0`, não quebra o build). Para torná-la bloqueante,
+mude `exit-code` para `1` no workflow (falha se houver vulnerabilidade HIGH/CRITICAL).
