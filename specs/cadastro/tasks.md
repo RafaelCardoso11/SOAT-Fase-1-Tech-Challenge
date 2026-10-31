@@ -28,7 +28,7 @@ Pacote raiz: `com.fiap.soat.oficina.cadastro` (`…cadastro`), em `modules/cadas
 
 ## Data / persistence (`…/adapter/outbound/persistence/`)
 
-- [x] T014 Migração `bootstrap/src/main/resources/db/migration/V3__create_cadastro.sql`: tabelas `cadastro.cliente`, `cadastro.veiculo` (FK + índice em `cliente_id`) e `cadastro.servico` (índice único em `lower(nome)`), conforme o plan (sem telefone).
+- [x] T014 Migração `bootstrap/src/main/resources/db/migration/V5__create_cadastro.sql`: tabelas `cadastro.cliente`, `cadastro.veiculo` (FK + índice em `cliente_id`) e `cadastro.servico` (índice único em `lower(nome)`), conforme o plan (sem telefone).
 - [x] T015 [P] `ClienteJpaEntity.kt` + `ClienteSpringDataRepository.kt` + `ClienteRepositoryAdapter.kt` (mapeia entidade ↔ modelo; traduz `DataIntegrityViolationException` em `DuplicidadeException`). Depende de T008, T014.
 - [x] T016 [P] `VeiculoJpaEntity.kt` + `VeiculoSpringDataRepository.kt` + `VeiculoRepositoryAdapter.kt` (inclui `listar(ativo, clienteId)` e `existeAtivoDoCliente`). Depende de T008, T014.
 - [x] T017 [P] `ServicoJpaEntity.kt` + `ServicoSpringDataRepository.kt` + `ServicoRepositoryAdapter.kt` (busca de nome sem caixa). Depende de T008, T014.
@@ -50,10 +50,10 @@ Pacote raiz: `com.fiap.soat.oficina.cadastro` (`…cadastro`), em `modules/cadas
 
 ## Documentação
 
-- [ ] T027 `README.md`: seção sobre o cadastro (rotas `/api/v1/admin/...`, como obter o token e chamar, Swagger com Authorize) e `docs/arquitetura.md` §8: convenção `/api/v1/admin/**`.
+- [x] T027 `README.md`: seção sobre o cadastro (rotas `/api/v1/admin/...`, como obter o token e chamar, Swagger com Authorize) e `docs/arquitetura.md` §8: convenção `/api/v1/admin/**`.
 
 ## Finalize
 
-- [ ] T028 Rodar `./gradlew build` (unit + integração + gate Jacoco ≥ 80% em `domain`+`application`) e corrigir falhas; conferir que o código segue o estilo do `autenticacao`.
-- [ ] T029 Subir a aplicação (`bootRun`) e validar manualmente no Swagger UI/`curl`: login, criar cliente → veículo → serviço, duplicidade, inativação.
-- [ ] T030 Commits em Conventional Commits (`feat(cadastro): …`, `test(cadastro): …`, `docs: …`) com `specs/cadastro/` incluído; preparar o PR (`## Objetivo / O que entra / Como validar / Escopo / Fora de escopo` + `Closes #34`). Push e abertura do PR ficam com você.
+- [x] T028 Rodar `./gradlew build` (unit + integração + gate Jacoco ≥ 80% em `domain`+`application`) e corrigir falhas; conferir que o código segue o estilo do `autenticacao`.
+- [x] T029 Subir a aplicação (`bootRun`) e validar manualmente no Swagger UI/`curl`: login, criar cliente → veículo → serviço, duplicidade, inativação.
+- [x] T030 Commits em Conventional Commits (`feat(cadastro): …`, `test(cadastro): …`, `docs: …`) com `specs/cadastro/` incluído; preparar o PR (`## Objetivo / O que entra / Como validar / Escopo / Fora de escopo` + `Closes #34`). Push e abertura do PR ficam com você.

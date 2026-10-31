@@ -97,7 +97,7 @@ códigos `400/404/409` com o schema `ErroResponse`, usando só o artefato `swagg
 | Adapter · web | Criar | `…cadastro/adapter/inbound/web/` | `ClienteController`, `VeiculoController`, `ServicoController`, `CadastroExceptionHandler` e DTOs em `dto/` (request/response, `ErroResponse` e mapeamento); anotações OpenAPI só aqui |
 | Adapter · persistence | Criar | `…cadastro/adapter/outbound/persistence/` | `ClienteJpaEntity`, `VeiculoJpaEntity`, `ServicoJpaEntity`, `*SpringDataRepository`, `*RepositoryAdapter` (traduz `DataIntegrityViolationException` em `DuplicidadeException`) |
 | Adapter · config | Criar | `…cadastro/adapter/config/CadastroBeanConfig.kt` | Instancia os services como beans, no estilo do `AutenticacaoBeanConfig`; fornece `Clock` (`@ConditionalOnMissingBean`) |
-| Migration | Criar | `bootstrap/src/main/resources/db/migration/V3__create_cadastro.sql` | Ver abaixo |
+| Migration | Criar | `bootstrap/src/main/resources/db/migration/V5__create_cadastro.sql` | Ver abaixo |
 | OpenAPI | Criar | `bootstrap/src/main/kotlin/com/fiap/soat/oficina/config/OpenApiConfig.kt` | Bean `OpenAPI` com título e esquema `bearerAuth` (botão Authorize) |
 | Docs | Modificar | `README.md` e `docs/arquitetura.md` §8 | Rotas de cadastro; convenção passa a `/api/v1/admin/**` |
 
@@ -106,7 +106,7 @@ ajuste em `SecurityConfig`.
 
 ## Data Model / Persistence
 
-Migration única `V3__create_cadastro.sql`, schema `cadastro` (já criado na V1), mantendo a migration
+Migration única `V5__create_cadastro.sql`, schema `cadastro` (já criado na V1), mantendo a migration
 centralizada no `bootstrap` como a V2 (a discussão #27 sobre migrations por módulo segue em aberto e não é
 decidida aqui):
 
