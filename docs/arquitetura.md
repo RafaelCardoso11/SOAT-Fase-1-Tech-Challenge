@@ -29,7 +29,7 @@ Serviços, aplicando **DDD** e boas práticas de qualidade e segurança. Escopo 
 - Monitoramento do **tempo médio de execução** (UC13 — consulta administrativa, calculada entre os
   eventos "Execução iniciada" e "Execução finalizada").
 
-Os casos de uso estão descritos em BDD (`specs/001-mvp-gestao-os/bdd/uc01..uc13`): os **12** derivados
+Os casos de uso estão descritos em BDD (`docs/bdd/uc01..uc13`): os **12** derivados
 do Event Storming (`docs/ddd/fluxograma-oficina.mmd`) mais o **UC13** (tempo médio de execução), que
 atende diretamente a um requisito do enunciado e não gera evento de domínio. Este documento é a ponte
 entre essa descrição de domínio e a
@@ -53,29 +53,28 @@ implementação técnica.
 
 ## 2. Abordagem de trabalho: Spec-Driven Development (SDD)
 
-O projeto será conduzido em fases, onde a **especificação é a fonte da verdade** e o código é um
-artefato derivado dela. Ordem dos documentos (cada um aprovado antes do próximo):
+O projeto é conduzido com a **especificação como fonte da verdade** e o código derivado dela. Cada
+feature tem sua pasta em `specs/<feature-slug>/`, com os artefatos produzidos pelas skills SDD
+(`/spec-specify` → `/spec-plan` → `/spec-tasks`):
 
 ```
-constitution.md   →   spec.md        →   plan.md          →   tasks.md        →   implementação
-(princípios        (o QUÊ: requisitos   (o COMO: arquitetura   (passos ordenados    (código guiado
- inegociáveis)       e user stories)      e estrutura)           e paralelizáveis)     pelos testes)
+spec.md        →   plan.md          →   tasks.md        →   implementação
+(o QUÊ:            (o COMO: arquitetura   (passos ordenados    (código guiado
+ requisitos)         e estrutura)           e paralelizáveis)     pelos testes)
 ```
 
 | Artefato | Papel | Responde |
 |----------|-------|----------|
-| `.specify/memory/constitution.md` | Princípios de engenharia que nenhuma fase pode violar | Quais regras são inegociáveis? |
-| `specs/001-mvp-gestao-os/spec.md` | Especificação funcional (user stories UC01–UC12, requisitos, critérios de aceite) | O **quê** |
-| `specs/001-mvp-gestao-os/plan.md` | Plano técnico (arquitetura, estrutura, stack) — consome este documento | O **como** |
-| `specs/001-mvp-gestao-os/research.md` | Decisões e trade-offs (sintetiza os ADRs) | **Por quê** |
-| `specs/001-mvp-gestao-os/data-model.md` | Agregados, entidades, VOs, transições de estado | Modelo de dados |
-| `specs/001-mvp-gestao-os/contracts/openapi.yaml` | Contratos REST | Interface |
-| `specs/001-mvp-gestao-os/tasks.md` | Tarefas numeradas, ordenadas e paralelizáveis | Em que ordem |
-| `docs/adr/NNNN-*.md` | Registro detalhado e versionado de cada decisão | Histórico das decisões |
+| `specs/<feature-slug>/spec.md` | Especificação funcional (user stories, requisitos, critérios de aceite) | O **quê** |
+| `specs/<feature-slug>/plan.md` | Plano técnico (mapeia requisitos → hexagonal, portas, migrations) | O **como** |
+| `specs/<feature-slug>/tasks.md` | Checklist ordenado e paralelizável | Em que ordem |
+| `docs/adr/NNNN-*.md` | Registro versionado de cada decisão de arquitetura | Histórico das decisões |
+| `docs/bdd/*.feature` | Cenários BDD (Gherkin) por caso de uso — aceite executável | Comportamento esperado |
 
-**Este documento (`docs/arquitetura.md`)** é o insumo central do `plan.md` e dos ADRs. Depois de
-aprovado, ele é "fatiado" nos artefatos SDD acima. Os BDDs em `specs/001-mvp-gestao-os/bdd/` já funcionam como
-critérios de aceite executáveis dentro do fluxo SDD (viram testes Cucumber).
+> As skills SDD vivem em `.claude/skills/` e escrevem sempre em `specs/<feature-slug>/`. Os `.feature`
+> são pré-existentes e ficam em `docs/bdd/`; quando o Cucumber for ligado, migram para test resources.
+
+**Este documento (`docs/arquitetura.md`)** orienta os `plan.md` de cada feature e os ADRs.
 
 ---
 
@@ -162,7 +161,7 @@ cliente (UC12)** é pública/leve.
 
 ### ADR-0008 — Estratégia de testes e cobertura
 JUnit5 + MockK + AssertJ (unit), Testcontainers/Postgres (integração), **Cucumber-JVM** reaproveitando
-os `.feature` de `specs/001-mvp-gestao-os/bdd/`. **Jacoco** com gate de **80%** sobre `domain` + `application`.
+os `.feature` de `docs/bdd/`. **Jacoco** com gate de **80%** sobre `domain` + `application`.
 
 ### ADR-0009 — Transações e consistência
 Consistência **forte dentro do contexto** (uma transação por caso de uso); **eventual entre contextos**
@@ -273,15 +272,12 @@ Package root: `com.fiap.soat.oficina`. Build Gradle multi-módulo; `bootstrap` �
 │   ├── Dockerfile                   # build multi-stage da app (bootstrap)
 │   └── docker-compose.yml           # app + postgres:16 + mailhog (SMTP de dev)
 │
-├── .specify/
-│   └── memory/constitution.md       # princípios SDD inegociáveis
 ├── specs/
-│   └── 001-mvp-gestao-os/
-│       ├── spec.md  plan.md  research.md  data-model.md  tasks.md  quickstart.md
-│       └── contracts/openapi.yaml
+│   └── <feature-slug>/              # SDD por feature: spec.md · plan.md · tasks.md
 ├── docs/
 │   ├── arquitetura.md               # ESTE documento
-│   ├── adr/                         # ADR-0001 .. ADR-0009
+│   ├── adr/                         # ADRs
+│   ├── bdd/                         # cenários BDD (.feature) por caso de uso
 │   └── ddd/                         # event-storming.pdf, diagramas.pdf, linguagem-ubiqua.md
 │
 ├── bootstrap/                       # aplicação Spring Boot (main)
@@ -370,12 +366,8 @@ Ordem natural de extração: `estoque` (fluxo mais assíncrono) → `cadastro` (
 
 ## 11. Próximos passos (após aprovação deste documento)
 
-1. **Constitution** (`.specify/memory/constitution.md`) — fixar os princípios em §3/§4 como regras.
-2. **`spec.md`** — formalizar user stories UC01–UC12 + requisitos + critérios de aceite (resolvendo os
-   *hotspots* de §5).
-3. **ADRs** — abrir `docs/adr/0001..0009` com o detalhe de cada decisão de §4.
-4. **`plan.md` + `data-model.md` + `contracts/`** — detalhar técnico a partir deste documento.
-5. **`tasks.md`** — quebrar em tarefas ordenadas/paralelizáveis.
-6. **Scaffold** — só então gerar a árvore de §7 (Gradle, Docker, stubs).
+1. **Por feature (SDD):** `/spec-specify` → `specs/<slug>/spec.md`, `/spec-plan` → `plan.md`, `/spec-tasks` → `tasks.md` (resolvendo os *hotspots* de §5 quando aplicável).
+2. **ADRs** — registrar as decisões de §4 em `docs/adr/`.
+3. **Implementação** — seguir o `tasks.md`; gate `./gradlew build` (testes + cobertura ≥ 80%).
 
 > Nada acima é implementado antes da sua aprovação deste documento.

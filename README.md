@@ -81,7 +81,7 @@ e `http://localhost:8080/actuator/health` → `{"status":"UP"}`.
 
 Roda testes unitários e de integração e aplica o gate de cobertura (Jacoco ≥ 80% nos módulos de domínio). Os testes de integração usam Testcontainers e sobem um PostgreSQL efêmero — exigem Docker em execução (são pulados automaticamente quando o Docker não está disponível).
 
-Cenários BDD em [`specs/001-mvp-gestao-os/bdd/`](specs/001-mvp-gestao-os/bdd/), um arquivo `.feature` por caso de uso (UC01 a UC13).
+Cenários BDD em [`docs/bdd/`](docs/bdd/), um arquivo `.feature` por caso de uso (UC01 a UC13).
 
 ## Documentação da API
 

@@ -24,7 +24,7 @@ Todo trabalho começa por uma issue. Nada vai para a `main` sem PR vinculado a u
 
 ## Referências
 
-- Specs e BDD: `specs/001-mvp-gestao-os/` (BDD em `bdd/*.feature`)
+- Specs (SDD): `specs/<feature-slug>/` (`spec.md`/`plan.md`/`tasks.md`). BDD: `docs/bdd/*.feature`
 - Arquitetura: `docs/arquitetura.md`; C4 em `docs/c4/`; DDD em `docs/ddd/`
 - Event Storming e casos de uso: board **Tech01** no Miro, acessível pelo plugin `miro@claude-plugins-official`
 - Fluxo SDD: skills `/spec-driven-development`, `/spec-specify`, `/spec-plan`, `/spec-tasks`
