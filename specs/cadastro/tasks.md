@@ -35,12 +35,12 @@ Pacote raiz: `com.fiap.soat.oficina.cadastro` (`…cadastro`), em `modules/cadas
 
 ## Adapters — web (`…/adapter/inbound/web/` e `…/adapter/config/`)
 
-- [ ] T018 `dto/ErroResponse.kt` e `CadastroExceptionHandler.kt` (`@RestControllerAdvice` só para `CadastroException`: 400/404/409, corpo `erro` + `campo`; sem handler genérico). Depende de T003.
-- [ ] T019 [P] `ClienteController.kt` + DTOs em `dto/` (`/api/v1/admin/clientes`: POST, GET lista com `?ativo=`, GET `/{id}`, GET `/documento/{documento}`, PUT `/{id}`, POST `/{id}/inativar`; campos de entrada anuláveis; anotações OpenAPI). Depende de T009, T018.
-- [ ] T020 [P] `VeiculoController.kt` + DTOs (`/api/v1/admin/veiculos`: idem, mais `?clienteId=` e `/placa/{placa}`). Depende de T009, T018.
-- [ ] T021 [P] `ServicoController.kt` + DTOs (`/api/v1/admin/servicos`). Depende de T009, T018.
-- [ ] T022 `adapter/config/CadastroBeanConfig.kt`: instancia os 6 services como beans (portas de entrada) e o `Clock` (`@ConditionalOnMissingBean`). Depende de T010–T013.
-- [ ] T023 `bootstrap/src/main/kotlin/com/fiap/soat/oficina/config/OpenApiConfig.kt`: bean `OpenAPI` com título e esquema `bearerAuth` (botão Authorize do Swagger UI).
+- [x] T018 `dto/ErroResponse.kt` e `CadastroExceptionHandler.kt` (`@RestControllerAdvice` só para `CadastroException`: 400/404/409, corpo `erro` + `campo`; sem handler genérico). Depende de T003.
+- [x] T019 [P] `ClienteController.kt` + DTOs em `dto/` (`/api/v1/admin/clientes`: POST, GET lista com `?ativo=`, GET `/{id}`, GET `/documento/{documento}`, PUT `/{id}`, POST `/{id}/inativar`; campos de entrada anuláveis; anotações OpenAPI). Depende de T009, T018.
+- [x] T020 [P] `VeiculoController.kt` + DTOs (`/api/v1/admin/veiculos`: idem, mais `?clienteId=` e `/placa/{placa}`). Depende de T009, T018.
+- [x] T021 [P] `ServicoController.kt` + DTOs (`/api/v1/admin/servicos`). Depende de T009, T018.
+- [x] T022 `adapter/config/CadastroBeanConfig.kt`: instancia os 6 services como beans (portas de entrada) e o `Clock` (`@ConditionalOnMissingBean`). Depende de T010–T013.
+- [x] T023 `bootstrap/src/main/kotlin/com/fiap/soat/oficina/config/OpenApiConfig.kt`: bean `OpenAPI` com título e esquema `bearerAuth` (botão Authorize do Swagger UI).
 
 ## Tests
 
