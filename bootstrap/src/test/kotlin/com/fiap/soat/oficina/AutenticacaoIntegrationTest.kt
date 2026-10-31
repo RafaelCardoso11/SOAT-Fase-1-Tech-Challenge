@@ -66,6 +66,13 @@ class AutenticacaoIntegrationTest {
     }
 
     @Test
+    fun `swagger-ui html e acessivel sem token`() {
+        mockMvc.get("/swagger-ui.html").andExpect {
+            status { is3xxRedirection() }
+        }
+    }
+
+    @Test
     fun `rota administrativa com token valido nao retorna 401`() {
         val resposta = mockMvc.post("/api/auth/login") {
             contentType = MediaType.APPLICATION_JSON
