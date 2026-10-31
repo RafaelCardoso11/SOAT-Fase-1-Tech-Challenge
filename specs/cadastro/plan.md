@@ -34,7 +34,7 @@ Pacote raiz: `com.fiap.soat.oficina.cadastro` (abreviado `…cadastro`), em `mod
 | `FR-010` | `GerenciarVeiculoService` consulta `ClienteRepository` | Cliente inexistente → `RegistroNaoEncontradoException`; inativo → `ConflitoException` |
 | `FR-011` | `Veiculo.criar/alterar` | Marca/modelo em branco → inválido; ano entre 1900 e `anoAtual + 1` (suposição da spec), com `Clock` injetado para testar |
 | `FR-012` | `Veiculo.alterar(marca, modelo, ano, clienteId)` | Placa fora da assinatura; troca de dono revalida cliente ativo (`FR-010`) |
-| `FR-013` | `ConsultarVeiculoService` (`buscarPorId`, `buscarPorPlaca`, `listar`, `listarPorCliente`) | Filtro opcional por cliente e por `ativo` |
+| `FR-013` | `ConsultarVeiculoService` (`buscarPorId`, `buscarPorPlaca`, `listar(ativo, clienteId)`) | Filtro opcional por cliente e por `ativo` |
 | `FR-014` | `Servico.criar`, `GerenciarServicoService.cadastrar` | Campos: nome, descrição (opcional), preço |
 | `FR-015` | `ServicoRepository.existePorNome` + índice único em `lower(nome)` | Comparação sem diferenciar maiúsculas; checa também ao renomear |
 | `FR-016` | `Servico.criar/alterar` + VO `Dinheiro` | Nome em branco / preço ausente → inválido; `Dinheiro.of` rejeita negativo e arredonda a 2 casas |

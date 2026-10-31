@@ -11,13 +11,13 @@ Pacote raiz: `com.fiap.soat.oficina.cadastro` (`…cadastro`), em `modules/cadas
 
 ## Domain (`modules/cadastro/.../domain/`)
 
-- [ ] T003 [P] `error/`: `CadastroException` (base) · `DadoInvalidoException(campo)` · `RegistroNaoEncontradoException` · `DuplicidadeException(campo)` · `ConflitoException`.
-- [ ] T004 `model/Validacao.kt` (helper que converte `IllegalArgumentException` dos VOs em `DadoInvalidoException(campo)`) e `model/Email.kt` (value class, formato válido). Depende de T003.
-- [ ] T005 [P] `model/Cliente.kt`: `criar(documento, nome, email)`, `alterar(nome, email)`, `inativar()`, `ativo`; documento via VO `Documento`; rejeita alterar inativo. Depende de T004.
-- [ ] T006 [P] `model/Veiculo.kt`: `criar(placa, marca, modelo, ano, clienteId, anoLimite)`, `alterar(marca, modelo, ano, clienteId, anoLimite)`, `inativar()`; placa via VO `Placa`; ano entre 1900 e o limite. Depende de T004.
-- [ ] T007 [P] `model/Servico.kt`: `criar(nome, descricao, preco)`, `alterar(...)`, `inativar()`; preço via VO `Dinheiro`. Depende de T004.
-- [ ] T008 `port/outbound/{ClienteRepository,VeiculoRepository,ServicoRepository}.kt`: `salvar`, `buscarPorId`, `buscarPorDocumento`/`Placa`, `existePor…`, `listar(ativo)`; `VeiculoRepository` com `listarPorCliente` e `existeAtivoDoCliente`; `ServicoRepository.existePorNome` (sem caixa).
-- [ ] T009 `port/inbound/`: `GerenciarClienteUseCase` e `ConsultarClienteUseCase` (`buscarPorId/Documento(…, somenteAtivos)`, `listar(ativo)`); idem `Veiculo` (com `listarPorCliente`) e `Servico`.
+- [x] T003 [P] `error/`: `CadastroException` (base) · `DadoInvalidoException(campo)` · `RegistroNaoEncontradoException` · `DuplicidadeException(campo)` · `ConflitoException`.
+- [x] T004 `model/Validacao.kt` (helper que converte `IllegalArgumentException` dos VOs em `DadoInvalidoException(campo)`) e `model/Email.kt` (value class, formato válido). Depende de T003.
+- [x] T005 [P] `model/Cliente.kt`: `criar(documento, nome, email)`, `alterar(nome, email)`, `inativar()`, `ativo`; documento via VO `Documento`; rejeita alterar inativo. Depende de T004.
+- [x] T006 [P] `model/Veiculo.kt`: `criar(placa, marca, modelo, ano, clienteId, anoLimite)`, `alterar(marca, modelo, ano, clienteId, anoLimite)`, `inativar()`; placa via VO `Placa`; ano entre 1900 e o limite. Depende de T004.
+- [x] T007 [P] `model/Servico.kt`: `criar(nome, descricao, preco)`, `alterar(...)`, `inativar()`; preço via VO `Dinheiro`. Depende de T004.
+- [x] T008 `port/outbound/{ClienteRepository,VeiculoRepository,ServicoRepository}.kt`: `salvar`, `buscarPorId`, `buscarPorDocumento`/`Placa`, `existePor…`, `listar(ativo)`; `VeiculoRepository` com `listar(ativo, clienteId)` e `existeAtivoDoCliente`; `ServicoRepository.existePorNome` (sem caixa).
+- [x] T009 `port/inbound/`: `GerenciarClienteUseCase` e `ConsultarClienteUseCase` (`buscarPorId/Documento(…, somenteAtivos)`, `listar(ativo)`); idem `Veiculo` (`listar(ativo, clienteId)`) e `Servico`.
 
 ## Application (`…/application/usecase/`)
 
