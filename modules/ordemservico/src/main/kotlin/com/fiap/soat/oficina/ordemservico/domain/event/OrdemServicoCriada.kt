@@ -1,3 +1,5 @@
 package com.fiap.soat.oficina.ordemservico.domain.event
 
-class OrdemServicoCriada(val ordemServicoId: Long)
+import com.fiap.soat.oficina.shared.domain.event.DomainEvent
+
+class OrdemServicoCriada(val ordemServicoId: Long) : DomainEvent
