@@ -3,6 +3,7 @@ kotlin = "1.9.25"
 springBoot = "3.3.5"
 springDependencyManagement = "1.1.6"
 springdoc = "2.6.0"
+swaggerAnnotations = "2.2.22"
 junit = "5.11.3"
 mockk = "1.13.13"
 assertj = "3.26.3"
@@ -14,6 +15,7 @@ spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-start
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 springdoc-openapi-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
+swagger-annotations = { module = "io.swagger.core.v3:swagger-annotations-jakarta", version.ref = "swaggerAnnotations" }
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 
