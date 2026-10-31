@@ -7,6 +7,7 @@ junit = "5.11.3"
 mockk = "1.13.13"
 assertj = "3.26.3"
 jjwt = "0.12.6"
+cucumber = "7.20.1"
 
 [libraries]
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
@@ -32,6 +33,9 @@ assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql" }
+cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
+cucumber-junit-platform-engine = { module = "io.cucumber:cucumber-junit-platform-engine", version.ref = "cucumber" }
+junit-platform-suite = { module = "org.junit.platform:junit-platform-suite" }
 
 [bundles]
 testing = ["junit-jupiter", "mockk", "assertj-core"]

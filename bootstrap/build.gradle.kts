@@ -32,8 +32,13 @@ dependencies {
     testImplementation(libs.spring.boot.testcontainers)
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.testcontainers.postgresql)
+    testImplementation(libs.cucumber.java)
+    testImplementation(libs.cucumber.junit.platform.engine)
+    testImplementation(libs.junit.platform.suite)
+    testImplementation(libs.mockk)
 }
 
 tasks.test {
     useJUnitPlatform()
+    workingDir = rootProject.projectDir
 }
