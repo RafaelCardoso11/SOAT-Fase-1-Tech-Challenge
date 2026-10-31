@@ -1,10 +1,13 @@
 package com.fiap.soat.oficina.ordemservico.adapter.outbound.persistence
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 
 @Entity
@@ -34,4 +37,8 @@ class OrdemServicoJpaEntity(
 
     @Column(nullable = false)
     var status: String = "",
+
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JoinColumn(name = "ordem_servico_id", nullable = false)
+    var transicoes: MutableList<TransicaoStatusJpaEntity> = mutableListOf(),
 )
