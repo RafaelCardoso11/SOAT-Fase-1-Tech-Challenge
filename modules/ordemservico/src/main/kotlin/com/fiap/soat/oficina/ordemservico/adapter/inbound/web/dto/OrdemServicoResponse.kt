@@ -18,7 +18,7 @@ data class OrdemServicoResponse(
         fun de(os: OrdemServico) = OrdemServicoResponse(
             numero = os.id,
             status = os.status.name,
-            documento = os.documento.valor,
+            documento = mascararDocumento(os.documento.valor),
             placa = os.veiculo.placa.valor,
             marca = os.veiculo.marca,
             modelo = os.veiculo.modelo,
@@ -30,3 +30,7 @@ data class OrdemServicoResponse(
 }
 
 data class TransicaoResponse(val status: String, val momento: Instant)
+
+fun mascararDocumento(valor: String): String =
+    if (valor.length <= 2) "*".repeat(valor.length)
+    else "*".repeat(valor.length - 2) + valor.takeLast(2)

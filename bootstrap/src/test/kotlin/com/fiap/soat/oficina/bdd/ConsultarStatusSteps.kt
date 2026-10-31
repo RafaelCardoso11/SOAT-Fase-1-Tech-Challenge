@@ -74,7 +74,6 @@ class ConsultarStatusSteps {
 
     @Entao("nenhum evento de domínio deve ser registrado")
     fun nenhumEvento() {
-        // Consulta é read-only: o serviço não possui publicador de eventos.
     }
 
     @Entao("o sistema deve informar que nenhuma OS foi encontrada")

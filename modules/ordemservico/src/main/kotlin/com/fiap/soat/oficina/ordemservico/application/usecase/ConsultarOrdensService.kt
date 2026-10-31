@@ -12,7 +12,6 @@ class ConsultarOrdensService(
 
     override fun porNumero(numero: Long): OrdemServico? = repositorio.buscarPorId(numero)
 
-    // Identificador malformado é tratado como "nenhuma encontrada" (sem erro de validação).
     override fun porPlaca(placa: String): List<OrdemServico> =
         runCatching { Placa.of(placa).valor }.map(repositorio::buscarPorPlaca).getOrDefault(emptyList())
 
