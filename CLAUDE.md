@@ -1,5 +1,9 @@
 # SOAT Fase 1 — Tech Challenge (Oficina Mecânica)
 
+## Estilo de código
+
+- **Sem comentários óbvios.** Não escreva comentários que apenas repetem o que o código já diz (ex.: `// retorna a lista`, `// mascara o documento`). Comente só o *porquê* que o código não mostra — uma decisão não óbvia ou um workaround — em uma linha.
+
 ## Fluxo de trabalho: issue → branch → PR
 
 Todo trabalho começa por uma issue. Nada vai para a `main` sem PR vinculado a uma issue.
