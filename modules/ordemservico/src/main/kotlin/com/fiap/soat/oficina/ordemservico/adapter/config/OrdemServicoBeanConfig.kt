@@ -1,6 +1,8 @@
 package com.fiap.soat.oficina.ordemservico.adapter.config
 
+import com.fiap.soat.oficina.ordemservico.application.usecase.ConsultarOrdensService
 import com.fiap.soat.oficina.ordemservico.application.usecase.CriarOrdemServicoService
+import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ConsultarOrdensUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.CriarOrdemServicoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.OrdemServicoRepository
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.PublicadorDeEventos
@@ -15,4 +17,9 @@ class OrdemServicoBeanConfig {
         repositorio: OrdemServicoRepository,
         eventos: PublicadorDeEventos,
     ): CriarOrdemServicoUseCase = CriarOrdemServicoService(repositorio, eventos)
+
+    @Bean
+    fun consultarOrdensUseCase(
+        repositorio: OrdemServicoRepository,
+    ): ConsultarOrdensUseCase = ConsultarOrdensService(repositorio)
 }
