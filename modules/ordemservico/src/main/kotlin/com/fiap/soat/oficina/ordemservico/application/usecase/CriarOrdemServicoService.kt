@@ -21,6 +21,11 @@ class CriarOrdemServicoService(
 
         val documento = Documento.of(comando.documento)
         val placa = Placa.of(comando.placa)
+
+        require(comando.marca.isNotBlank()) { "Marca é obrigatória" }
+        require(comando.modelo.isNotBlank()) { "Modelo é obrigatório" }
+        require(comando.ano > 0) { "Ano inválido" }
+
         val veiculo = Veiculo(placa, comando.marca, comando.modelo, comando.ano)
 
         val id = repositorio.salvar(OrdemServico.criar(documento, veiculo, comando.relato))

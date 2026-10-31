@@ -21,8 +21,13 @@ class CriarOrdemServicoServiceTest {
     private val eventos = mockk<PublicadorDeEventos>(relaxed = true)
     private val service = CriarOrdemServicoService(repositorio, eventos)
 
-    private fun comando(documento: String = "123.456.789-09", placa: String = "ABC1D23") =
-        CriarOrdemServico(documento, placa, "Fiat", "Uno", 2020, "Barulho ao frear")
+    private fun comando(
+        documento: String = "123.456.789-09",
+        placa: String = "ABC1D23",
+        marca: String = "Fiat",
+        modelo: String = "Uno",
+        ano: Int = 2020,
+    ) = CriarOrdemServico(documento, placa, marca, modelo, ano, "Barulho ao frear")
 
     @Test
     fun `cria OS recebida e publica evento`() {
@@ -59,5 +64,23 @@ class CriarOrdemServicoServiceTest {
     fun `Placa invalida`() {
         assertThatThrownBy { service.criar(comando(placa = "12345")) }
             .hasMessage("Placa inválida")
+    }
+
+    @Test
+    fun `Marca obrigatoria`() {
+        assertThatThrownBy { service.criar(comando(marca = "")) }
+            .hasMessage("Marca é obrigatória")
+    }
+
+    @Test
+    fun `Modelo obrigatorio`() {
+        assertThatThrownBy { service.criar(comando(modelo = "")) }
+            .hasMessage("Modelo é obrigatório")
+    }
+
+    @Test
+    fun `Ano invalido`() {
+        assertThatThrownBy { service.criar(comando(ano = 0)) }
+            .hasMessage("Ano inválido")
     }
 }
