@@ -50,8 +50,11 @@ Migração `bootstrap/.../db/migration/V3__create_ordem_servico.sql` → tabela 
 - Status apenas os 6 oficiais por ora (`DIAGNOSTICO_FINALIZADO` etc. entram com a decisão do modelo de status — issue #37).
 
 ## Lacunas identificadas (o backfill revelou)
-Candidatas a follow-up (issues próprias), **não** corrigidas neste PR de documentação:
-1. **Evento publicado mas não persistido** — não há subscriber nem outbox; "registrado" fica parcial (o evento não sobrevive). → outbox/event log quando houver consumidor.
-2. **Sem `@Transactional` explícito** — hoje confia no commit por chamada do Spring Data; o enunciado pede tratamento de transações. Definir o boundary (ex.: no adapter/aplicação).
-3. **`marca`/`modelo`/`ano` sem validação de presença** (aceita vazio/0) — o enunciado lista esses campos no cadastro do veículo.
-4. **Sem teste HTTP e2e** do endpoint (`controller`/`handler` não cobertos por teste automatizado; só unit + persistência + Cucumber via use case).
+
+**Resolvidas neste PR:**
+- ✅ **`marca`/`modelo`/`ano` validados** (presença / ano positivo) no `CriarOrdemServicoService` + testes unitários.
+- ✅ **Teste HTTP e2e** do endpoint (`CriarOrdemServicoHttpIntegrationTest`: 201 válido, 400 inválido, 401 sem token).
+
+**Adiadas (padrões cross-cutting — decisão do grupo, afetam todos os UCs):**
+- ⏳ **Evento publicado mas não persistido** — sem subscriber nem outbox; "registrado" fica parcial. Fazer quando houver consumidor (outbox/event log).
+- ⏳ **`@Transactional`** — para o insert único do UC01 é inócuo; definir o boundary quando um UC tiver múltiplas escritas (ex.: UC09 reserva+baixa).
