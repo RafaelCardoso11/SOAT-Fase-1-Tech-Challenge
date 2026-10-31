@@ -72,7 +72,7 @@ spec.md        →   plan.md          →   tasks.md        →   implementaçã
 | `docs/bdd/*.feature` | Cenários BDD (Gherkin) por caso de uso — aceite executável | Comportamento esperado |
 
 > As skills SDD vivem em `.claude/skills/` e escrevem sempre em `specs/<feature-slug>/`. Os `.feature`
-> são pré-existentes e ficam em `docs/bdd/`; quando o Cucumber for ligado, migram para test resources.
+> são pré-existentes e ficam em `docs/bdd/`, executados pelo Cucumber (suíte no `bootstrap` apontando para essa pasta; só os cenários com a tag `@implementado` rodam).
 
 **Este documento (`docs/arquitetura.md`)** orienta os `plan.md` de cada feature e os ADRs.
 

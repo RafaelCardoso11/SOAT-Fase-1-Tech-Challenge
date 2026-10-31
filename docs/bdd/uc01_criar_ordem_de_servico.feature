@@ -1,4 +1,5 @@
 # language: pt
+@implementado
 Funcionalidade: UC01 - Criar Ordem de Serviço
   Como atendente
   Quero abrir uma OS com os dados do cliente e do veículo
