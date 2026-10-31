@@ -21,16 +21,16 @@ Pacote raiz: `com.fiap.soat.oficina.cadastro` (`…cadastro`), em `modules/cadas
 
 ## Application (`…/application/usecase/`)
 
-- [ ] T010 [P] `GerenciarClienteService.kt` (`@Transactional`): cadastrar (checa duplicidade de documento), alterar, inativar (conflito se houver veículo ativo; idempotente). Depende de T005, T008, T009.
-- [ ] T011 [P] `GerenciarVeiculoService.kt` (`@Transactional`): cadastrar e alterar exigindo cliente existente e ativo, duplicidade de placa, `Clock` para o limite do ano; inativar. Depende de T006, T008, T009.
-- [ ] T012 [P] `GerenciarServicoService.kt` (`@Transactional`): cadastrar e alterar (nome único ignorando caixa, inclusive ao renomear), inativar. Depende de T007, T008, T009.
-- [ ] T013 [P] `ConsultarClienteService.kt`, `ConsultarVeiculoService.kt`, `ConsultarServicoService.kt`: buscas e listagens; `somenteAtivos = true` trata inativo como `RegistroNaoEncontradoException`. Depende de T008, T009.
+- [x] T010 [P] `GerenciarClienteService.kt` (`@Transactional`): cadastrar (checa duplicidade de documento), alterar, inativar (conflito se houver veículo ativo; idempotente). Depende de T005, T008, T009.
+- [x] T011 [P] `GerenciarVeiculoService.kt` (`@Transactional`): cadastrar e alterar exigindo cliente existente e ativo, duplicidade de placa, `Clock` para o limite do ano; inativar. Depende de T006, T008, T009.
+- [x] T012 [P] `GerenciarServicoService.kt` (`@Transactional`): cadastrar e alterar (nome único ignorando caixa, inclusive ao renomear), inativar. Depende de T007, T008, T009.
+- [x] T013 [P] `ConsultarClienteService.kt`, `ConsultarVeiculoService.kt`, `ConsultarServicoService.kt`: buscas e listagens; `somenteAtivos = true` trata inativo como `RegistroNaoEncontradoException`. Depende de T008, T009.
 
 ## Data / persistence (`…/adapter/outbound/persistence/`)
 
 - [ ] T014 Migração `bootstrap/src/main/resources/db/migration/V3__create_cadastro.sql`: tabelas `cadastro.cliente`, `cadastro.veiculo` (FK + índice em `cliente_id`) e `cadastro.servico` (índice único em `lower(nome)`), conforme o plan (sem telefone).
 - [ ] T015 [P] `ClienteJpaEntity.kt` + `ClienteSpringDataRepository.kt` + `ClienteRepositoryAdapter.kt` (mapeia entidade ↔ modelo; traduz `DataIntegrityViolationException` em `DuplicidadeException`). Depende de T008, T014.
-- [ ] T016 [P] `VeiculoJpaEntity.kt` + `VeiculoSpringDataRepository.kt` + `VeiculoRepositoryAdapter.kt` (inclui `listarPorCliente` e `existeAtivoDoCliente`). Depende de T008, T014.
+- [ ] T016 [P] `VeiculoJpaEntity.kt` + `VeiculoSpringDataRepository.kt` + `VeiculoRepositoryAdapter.kt` (inclui `listar(ativo, clienteId)` e `existeAtivoDoCliente`). Depende de T008, T014.
 - [ ] T017 [P] `ServicoJpaEntity.kt` + `ServicoSpringDataRepository.kt` + `ServicoRepositoryAdapter.kt` (busca de nome sem caixa). Depende de T008, T014.
 
 ## Adapters — web (`…/adapter/inbound/web/` e `…/adapter/config/`)
