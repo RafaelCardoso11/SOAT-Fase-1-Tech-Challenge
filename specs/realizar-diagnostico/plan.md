@@ -56,6 +56,7 @@ Rotas **administrativas** (mecânico autenticado), sob `/api/admin/ordens/{id}` 
 ## Quality / Lint Risks & Mitigation
 - **Agregado deixa de ser imutável** (ganha `var` nos campos que mudam) → encapsular as mudanças **apenas** via métodos com guarda de status; nada de setters públicos soltos.
 - **`salvar` com update + append de transições** → risco de duplicar transições; mitigado anexando só as que excedem as já persistidas (append-only). `shortcut:` documentado no adapter.
+- **Concorrência (TOCTOU/lost update)** → `@Transactional` no service (convenção do módulo `cadastro`) + `@Version` na entidade; a escrita concorrente falha com `ObjectOptimisticLockingFailureException` → 409.
 - **Retrocompat UC12/UC01** → `reconstituir` e `salvar` continuam funcionando; testes existentes devem seguir verdes.
 
 ## Alternatives Considered

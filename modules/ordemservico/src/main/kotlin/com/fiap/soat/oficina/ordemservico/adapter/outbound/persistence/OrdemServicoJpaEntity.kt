@@ -9,6 +9,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import jakarta.persistence.Version
 
 @Entity
 @Table(name = "ordem_servico", schema = "ordemservico")
@@ -43,6 +44,9 @@ class OrdemServicoJpaEntity(
 
     @Column(nullable = false)
     var liberadoParaOrcamento: Boolean = false,
+
+    @Version
+    var versao: Long? = null,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "ordem_servico_id", nullable = false)

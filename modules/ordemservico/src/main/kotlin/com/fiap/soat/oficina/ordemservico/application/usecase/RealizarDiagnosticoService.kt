@@ -9,7 +9,9 @@ import com.fiap.soat.oficina.ordemservico.domain.port.inbound.RealizarDiagnostic
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.OrdemServicoRepository
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.PublicadorDeEventos
 import com.fiap.soat.oficina.shared.domain.event.DomainEvent
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 class RealizarDiagnosticoService(
     private val repositorio: OrdemServicoRepository,
     private val eventos: PublicadorDeEventos,

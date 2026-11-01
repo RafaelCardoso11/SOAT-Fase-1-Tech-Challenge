@@ -2,6 +2,7 @@ package com.fiap.soat.oficina.ordemservico.adapter.inbound.web
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.orm.ObjectOptimisticLockingFailureException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
@@ -22,4 +23,9 @@ class OrdemServicoExceptionHandler {
     fun tratarEstadoInvalido(e: IllegalStateException): ResponseEntity<Map<String, String>> =
         ResponseEntity.status(HttpStatus.CONFLICT)
             .body(mapOf("erro" to (e.message ?: "Operação incompatível com o status atual")))
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException::class)
+    fun tratarConcorrencia(e: ObjectOptimisticLockingFailureException): ResponseEntity<Map<String, String>> =
+        ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(mapOf("erro" to "A ordem foi alterada por outra operação; tente novamente"))
 }
