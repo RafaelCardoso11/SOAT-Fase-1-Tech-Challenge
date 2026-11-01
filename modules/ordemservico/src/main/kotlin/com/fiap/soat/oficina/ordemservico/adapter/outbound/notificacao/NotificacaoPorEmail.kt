@@ -18,11 +18,25 @@ class NotificacaoPorEmail(
 ) : NotificacaoPort {
 
     override fun notificarOrcamentoGerado(ordemServicoId: Long, total: Dinheiro) {
+        enviar(
+            destinatario,
+            "Orçamento da OS #$ordemServicoId",
+            "O orçamento da sua ordem de serviço #$ordemServicoId foi gerado no valor de R$ ${total.valor}.",
+        )
+    }
+
+    // Rejeição notifica a oficina (remetente), não o cliente.
+    override fun notificarOrcamentoRejeitado(ordemServicoId: Long, motivo: String?) {
+        val detalhe = motivo?.let { " Motivo: $it." } ?: ""
+        enviar(remetente, "Orçamento da OS #$ordemServicoId rejeitado", "O cliente rejeitou o orçamento.$detalhe")
+    }
+
+    private fun enviar(para: String, assunto: String, corpo: String) {
         val mensagem = SimpleMailMessage().apply {
             from = remetente
-            setTo(destinatario)
-            subject = "Orçamento da OS #$ordemServicoId"
-            text = "O orçamento da sua ordem de serviço #$ordemServicoId foi gerado no valor de R$ ${total.valor}."
+            setTo(para)
+            subject = assunto
+            text = corpo
         }
         mailSender.send(mensagem)
     }
