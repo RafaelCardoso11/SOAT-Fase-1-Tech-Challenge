@@ -28,6 +28,9 @@ class OrcamentoJpaEntity(
     @Column(nullable = true)
     var aprovadoEm: Instant? = null,
 
+    @Column(nullable = true)
+    var motivoRejeicao: String? = null,
+
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "orcamento_id", nullable = false)
     var itens: MutableList<ItemOrcamentoJpaEntity> = mutableListOf(),

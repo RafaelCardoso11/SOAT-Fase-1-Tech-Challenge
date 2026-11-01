@@ -8,6 +8,7 @@ class Orcamento(
     val itens: List<ItemOrcamento>,
     val validoAte: Instant,
     aprovadoEm: Instant? = null,
+    motivoRejeicao: String? = null,
 ) {
     init {
         require(itens.isNotEmpty()) { "O orçamento deve ter ao menos um item" }
@@ -18,8 +19,15 @@ class Orcamento(
     var aprovadoEm: Instant? = aprovadoEm
         private set
 
+    var motivoRejeicao: String? = motivoRejeicao
+        private set
+
     fun aprovar(momento: Instant) {
         check(momento <= validoAte) { "Orçamento expirado" }
         aprovadoEm = momento
+    }
+
+    fun rejeitar(motivo: String?) {
+        motivoRejeicao = motivo
     }
 }

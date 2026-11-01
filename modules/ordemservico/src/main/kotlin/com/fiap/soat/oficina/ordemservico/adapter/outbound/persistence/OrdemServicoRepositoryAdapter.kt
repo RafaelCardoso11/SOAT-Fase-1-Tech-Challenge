@@ -36,6 +36,7 @@ class OrdemServicoRepositoryAdapter(
                 entidade.orcamento = domOrcamento.toJpa()
             } else {
                 orcamentoEntity.aprovadoEm = domOrcamento.aprovadoEm
+                orcamentoEntity.motivoRejeicao = domOrcamento.motivoRejeicao
             }
         }
         // shortcut: histórico append-only — anexa só as transições além das já persistidas; revisar se transições puderem ser editadas/removidas.
@@ -75,6 +76,7 @@ private fun Orcamento.toJpa(): OrcamentoJpaEntity = OrcamentoJpaEntity(
     total = total.valor,
     validoAte = validoAte,
     aprovadoEm = aprovadoEm,
+    motivoRejeicao = motivoRejeicao,
     itens = itens.map {
         ItemOrcamentoJpaEntity(tipo = it.tipo.name, descricao = it.descricao, valor = it.valor.valor)
     }.toMutableList(),
@@ -84,4 +86,5 @@ private fun OrcamentoJpaEntity.toDomain(): Orcamento = Orcamento(
     itens = itens.map { ItemOrcamento(TipoItem.valueOf(it.tipo), it.descricao, Dinheiro.of(it.valor)) },
     validoAte = validoAte,
     aprovadoEm = aprovadoEm,
+    motivoRejeicao = motivoRejeicao,
 )

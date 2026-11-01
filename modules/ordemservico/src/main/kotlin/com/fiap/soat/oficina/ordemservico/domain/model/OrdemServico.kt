@@ -66,6 +66,14 @@ class OrdemServico private constructor(
         transitarPara(StatusOS.EM_EXECUCAO)
     }
 
+    fun rejeitarOrcamento(motivo: String?) {
+        check(status == StatusOS.AGUARDANDO_APROVACAO) {
+            "A rejeição só é possível com a OS aguardando aprovação"
+        }
+        checkNotNull(orcamento) { "Orçamento inexistente" }.rejeitar(motivo)
+        transitarPara(StatusOS.FINALIZADA)
+    }
+
     private fun transitarPara(novo: StatusOS) {
         status = novo
         _transicoes.add(TransicaoStatus(novo, Instant.now()))
