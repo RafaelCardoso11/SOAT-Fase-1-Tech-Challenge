@@ -38,14 +38,14 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Tests (`modules/estoque/src/test/kotlin/…/estoque/`)
 
-- [ ] T013 [P] `Assercoes.kt` (helpers `assertDadoInvalido`/`assertDuplicidade`) e `domain/model/QuantidadeTest.kt` (zero, negativo, positivo).
-- [ ] T014 `domain/model/ItemEstoqueTest.kt`: criação válida e normalizada; nome/tipo/preço/saldo inicial inválidos; preço zero; alterar sem mexer em saldo/reservado; entrada soma ao saldo; `disponivel`; inativo rejeita alterar e entrada; `inativar` idempotente. Depende de T008, T013.
-- [ ] T015 `application/GerenciarItemServiceTest.kt` (MockK): cadastrar, nome duplicado, alterar, entrada, item inexistente, inativar com e sem `reservado`, inativar repetido. Depende de T011, T013.
-- [ ] T016 `application/ConsultarItemServiceTest.kt`: busca, não encontrado, `somenteAtivos` trata inativo como não encontrado, listagem com filtro. Depende de T012, T013.
+- [x] T013 [P] `Assercoes.kt` (helpers `assertDadoInvalido`/`assertDuplicidade`) e `domain/model/QuantidadeTest.kt` (zero, negativo, positivo).
+- [x] T014 `domain/model/ItemEstoqueTest.kt`: criação válida e normalizada; nome/tipo/preço/saldo inicial inválidos; preço zero; alterar sem mexer em saldo/reservado; entrada soma ao saldo; `disponivel`; inativo rejeita alterar e entrada; `inativar` idempotente. Depende de T008, T013.
+- [x] T015 `application/GerenciarItemServiceTest.kt` (MockK): cadastrar, nome duplicado, alterar, entrada, item inexistente, inativar com e sem `reservado`, inativar repetido. Depende de T011, T013.
+- [x] T016 `application/ConsultarItemServiceTest.kt`: busca, não encontrado, `somenteAtivos` trata inativo como não encontrado, listagem com filtro. Depende de T012, T013.
 
 ### Finalize
 
-- [ ] T017 Rodar `./gradlew :modules:estoque:build` e `./gradlew build` (gate Jacoco ≥ 80%); conferir `git diff --stat origin/main...HEAD` (~22 arquivos); preparar o PR (`Closes #<issue>`).
+- [x] T017 Rodar `./gradlew :modules:estoque:build` e `./gradlew build` (gate Jacoco ≥ 80%); conferir `git diff --stat origin/main...HEAD` (~22 arquivos); preparar o PR (`Closes #<issue>`).
 
 ---
 
