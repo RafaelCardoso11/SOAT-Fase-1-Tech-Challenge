@@ -24,12 +24,12 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Domain (`…estoque/domain/`)
 
-- [ ] T005 [P] `error/`: `EstoqueException` (sealed) · `DadoInvalidoException(campo)` · `RegistroNaoEncontradoException` · `DuplicidadeException(campo)` · `ConflitoException`.
-- [ ] T006 `model/Validacao.kt`: helpers `validando`, `textoObrigatorio` e `exigirAtivo` (cópia local, no padrão do `cadastro`). Depende de T005.
-- [ ] T007 [P] `model/Quantidade.kt` (value class, inteiro > 0, "Quantidade deve ser maior que zero") e `model/TipoItem.kt` (`PECA`, `INSUMO`).
-- [ ] T008 `model/ItemEstoque.kt`: `criar(nome, descricao, tipo, preco, saldoInicial)`, `alterar(nome, descricao, tipo, preco)`, `registrarEntrada(Quantidade)`, `inativar()`, `disponivel`, `reconstituir(...)`; item inativo rejeita alterar e entrada. Depende de T006, T007.
-- [ ] T009 `port/outbound/ItemEstoqueRepository.kt`: `salvar`, `buscarPorId`, `buscarPorIdParaAtualizar` (lock), `existePorNome(nome, ignorandoId)`, `listar(ativo)`.
-- [ ] T010 `port/inbound/`: `GerenciarItemUseCase` (`cadastrar`, `alterar`, `registrarEntrada`, `inativar`) e `ConsultarItemUseCase` (`buscarPorId(id, somenteAtivos)`, `listar(ativo)`). Depende de T008.
+- [x] T005 [P] `error/`: `EstoqueException` (sealed) · `DadoInvalidoException(campo)` · `RegistroNaoEncontradoException` · `DuplicidadeException(campo)` · `ConflitoException`.
+- [x] T006 `model/Validacao.kt`: helpers `validando`, `textoObrigatorio` e `exigirAtivo` (cópia local, no padrão do `cadastro`). Depende de T005.
+- [x] T007 [P] `model/Quantidade.kt` (value class, inteiro > 0, "Quantidade deve ser maior que zero") e `model/TipoItem.kt` (`PECA`, `INSUMO`).
+- [x] T008 `model/ItemEstoque.kt`: `criar(nome, descricao, tipo, preco, saldoInicial)`, `alterar(nome, descricao, tipo, preco)`, `registrarEntrada(Quantidade)`, `inativar()`, `disponivel`, `reconstituir(...)`; item inativo rejeita alterar e entrada. Depende de T006, T007.
+- [x] T009 `port/outbound/ItemEstoqueRepository.kt`: `salvar`, `buscarPorId`, `buscarPorIdParaAtualizar` (lock), `existePorNome(nome, ignorandoId)`, `listar(ativo)`.
+- [x] T010 `port/inbound/`: `GerenciarItemUseCase` (`cadastrar`, `alterar`, `registrarEntrada`, `inativar`) e `ConsultarItemUseCase` (`buscarPorId(id, somenteAtivos)`, `listar(ativo)`). Depende de T008.
 
 ### Application (`…estoque/application/usecase/`)
 
