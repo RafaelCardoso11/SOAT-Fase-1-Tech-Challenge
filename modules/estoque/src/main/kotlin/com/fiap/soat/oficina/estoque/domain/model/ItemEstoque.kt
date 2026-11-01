@@ -31,6 +31,30 @@ class ItemEstoque private constructor(
         return ItemEstoque(id, nome, descricao, tipo, preco, saldo + quantidade.valor, reservado, ativo)
     }
 
+    fun comporta(quantidade: Quantidade): Boolean = quantidade.valor <= disponivel
+
+    fun reservar(quantidade: Quantidade): ItemEstoque {
+        exigirAtivo(ativo, "Item inativo não pode ser reservado")
+        if (!comporta(quantidade)) throw ConflitoException("Quantidade indisponível em estoque")
+        return ItemEstoque(id, nome, descricao, tipo, preco, saldo, reservado + quantidade.valor, ativo)
+    }
+
+    fun liberar(quantidade: Quantidade): ItemEstoque {
+        exigirReservado(quantidade, "liberar")
+        return ItemEstoque(id, nome, descricao, tipo, preco, saldo, reservado - quantidade.valor, ativo)
+    }
+
+    fun baixar(quantidade: Quantidade): ItemEstoque {
+        exigirReservado(quantidade, "dar baixa")
+        return ItemEstoque(
+            id, nome, descricao, tipo, preco, saldo - quantidade.valor, reservado - quantidade.valor, ativo,
+        )
+    }
+
+    private fun exigirReservado(quantidade: Quantidade, operacao: String) {
+        if (quantidade.valor > reservado) throw ConflitoException("Quantidade a $operacao excede o reservado")
+    }
+
     fun inativar(): ItemEstoque {
         if (!ativo) return this
         if (reservado > 0) throw ConflitoException("Item possui reservas ativas e não pode ser inativado")

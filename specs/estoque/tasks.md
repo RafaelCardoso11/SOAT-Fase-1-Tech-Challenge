@@ -86,32 +86,32 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Setup
 
-- [ ] T029 Abrir a issue do PR 4 e criar a branch a partir da `main` com o PR 3 mergeado.
+- [x] T029 Abrir a issue do PR 4 e criar a branch a partir da `main` com o PR 3 mergeado.
 
 ### Domain (`…estoque/domain/`)
 
-- [ ] T030 [P] `model/SituacaoReserva.kt` (`ATIVA`, `LIBERADA`, `CONSUMIDA`), `model/Reserva.kt` (`criar(osId, itemId, quantidade)`, `liberar()`, `consumir()`; imutável depois de liberada/consumida) e `model/ResultadoReserva.kt` (sealed: `Reservada(reserva)`, `Indisponivel(disponivel)`).
-- [ ] T031 `model/ItemEstoque.kt`: acrescentar `reservar(Quantidade)`, `liberar(Quantidade)` e `baixar(Quantidade)`, mantendo os invariantes (saldo ≥ 0, reservado ≤ saldo); item inativo rejeita reservar. Depende de T030.
-- [ ] T032 [P] `event/`: `PecaReservada`, `PecaIndisponivel`, `ReservaLiberada`, `PecasBaixadas` (implementam `DomainEvent`).
-- [ ] T033 `port/outbound/ReservaRepository.kt` (`salvar`, `buscarAtivaPorOsEItem`, `listarAtivasPorOs`, `listarPorOs`) e `port/outbound/PublicadorDeEventos.kt`.
-- [ ] T034 `port/inbound/`: `ReservarPecaUseCase`, `LiberarReservaUseCase`, `BaixarPecasUseCase`, `ConsultarReservasUseCase`. Depende de T030.
+- [x] T030 [P] `model/SituacaoReserva.kt` (`ATIVA`, `LIBERADA`, `CONSUMIDA`), `model/Reserva.kt` (`criar(osId, itemId, quantidade)`, `liberar()`, `consumir()`; imutável depois de liberada/consumida) e `model/ResultadoReserva.kt` (sealed: `Reservada(reserva)`, `Indisponivel(disponivel)`).
+- [x] T031 `model/ItemEstoque.kt`: acrescentar `reservar(Quantidade)`, `liberar(Quantidade)` e `baixar(Quantidade)`, mantendo os invariantes (saldo ≥ 0, reservado ≤ saldo); item inativo rejeita reservar. Depende de T030.
+- [x] T032 [P] `event/`: `PecaReservada`, `PecaIndisponivel`, `ReservaLiberada`, `PecasBaixadas` (implementam `DomainEvent`).
+- [x] T033 `port/outbound/ReservaRepository.kt` (`salvar`, `buscarAtivaPorOsEItem`, `listarAtivasPorOs`, `listarPorOs`) e `port/outbound/PublicadorDeEventos.kt`.
+- [x] T034 `port/inbound/`: `ReservarPecaUseCase`, `LiberarReservaUseCase`, `BaixarPecasUseCase`, `ConsultarReservasUseCase`. Depende de T030.
 
 ### Application (`…estoque/application/usecase/`)
 
-- [ ] T035 `ReservarPecaService.kt` (`@Transactional`): item com lock; inexistente/inativo; reserva já ativa para a OS e o item → conflito; disponível insuficiente → `Indisponivel` + evento; senão reserva, salva e publica `PecaReservada`. Depende de T031–T034.
-- [ ] T036 `LiberarReservaService.kt` (`@Transactional`): um item ou a OS inteira; itens bloqueados em ordem de `itemId`; idempotente; evento `ReservaLiberada` por reserva liberada. Depende de T031–T034.
-- [ ] T037 `BaixarPecasService.kt` (`@Transactional`): reservas ativas da OS, itens bloqueados em ordem de `itemId`, `baixar` em cada um, reservas consumidas, evento `PecasBaixadas`; vazia/repetida sem efeito. Depende de T031–T034.
-- [ ] T038 `ConsultarReservasService.kt`: reservas da OS (todas as situações). Depende de T033, T034.
+- [x] T035 `ReservarPecaService.kt` (`@Transactional`): item com lock; inexistente/inativo; reserva já ativa para a OS e o item → conflito; disponível insuficiente → `Indisponivel` + evento; senão reserva, salva e publica `PecaReservada`. Depende de T031–T034.
+- [x] T036 `LiberarReservaService.kt` (`@Transactional`): um item ou a OS inteira; itens bloqueados em ordem de `itemId`; idempotente; evento `ReservaLiberada` por reserva liberada. Depende de T031–T034.
+- [x] T037 `BaixarPecasService.kt` (`@Transactional`): reservas ativas da OS, itens bloqueados em ordem de `itemId`, `baixar` em cada um, reservas consumidas, evento `PecasBaixadas`; vazia/repetida sem efeito. Depende de T031–T034.
+- [x] T038 `ConsultarReservasService.kt`: reservas da OS (todas as situações). Depende de T033, T034.
 
 ### Tests
 
-- [ ] T039 `domain/model/ReservaTest.kt` e extensão de `ItemEstoqueTest.kt`: `reservar` com disponível suficiente, exato e insuficiente; `liberar`; `baixar` reduz saldo e reservado; invariantes; inativo rejeita reservar; transições da `Reserva`. Depende de T030, T031.
-- [ ] T040 `application/ReservarPecaServiceTest.kt` e `LiberarReservaServiceTest.kt` (MockK): sucesso e evento, indisponível e evento, item inativo/inexistente, reserva repetida, liberar item e OS inteira, idempotência, ordem de lock. Depende de T035, T036.
-- [ ] T041 `application/BaixarPecasServiceTest.kt` e `ConsultarReservasServiceTest.kt`: baixa com vários itens, ordem de lock, vazia, repetida, evento só com efeito; consulta com situações. Depende de T037, T038.
+- [x] T039 `domain/model/ReservaTest.kt` e extensão de `ItemEstoqueTest.kt`: `reservar` com disponível suficiente, exato e insuficiente; `liberar`; `baixar` reduz saldo e reservado; invariantes; inativo rejeita reservar; transições da `Reserva`. Depende de T030, T031.
+- [x] T040 `application/ReservarPecaServiceTest.kt` e `LiberarReservaServiceTest.kt` (MockK): sucesso e evento, indisponível e evento, item inativo/inexistente, reserva repetida, liberar item e OS inteira, idempotência, ordem de lock. Depende de T035, T036.
+- [x] T041 `application/BaixarPecasServiceTest.kt` e `ConsultarReservasServiceTest.kt`: baixa com vários itens, ordem de lock, vazia, repetida, evento só com efeito; consulta com situações. Depende de T037, T038.
 
 ### Finalize
 
-- [ ] T042 Rodar `./gradlew build` (gate Jacoco); conferir o diff (~25 arquivos; se passar muito, dividir em "reservar + liberar" e "baixar + consultar"); preparar o PR (`Closes #<issue>`).
+- [x] T042 Rodar `./gradlew build` (gate Jacoco); conferir o diff (~25 arquivos; se passar muito, dividir em "reservar + liberar" e "baixar + consultar"); preparar o PR (`Closes #<issue>`).
 
 ---
 
