@@ -57,7 +57,7 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Data / persistence (`…estoque/adapter/outbound/persistence/`)
 
-- [x] T019 Migration `bootstrap/src/main/resources/db/migration/V7__create_estoque_item.sql`: `estoque.item` com `CHECK`s (tipo, preço, saldo, reservado, `reservado <= saldo`) e índice único em `lower(nome)`.
+- [x] T019 Migration `bootstrap/src/main/resources/db/migration/V8__create_estoque_item.sql`: `estoque.item` com `CHECK`s (tipo, preço, saldo, reservado, `reservado <= saldo`) e índice único em `lower(nome)`.
 - [x] T020 `ItemEstoqueJpaEntity.kt` e `ItemEstoqueSpringDataRepository.kt` (inclui consulta com `@Lock(PESSIMISTIC_WRITE)`). Depende de T019.
 - [x] T021 `ItemEstoqueRepositoryAdapter.kt` e `ViolacaoDeUnicidade.kt` (SQLState `23505` → `DuplicidadeException`). Depende de T020.
 
@@ -69,15 +69,15 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Tests
 
-- [ ] T025 `bootstrap/src/test/kotlin/com/fiap/soat/oficina/EstoqueItensIntegrationTest.kt` (Testcontainers + MockMvc): fluxo completo; 401 sem token; 400/404/409 com `erro`/`campo`; nome duplicado (inclusive inativo e caixa diferente); entrada; filtros `?ativo=`; unicidade pelo banco; `CHECK` do banco; `/v3/api-docs` publica as rotas. Depende de T019–T024.
+- [x] T025 `bootstrap/src/test/kotlin/com/fiap/soat/oficina/EstoqueItensIntegrationTest.kt` (Testcontainers + MockMvc): fluxo completo; 401 sem token; 400/404/409 com `erro`/`campo`; nome duplicado (inclusive inativo e caixa diferente); entrada; filtros `?ativo=`; unicidade pelo banco; `CHECK` do banco; `/v3/api-docs` publica as rotas. Depende de T019–T024.
 
 ### Documentação
 
-- [ ] T026 `README.md`: seção "Estoque — itens" (rotas, regras, exemplo).
+- [x] T026 `README.md`: seção "Estoque — itens" (rotas, regras, exemplo).
 
 ### Finalize
 
-- [ ] T027 Criar `api-local/estoque-itens.http` (fora do Git) e validar manualmente com a aplicação no ar.
+- [x] T027 Criar `api-local/estoque-itens.http` (fora do Git) e validar manualmente com a aplicação no ar.
 - [ ] T028 Rodar `./gradlew build` (gate Jacoco); conferir o diff (~14 arquivos); preparar o PR (`Closes #<issue>`).
 
 ---
