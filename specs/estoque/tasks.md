@@ -33,8 +33,8 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Application (`…estoque/application/usecase/`)
 
-- [ ] T011 `GerenciarItemService.kt` (`@Transactional`): cadastrar (nome duplicado), alterar, entrada (item com lock), inativar (negado se `reservado > 0`; idempotente). Depende de T008–T010.
-- [ ] T012 `ConsultarItemService.kt`: busca por id (com `somenteAtivos`) e listagem. Depende de T009, T010.
+- [x] T011 `GerenciarItemService.kt` (`@Transactional`): cadastrar (nome duplicado), alterar, entrada (item com lock), inativar (negado se `reservado > 0`; idempotente). Depende de T008–T010.
+- [x] T012 `ConsultarItemService.kt`: busca por id (com `somenteAtivos`) e listagem. Depende de T009, T010.
 
 ### Tests (`modules/estoque/src/test/kotlin/…/estoque/`)
 
