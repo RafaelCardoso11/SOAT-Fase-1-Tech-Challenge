@@ -57,7 +57,7 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Data / persistence (`…estoque/adapter/outbound/persistence/`)
 
-- [x] T019 Migration `bootstrap/src/main/resources/db/migration/V8__create_estoque_item.sql`: `estoque.item` com `CHECK`s (tipo, preço, saldo, reservado, `reservado <= saldo`) e índice único em `lower(nome)`.
+- [x] T019 Migration `bootstrap/src/main/resources/db/migration/V10__create_estoque_item.sql`: `estoque.item` com `CHECK`s (tipo, preço, saldo, reservado, `reservado <= saldo`) e índice único em `lower(nome)`.
 - [x] T020 `ItemEstoqueJpaEntity.kt` e `ItemEstoqueSpringDataRepository.kt` (inclui consulta com `@Lock(PESSIMISTIC_WRITE)`). Depende de T019.
 - [x] T021 `ItemEstoqueRepositoryAdapter.kt` e `ViolacaoDeUnicidade.kt` (SQLState `23505` → `DuplicidadeException`). Depende de T020.
 
