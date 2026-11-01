@@ -130,8 +130,8 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Adapters — web
 
-- [ ] T048 `ReservaController.kt` + `dto/ReservaDtos.kt` (`/api/v1/admin/estoque/ordens/{osId}/reservas`: POST reservar → `201` ou `409` indisponível, GET consultar, POST `/liberar` com `?itemId=` opcional; `/api/v1/admin/estoque/ordens/{osId}/baixa`: POST; anotações OpenAPI).
-- [ ] T049 `EstoqueBeanConfig.kt`: beans dos quatro casos de uso de reserva. Depende de T035–T038.
+- [x] T048 `ReservaController.kt` + `dto/ReservaDtos.kt` (`/api/v1/admin/estoque/ordens/{osId}/reservas`: POST reservar → `201` ou `409` indisponível, GET consultar, POST `/liberar` com `?itemId=` opcional; `/api/v1/admin/estoque/ordens/{osId}/baixa`: POST; anotações OpenAPI).
+- [x] T049 `EstoqueBeanConfig.kt`: beans dos quatro casos de uso de reserva. Depende de T035–T038.
 
 ### Tests
 
