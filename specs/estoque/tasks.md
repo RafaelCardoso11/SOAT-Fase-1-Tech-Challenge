@@ -98,10 +98,10 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Application (`…estoque/application/usecase/`)
 
-- [ ] T035 `ReservarPecaService.kt` (`@Transactional`): item com lock; inexistente/inativo; reserva já ativa para a OS e o item → conflito; disponível insuficiente → `Indisponivel` + evento; senão reserva, salva e publica `PecaReservada`. Depende de T031–T034.
-- [ ] T036 `LiberarReservaService.kt` (`@Transactional`): um item ou a OS inteira; itens bloqueados em ordem de `itemId`; idempotente; evento `ReservaLiberada` por reserva liberada. Depende de T031–T034.
-- [ ] T037 `BaixarPecasService.kt` (`@Transactional`): reservas ativas da OS, itens bloqueados em ordem de `itemId`, `baixar` em cada um, reservas consumidas, evento `PecasBaixadas`; vazia/repetida sem efeito. Depende de T031–T034.
-- [ ] T038 `ConsultarReservasService.kt`: reservas da OS (todas as situações). Depende de T033, T034.
+- [x] T035 `ReservarPecaService.kt` (`@Transactional`): item com lock; inexistente/inativo; reserva já ativa para a OS e o item → conflito; disponível insuficiente → `Indisponivel` + evento; senão reserva, salva e publica `PecaReservada`. Depende de T031–T034.
+- [x] T036 `LiberarReservaService.kt` (`@Transactional`): um item ou a OS inteira; itens bloqueados em ordem de `itemId`; idempotente; evento `ReservaLiberada` por reserva liberada. Depende de T031–T034.
+- [x] T037 `BaixarPecasService.kt` (`@Transactional`): reservas ativas da OS, itens bloqueados em ordem de `itemId`, `baixar` em cada um, reservas consumidas, evento `PecasBaixadas`; vazia/repetida sem efeito. Depende de T031–T034.
+- [x] T038 `ConsultarReservasService.kt`: reservas da OS (todas as situações). Depende de T033, T034.
 
 ### Tests
 
