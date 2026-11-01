@@ -28,6 +28,9 @@ notificacao:
     remetente: ${NOTIFICACAO_EMAIL_REMETENTE:oficina@exemplo.com}
     destinatario-padrao: ${NOTIFICACAO_EMAIL_DESTINATARIO:cliente@exemplo.com}
 
+orcamento:
+  validade-dias: ${ORCAMENTO_VALIDADE_DIAS:7}
+
 jwt:
   secret: ${JWT_SECRET:troque-este-segredo-por-uma-chave-bem-longa-e-aleatoria}
   expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}

@@ -35,7 +35,7 @@ class GerarOrcamentoSteps {
     private val eventos = mockk<PublicadorDeEventos>()
     private val estoque = mockk<EstoquePort>(relaxed = true)
     private val notificacao = mockk<NotificacaoPort>(relaxed = true)
-    private val service = GerarOrcamentoService(repositorio, eventos, estoque, notificacao)
+    private val service = GerarOrcamentoService(repositorio, eventos, estoque, notificacao, validadeDias = 7L)
 
     private lateinit var ordem: OrdemServico
     private val publicados = mutableListOf<DomainEvent>()
