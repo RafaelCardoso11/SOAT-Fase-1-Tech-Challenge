@@ -119,14 +119,14 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Setup
 
-- [ ] T043 Abrir a issue do PR 5 e criar a branch a partir da `main` com o PR 4 mergeado; `git fetch` e conferir a próxima versão livre de migration.
+- [x] T043 Abrir a issue do PR 5 e criar a branch a partir da `main` com o PR 4 mergeado; `git fetch` e conferir a próxima versão livre de migration.
 
 ### Data / persistence e eventos
 
-- [ ] T044 Migration `bootstrap/src/main/resources/db/migration/V<próxima>__create_estoque_reserva.sql`: `estoque.reserva` com FK para `estoque.item`, `CHECK`s, índice único parcial (`os_id`, `item_id`) onde `ATIVA` e índice em `os_id`.
-- [ ] T045 `ReservaJpaEntity.kt` e `ReservaSpringDataRepository.kt`. Depende de T044.
-- [ ] T046 `ReservaRepositoryAdapter.kt` (violação do índice parcial → `ConflitoException`). Depende de T045.
-- [ ] T047 `adapter/outbound/event/PublicadorDeEventosSpring.kt` (sobre o `ApplicationEventPublisher`, no padrão do `ordemservico`).
+- [x] T044 Migration `bootstrap/src/main/resources/db/migration/V13__create_estoque_reserva.sql`: `estoque.reserva` com FK para `estoque.item`, `CHECK`s, índice único parcial (`os_id`, `item_id`) onde `ATIVA` e índice em `os_id`.
+- [x] T045 `ReservaJpaEntity.kt` e `ReservaSpringDataRepository.kt`. Depende de T044.
+- [x] T046 `ReservaRepositoryAdapter.kt` (violação do índice parcial → `ConflitoException`). Depende de T045.
+- [x] T047 `adapter/outbound/event/PublicadorDeEventosEstoque.kt` (sobre o `ApplicationEventPublisher`, no padrão do `ordemservico`).
 
 ### Adapters — web
 
