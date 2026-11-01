@@ -169,7 +169,7 @@ via eventos. Ver §9.
 
 ### ADR-0010 — Serviço de Notificação por e-mail (SMTP)
 **Decisão:** o canal de notificação ao cliente (orçamento gerado/expirado, veículo pronto — UC03, UC08,
-UC10) é **e-mail via SMTP**. Em **dev**, um container **MailHog** no docker-compose captura os e-mails
+UC10) é **e-mail via SMTP**. Em **dev**, um container **Mailpit** no docker-compose captura os e-mails
 (sem credenciais reais, visualização por UI web); em **prod**, aponta-se para um SMTP real (ex.: AWS SES).
 A integração fica no adapter `ordemservico/adapter/outbound/notificacao/`, atrás de `NotificacaoPort`.
 **Padrão outbox:** a notificação é gravada numa tabela *outbox* e enviada de forma assíncrona, garantindo
@@ -198,7 +198,7 @@ mora a vantagem competitiva; **suporte** e **genérico** devem ser simples ou te
 | **Cadastro** (clientes, veículos, serviços) | **Suporte** | Dados de apoio consultados pela OS | CRUD simples, modelo anêmico aceitável |
 | **Estoque** (peças e insumos) | **Suporte** | Reserva e baixa de peças | CRUD + regras de reserva; integra com a OS por porta |
 | **Autenticação** | **Genérico** | Protege as APIs administrativas | Solução padrão (Spring Security + JWT), sem regra de negócio própria |
-| **Serviço de Notificação** | **Sistema externo** | Avisa o cliente | **E-mail via SMTP**; MailHog em dev, SMTP/SES em prod. Fora do monolito, acessado por `NotificacaoPort` (ver ADR-0010) |
+| **Serviço de Notificação** | **Sistema externo** | Avisa o cliente | **E-mail via SMTP**; Mailpit em dev, SMTP/SES em prod. Fora do monolito, acessado por `NotificacaoPort` (ver ADR-0010) |
 
 ### 5.2 Relações entre contextos (do mapa)
 
@@ -270,7 +270,7 @@ Package root: `com.fiap.soat.oficina`. Build Gradle multi-módulo; `bootstrap` �
 ├── .env.example
 ├── docker/
 │   ├── Dockerfile                   # build multi-stage da app (bootstrap)
-│   └── docker-compose.yml           # app + postgres:16 + mailhog (SMTP de dev)
+│   └── docker-compose.yml           # app + postgres:16 + mailpit (SMTP de dev)
 │
 ├── specs/
 │   └── <feature-slug>/              # SDD por feature: spec.md · plan.md · tasks.md

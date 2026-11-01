@@ -1,4 +1,4 @@
-# Sobe o ambiente completo: aplicação + PostgreSQL + MailHog (SMTP de dev).
+# Sobe o ambiente completo: aplicação + PostgreSQL + Mailpit (SMTP de dev).
 # Rode a partir da raiz do projeto:  docker compose -f docker/docker-compose.yml up --build
 services:
   postgres:
@@ -17,8 +17,8 @@ services:
       timeout: 5s
       retries: 5
 
-  mailhog:
-    image: mailhog/mailhog
+  mailpit:
+    image: axllent/mailpit:v1.21.8
     ports:
       - "1025:1025"   # SMTP
       - "8025:8025"   # UI web (http://localhost:8025)
@@ -30,15 +30,16 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      mailhog:
+      mailpit:
         condition: service_started
     environment:
       APP_PORT: 8080
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-oficina}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-oficina}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
-      SMTP_HOST: mailhog
+      SMTP_HOST: mailpit
       SMTP_PORT: 1025
+      NOTIFICACAO_EMAIL_ENABLED: "true"
     ports:
       - "${APP_PORT:-8080}:8080"
 
