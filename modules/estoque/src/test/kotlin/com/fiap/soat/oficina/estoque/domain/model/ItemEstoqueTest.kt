@@ -161,6 +161,99 @@ class ItemEstoqueTest {
     }
 
     @Test
+    fun `reservar soma ao reservado, reduz o disponivel e nao mexe no saldo`() {
+        val original = ItemEstoque.reconstituir(1, "Pastilha", null, "PECA", BigDecimal.TEN, 5, 1, true)
+
+        val reservado = original.reservar(Quantidade.of(2))
+
+        assertThat(reservado.saldo).isEqualTo(5)
+        assertThat(reservado.reservado).isEqualTo(3)
+        assertThat(reservado.disponivel).isEqualTo(2)
+        assertThat(original.reservado).isEqualTo(1)
+    }
+
+    @Test
+    fun `reservar exatamente o disponivel zera o disponivel`() {
+        val reservado = item().reservar(Quantidade.of(10))
+
+        assertThat(reservado.disponivel).isZero()
+        assertThat(reservado.reservado).isEqualTo(reservado.saldo)
+    }
+
+    @Test
+    fun `comporta indica se a quantidade cabe no disponivel`() {
+        val parcial = ItemEstoque.reconstituir(1, "Pastilha", null, "PECA", BigDecimal.TEN, 5, 3, true)
+
+        assertThat(parcial.comporta(Quantidade.of(2))).isTrue()
+        assertThat(parcial.comporta(Quantidade.of(3))).isFalse()
+    }
+
+    @Test
+    fun `reservar acima do disponivel e recusado`() {
+        assertThatThrownBy { item().reservar(Quantidade.of(11)) }
+            .isInstanceOf(ConflitoException::class.java)
+            .hasMessage("Quantidade indisponível em estoque")
+    }
+
+    @Test
+    fun `item inativo nao pode ser reservado`() {
+        assertThatThrownBy { item().inativar().reservar(Quantidade.of(1)) }
+            .isInstanceOf(ConflitoException::class.java)
+            .hasMessage("Item inativo não pode ser reservado")
+    }
+
+    @Test
+    fun `liberar devolve ao disponivel sem mexer no saldo`() {
+        val reservado = ItemEstoque.reconstituir(1, "Pastilha", null, "PECA", BigDecimal.TEN, 5, 3, true)
+
+        val liberado = reservado.liberar(Quantidade.of(2))
+
+        assertThat(liberado.reservado).isEqualTo(1)
+        assertThat(liberado.saldo).isEqualTo(5)
+        assertThat(liberado.disponivel).isEqualTo(4)
+    }
+
+    @Test
+    fun `liberar mais do que o reservado e recusado`() {
+        val reservado = ItemEstoque.reconstituir(1, "Pastilha", null, "PECA", BigDecimal.TEN, 5, 1, true)
+
+        assertThatThrownBy { reservado.liberar(Quantidade.of(2)) }
+            .isInstanceOf(ConflitoException::class.java)
+            .hasMessage("Quantidade a liberar excede o reservado")
+    }
+
+    @Test
+    fun `baixar reduz saldo e reservado na mesma quantidade`() {
+        val reservado = ItemEstoque.reconstituir(1, "Pastilha", null, "PECA", BigDecimal.TEN, 5, 3, true)
+
+        val baixado = reservado.baixar(Quantidade.of(3))
+
+        assertThat(baixado.saldo).isEqualTo(2)
+        assertThat(baixado.reservado).isZero()
+        assertThat(baixado.disponivel).isEqualTo(2)
+    }
+
+    @Test
+    fun `baixar mais do que o reservado e recusado`() {
+        val reservado = ItemEstoque.reconstituir(1, "Pastilha", null, "PECA", BigDecimal.TEN, 5, 2, true)
+
+        assertThatThrownBy { reservado.baixar(Quantidade.of(3)) }
+            .isInstanceOf(ConflitoException::class.java)
+            .hasMessage("Quantidade a dar baixa excede o reservado")
+    }
+
+    @Test
+    fun `o ciclo reservar e baixar preserva os invariantes`() {
+        val inicial = item()
+
+        val depois = inicial.reservar(Quantidade.of(4)).baixar(Quantidade.of(4))
+
+        assertThat(depois.saldo).isEqualTo(6)
+        assertThat(depois.reservado).isZero()
+        assertThat(depois.disponivel).isEqualTo(6)
+    }
+
+    @Test
     fun `reconstitui um item persistido`() {
         val item = ItemEstoque.reconstituir(9, "Oleo", "5W30", "INSUMO", BigDecimal("30.00"), 8, 2, false)
 

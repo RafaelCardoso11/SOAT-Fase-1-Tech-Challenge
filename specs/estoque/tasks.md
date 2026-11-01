@@ -105,13 +105,13 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Tests
 
-- [ ] T039 `domain/model/ReservaTest.kt` e extensão de `ItemEstoqueTest.kt`: `reservar` com disponível suficiente, exato e insuficiente; `liberar`; `baixar` reduz saldo e reservado; invariantes; inativo rejeita reservar; transições da `Reserva`. Depende de T030, T031.
-- [ ] T040 `application/ReservarPecaServiceTest.kt` e `LiberarReservaServiceTest.kt` (MockK): sucesso e evento, indisponível e evento, item inativo/inexistente, reserva repetida, liberar item e OS inteira, idempotência, ordem de lock. Depende de T035, T036.
-- [ ] T041 `application/BaixarPecasServiceTest.kt` e `ConsultarReservasServiceTest.kt`: baixa com vários itens, ordem de lock, vazia, repetida, evento só com efeito; consulta com situações. Depende de T037, T038.
+- [x] T039 `domain/model/ReservaTest.kt` e extensão de `ItemEstoqueTest.kt`: `reservar` com disponível suficiente, exato e insuficiente; `liberar`; `baixar` reduz saldo e reservado; invariantes; inativo rejeita reservar; transições da `Reserva`. Depende de T030, T031.
+- [x] T040 `application/ReservarPecaServiceTest.kt` e `LiberarReservaServiceTest.kt` (MockK): sucesso e evento, indisponível e evento, item inativo/inexistente, reserva repetida, liberar item e OS inteira, idempotência, ordem de lock. Depende de T035, T036.
+- [x] T041 `application/BaixarPecasServiceTest.kt` e `ConsultarReservasServiceTest.kt`: baixa com vários itens, ordem de lock, vazia, repetida, evento só com efeito; consulta com situações. Depende de T037, T038.
 
 ### Finalize
 
-- [ ] T042 Rodar `./gradlew build` (gate Jacoco); conferir o diff (~25 arquivos; se passar muito, dividir em "reservar + liberar" e "baixar + consultar"); preparar o PR (`Closes #<issue>`).
+- [x] T042 Rodar `./gradlew build` (gate Jacoco); conferir o diff (~25 arquivos; se passar muito, dividir em "reservar + liberar" e "baixar + consultar"); preparar o PR (`Closes #<issue>`).
 
 ---
 
