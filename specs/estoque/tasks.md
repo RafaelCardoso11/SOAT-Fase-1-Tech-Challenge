@@ -53,13 +53,13 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Setup
 
-- [ ] T018 Abrir a issue do PR 3 e criar a branch a partir da `main` com o PR 2 mergeado; `git fetch` e conferir a próxima versão livre de migration.
+- [x] T018 Abrir a issue do PR 3 e criar a branch a partir da `main` com o PR 2 mergeado; `git fetch` e conferir a próxima versão livre de migration.
 
 ### Data / persistence (`…estoque/adapter/outbound/persistence/`)
 
-- [ ] T019 Migration `bootstrap/src/main/resources/db/migration/V<próxima>__create_estoque_item.sql`: `estoque.item` com `CHECK`s (tipo, preço, saldo, reservado, `reservado <= saldo`) e índice único em `lower(nome)`.
-- [ ] T020 `ItemEstoqueJpaEntity.kt` e `ItemEstoqueSpringDataRepository.kt` (inclui consulta com `@Lock(PESSIMISTIC_WRITE)`). Depende de T019.
-- [ ] T021 `ItemEstoqueRepositoryAdapter.kt` e `ViolacaoDeUnicidade.kt` (SQLState `23505` → `DuplicidadeException`). Depende de T020.
+- [x] T019 Migration `bootstrap/src/main/resources/db/migration/V7__create_estoque_item.sql`: `estoque.item` com `CHECK`s (tipo, preço, saldo, reservado, `reservado <= saldo`) e índice único em `lower(nome)`.
+- [x] T020 `ItemEstoqueJpaEntity.kt` e `ItemEstoqueSpringDataRepository.kt` (inclui consulta com `@Lock(PESSIMISTIC_WRITE)`). Depende de T019.
+- [x] T021 `ItemEstoqueRepositoryAdapter.kt` e `ViolacaoDeUnicidade.kt` (SQLState `23505` → `DuplicidadeException`). Depende de T020.
 
 ### Adapters — web (`…estoque/adapter/inbound/web/` e `…/adapter/config/`)
 
