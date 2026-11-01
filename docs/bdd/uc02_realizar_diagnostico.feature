@@ -1,4 +1,5 @@
 # language: pt
+@implementado
 Funcionalidade: UC02 - Realizar Diagnóstico
   Como mecânico
   Quero inspecionar o veículo e registrar o diagnóstico
@@ -8,26 +9,26 @@ Funcionalidade: UC02 - Realizar Diagnóstico
     Dado que existe uma OS com status "Recebida"
     Quando o mecânico assumir a OS
     Então o status da OS deve ser "Em diagnóstico"
-    E o evento "Diagnóstico iniciado" deve ser registrado
+    E deve registrar o evento "Diagnóstico iniciado"
 
   Cenário: Registrar a inspeção técnica
     Dado que existe uma OS com status "Em diagnóstico"
     Quando o mecânico registrar as observações da inspeção
-    Então o evento "Diagnóstico realizado" deve ser registrado
+    Então deve registrar o evento "Diagnóstico realizado"
 
   Cenário: Finalizar diagnóstico
     Dado que existe uma OS com status "Em diagnóstico"
     E o mecânico registrou as observações da inspeção
     Quando o mecânico concluir a análise informando serviços e peças necessários
-    Então o evento "Diagnóstico finalizado" deve ser registrado
+    Então deve registrar o evento "Diagnóstico finalizado"
     E o status da OS deve continuar "Em diagnóstico"
     E a OS deve ficar liberada para geração de orçamento
 
   Cenário: Encerrar a OS quando a peça não for identificada
     Dado que existe uma OS com status "Em diagnóstico"
     Quando o mecânico concluir a inspeção sem identificar a peça necessária
-    Então o evento "Diagnóstico realizado" não deve ser registrado
-    E o evento "OS encerrada" deve ser registrado
+    Então não deve registrar o evento "Diagnóstico realizado"
+    E deve registrar o evento "OS encerrada"
     E o status da OS deve ser "Finalizada"
 
   Esquema do Cenário: Impedir início de diagnóstico fora do status "Recebida"

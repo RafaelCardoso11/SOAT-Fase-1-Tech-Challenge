@@ -15,17 +15,20 @@ class OrdemServicoRepositoryAdapter(
 ) : OrdemServicoRepository {
 
     override fun salvar(ordemServico: OrdemServico): Long {
-        val entidade = OrdemServicoJpaEntity(
-            documento = ordemServico.documento.valor,
-            placa = ordemServico.veiculo.placa.valor,
-            marca = ordemServico.veiculo.marca,
-            modelo = ordemServico.veiculo.modelo,
-            ano = ordemServico.veiculo.ano,
-            relato = ordemServico.relato,
-            status = ordemServico.status.name,
-            transicoes = ordemServico.transicoes.map {
-                TransicaoStatusJpaEntity(status = it.status.name, momento = it.momento)
-            }.toMutableList(),
+        val entidade = ordemServico.id?.let { springData.findById(it).orElseThrow() } ?: OrdemServicoJpaEntity()
+        entidade.documento = ordemServico.documento.valor
+        entidade.placa = ordemServico.veiculo.placa.valor
+        entidade.marca = ordemServico.veiculo.marca
+        entidade.modelo = ordemServico.veiculo.modelo
+        entidade.ano = ordemServico.veiculo.ano
+        entidade.relato = ordemServico.relato
+        entidade.status = ordemServico.status.name
+        entidade.observacoes = ordemServico.observacoes
+        entidade.liberadoParaOrcamento = ordemServico.liberadoParaOrcamento
+        // shortcut: histórico append-only — anexa só as transições além das já persistidas; revisar se transições puderem ser editadas/removidas.
+        val novas = ordemServico.transicoes.drop(entidade.transicoes.size)
+        entidade.transicoes.addAll(
+            novas.map { TransicaoStatusJpaEntity(status = it.status.name, momento = it.momento) },
         )
         return springData.save(entidade).id!!
     }
@@ -50,4 +53,6 @@ private fun OrdemServicoJpaEntity.toDomain(): OrdemServico =
         transicoes = transicoes
             .map { TransicaoStatus(StatusOS.valueOf(it.status), it.momento) }
             .sortedBy { it.momento },
+        observacoes = observacoes,
+        liberadoParaOrcamento = liberadoParaOrcamento,
     )
