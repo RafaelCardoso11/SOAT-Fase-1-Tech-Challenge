@@ -63,9 +63,9 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Adapters — web (`…estoque/adapter/inbound/web/` e `…/adapter/config/`)
 
-- [ ] T022 `dto/ErroResponse.kt`, `EstoqueExceptionHandler.kt` (somente `EstoqueException`: 400/404/409, sem catch-all) e `Localizacao.kt`.
-- [ ] T023 `ItemEstoqueController.kt` + `dto/ItemEstoqueDtos.kt` (`/api/v1/admin/estoque/itens`: POST, GET lista com `?ativo=`, GET `/{id}` com `?ativo=true`, PUT, `/{id}/inativar`, `/{id}/entradas`; saldo/reservado/disponivel na resposta; anotações OpenAPI). Depende de T010, T022.
-- [ ] T024 `adapter/config/EstoqueBeanConfig.kt`: beans de `GerenciarItemUseCase` e `ConsultarItemUseCase`. Depende de T011, T012.
+- [x] T022 `dto/ErroResponse.kt`, `EstoqueExceptionHandler.kt` (somente `EstoqueException`: 400/404/409, sem catch-all) e `Localizacao.kt`.
+- [x] T023 `ItemEstoqueController.kt` + `dto/ItemEstoqueDtos.kt` (`/api/v1/admin/estoque/itens`: POST, GET lista com `?ativo=`, GET `/{id}` com `?ativo=true`, PUT, `/{id}/inativar`, `/{id}/entradas`; saldo/reservado/disponivel na resposta; anotações OpenAPI). Depende de T010, T022.
+- [x] T024 `adapter/config/EstoqueBeanConfig.kt`: beans de `GerenciarItemUseCase` e `ConsultarItemUseCase`. Depende de T011, T012.
 
 ### Tests
 
