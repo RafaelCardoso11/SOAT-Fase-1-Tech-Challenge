@@ -53,31 +53,31 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Setup
 
-- [ ] T018 Abrir a issue do PR 3 e criar a branch a partir da `main` com o PR 2 mergeado; `git fetch` e conferir a próxima versão livre de migration.
+- [x] T018 Abrir a issue do PR 3 e criar a branch a partir da `main` com o PR 2 mergeado; `git fetch` e conferir a próxima versão livre de migration.
 
 ### Data / persistence (`…estoque/adapter/outbound/persistence/`)
 
-- [ ] T019 Migration `bootstrap/src/main/resources/db/migration/V<próxima>__create_estoque_item.sql`: `estoque.item` com `CHECK`s (tipo, preço, saldo, reservado, `reservado <= saldo`) e índice único em `lower(nome)`.
-- [ ] T020 `ItemEstoqueJpaEntity.kt` e `ItemEstoqueSpringDataRepository.kt` (inclui consulta com `@Lock(PESSIMISTIC_WRITE)`). Depende de T019.
-- [ ] T021 `ItemEstoqueRepositoryAdapter.kt` e `ViolacaoDeUnicidade.kt` (SQLState `23505` → `DuplicidadeException`). Depende de T020.
+- [x] T019 Migration `bootstrap/src/main/resources/db/migration/V8__create_estoque_item.sql`: `estoque.item` com `CHECK`s (tipo, preço, saldo, reservado, `reservado <= saldo`) e índice único em `lower(nome)`.
+- [x] T020 `ItemEstoqueJpaEntity.kt` e `ItemEstoqueSpringDataRepository.kt` (inclui consulta com `@Lock(PESSIMISTIC_WRITE)`). Depende de T019.
+- [x] T021 `ItemEstoqueRepositoryAdapter.kt` e `ViolacaoDeUnicidade.kt` (SQLState `23505` → `DuplicidadeException`). Depende de T020.
 
 ### Adapters — web (`…estoque/adapter/inbound/web/` e `…/adapter/config/`)
 
-- [ ] T022 `dto/ErroResponse.kt`, `EstoqueExceptionHandler.kt` (somente `EstoqueException`: 400/404/409, sem catch-all) e `Localizacao.kt`.
-- [ ] T023 `ItemEstoqueController.kt` + `dto/ItemEstoqueDtos.kt` (`/api/v1/admin/estoque/itens`: POST, GET lista com `?ativo=`, GET `/{id}` com `?ativo=true`, PUT, `/{id}/inativar`, `/{id}/entradas`; saldo/reservado/disponivel na resposta; anotações OpenAPI). Depende de T010, T022.
-- [ ] T024 `adapter/config/EstoqueBeanConfig.kt`: beans de `GerenciarItemUseCase` e `ConsultarItemUseCase`. Depende de T011, T012.
+- [x] T022 `dto/ErroResponse.kt`, `EstoqueExceptionHandler.kt` (somente `EstoqueException`: 400/404/409, sem catch-all) e `Localizacao.kt`.
+- [x] T023 `ItemEstoqueController.kt` + `dto/ItemEstoqueDtos.kt` (`/api/v1/admin/estoque/itens`: POST, GET lista com `?ativo=`, GET `/{id}` com `?ativo=true`, PUT, `/{id}/inativar`, `/{id}/entradas`; saldo/reservado/disponivel na resposta; anotações OpenAPI). Depende de T010, T022.
+- [x] T024 `adapter/config/EstoqueBeanConfig.kt`: beans de `GerenciarItemUseCase` e `ConsultarItemUseCase`. Depende de T011, T012.
 
 ### Tests
 
-- [ ] T025 `bootstrap/src/test/kotlin/com/fiap/soat/oficina/EstoqueItensIntegrationTest.kt` (Testcontainers + MockMvc): fluxo completo; 401 sem token; 400/404/409 com `erro`/`campo`; nome duplicado (inclusive inativo e caixa diferente); entrada; filtros `?ativo=`; unicidade pelo banco; `CHECK` do banco; `/v3/api-docs` publica as rotas. Depende de T019–T024.
+- [x] T025 `bootstrap/src/test/kotlin/com/fiap/soat/oficina/EstoqueItensIntegrationTest.kt` (Testcontainers + MockMvc): fluxo completo; 401 sem token; 400/404/409 com `erro`/`campo`; nome duplicado (inclusive inativo e caixa diferente); entrada; filtros `?ativo=`; unicidade pelo banco; `CHECK` do banco; `/v3/api-docs` publica as rotas. Depende de T019–T024.
 
 ### Documentação
 
-- [ ] T026 `README.md`: seção "Estoque — itens" (rotas, regras, exemplo).
+- [x] T026 `README.md`: seção "Estoque — itens" (rotas, regras, exemplo).
 
 ### Finalize
 
-- [ ] T027 Criar `api-local/estoque-itens.http` (fora do Git) e validar manualmente com a aplicação no ar.
+- [x] T027 Criar `api-local/estoque-itens.http` (fora do Git) e validar manualmente com a aplicação no ar.
 - [ ] T028 Rodar `./gradlew build` (gate Jacoco); conferir o diff (~14 arquivos); preparar o PR (`Closes #<issue>`).
 
 ---

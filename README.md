@@ -151,6 +151,35 @@ curl -X POST http://localhost:8080/api/v1/admin/clientes \
   -d '{"documento":"123.456.789-09","nome":"Maria Silva","email":"maria@email.com"}'
 ```
 
+## Estoque — peças e insumos
+
+Itens de estoque (peça ou insumo) em `/api/v1/admin/estoque/itens`, protegidos por JWT e documentados no
+Swagger UI. Especificação em [`specs/estoque/`](specs/estoque/).
+
+| Operação | Rota |
+|----------|------|
+| Cadastrar / listar | `POST` · `GET /api/v1/admin/estoque/itens` (`?ativo=true\|false`) |
+| Detalhar / alterar | `GET` · `PUT /api/v1/admin/estoque/itens/{id}` |
+| Entrada de estoque | `POST /api/v1/admin/estoque/itens/{id}/entradas` com `{"quantidade": 10}` |
+| Inativar | `POST /api/v1/admin/estoque/itens/{id}/inativar` |
+
+Regras principais:
+
+- Cada item tem nome **único** (sem diferenciar maiúsculas), descrição opcional, tipo (`PECA` ou `INSUMO`), preço e saldo inicial opcional.
+- As respostas trazem `saldo` (quantidade física), `reservado` (separado para OS) e `disponivel` (saldo menos reservado).
+- O saldo só aumenta por **entrada** (quantidade inteira maior que zero); alterar o item não mexe no saldo.
+- Não há exclusão: itens são **inativados**; item inativo não é alterado nem recebe entrada, e a busca por id aceita `?ativo=true` para tratá-lo como não encontrado.
+- A concorrência é resolvida com lock de linha no item e `CHECK`s no banco (saldo ≥ 0 e reservado ≤ saldo).
+- Erros: `400` dado inválido · `404` não encontrado · `409` nome duplicado ou item inativo, com corpo `{"erro": "...", "campo": "..."}`.
+
+Exemplo:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/admin/estoque/itens \
+  -H "Authorization: Bearer <jwt>" -H 'Content-Type: application/json' \
+  -d '{"nome":"Pastilha de freio","tipo":"PECA","preco":200.00,"saldoInicial":10}'
+```
+
 ## Estrutura do projeto
 
 ```
