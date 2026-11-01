@@ -29,8 +29,14 @@ class OrdemServicoRepositoryAdapter(
         entidade.status = ordemServico.status.name
         entidade.observacoes = ordemServico.observacoes
         entidade.liberadoParaOrcamento = ordemServico.liberadoParaOrcamento
-        if (entidade.orcamento == null) {
-            entidade.orcamento = ordemServico.orcamento?.toJpa()
+        val domOrcamento = ordemServico.orcamento
+        if (domOrcamento != null) {
+            val orcamentoEntity = entidade.orcamento
+            if (orcamentoEntity == null) {
+                entidade.orcamento = domOrcamento.toJpa()
+            } else {
+                orcamentoEntity.aprovadoEm = domOrcamento.aprovadoEm
+            }
         }
         // shortcut: histórico append-only — anexa só as transições além das já persistidas; revisar se transições puderem ser editadas/removidas.
         val novas = ordemServico.transicoes.drop(entidade.transicoes.size)
@@ -67,11 +73,15 @@ private fun OrdemServicoJpaEntity.toDomain(): OrdemServico =
 
 private fun Orcamento.toJpa(): OrcamentoJpaEntity = OrcamentoJpaEntity(
     total = total.valor,
+    validoAte = validoAte,
+    aprovadoEm = aprovadoEm,
     itens = itens.map {
         ItemOrcamentoJpaEntity(tipo = it.tipo.name, descricao = it.descricao, valor = it.valor.valor)
     }.toMutableList(),
 )
 
 private fun OrcamentoJpaEntity.toDomain(): Orcamento = Orcamento(
-    itens.map { ItemOrcamento(TipoItem.valueOf(it.tipo), it.descricao, Dinheiro.of(it.valor)) },
+    itens = itens.map { ItemOrcamento(TipoItem.valueOf(it.tipo), it.descricao, Dinheiro.of(it.valor)) },
+    validoAte = validoAte,
+    aprovadoEm = aprovadoEm,
 )

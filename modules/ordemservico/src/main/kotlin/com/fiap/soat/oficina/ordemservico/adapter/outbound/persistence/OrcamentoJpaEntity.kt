@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import java.math.BigDecimal
+import java.time.Instant
 
 @Entity
 @Table(name = "orcamento", schema = "ordemservico")
@@ -20,6 +21,12 @@ class OrcamentoJpaEntity(
 
     @Column(nullable = false, precision = 12, scale = 2)
     var total: BigDecimal = BigDecimal.ZERO,
+
+    @Column(nullable = false)
+    var validoAte: Instant = Instant.EPOCH,
+
+    @Column(nullable = true)
+    var aprovadoEm: Instant? = null,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "orcamento_id", nullable = false)

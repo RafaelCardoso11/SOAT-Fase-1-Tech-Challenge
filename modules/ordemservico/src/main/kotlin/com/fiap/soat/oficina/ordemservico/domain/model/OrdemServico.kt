@@ -48,14 +48,22 @@ class OrdemServico private constructor(
         }
     }
 
-    fun gerarOrcamento(itens: List<ItemOrcamento>): Orcamento {
+    fun gerarOrcamento(itens: List<ItemOrcamento>, validoAte: Instant): Orcamento {
         check(status == StatusOS.EM_DIAGNOSTICO && liberadoParaOrcamento) {
             "Orçamento só pode ser gerado a partir de um diagnóstico finalizado"
         }
-        val novo = Orcamento(itens)
+        val novo = Orcamento(itens, validoAte)
         orcamento = novo
         transitarPara(StatusOS.AGUARDANDO_APROVACAO)
         return novo
+    }
+
+    fun aprovarOrcamento() {
+        check(status == StatusOS.AGUARDANDO_APROVACAO) {
+            "A aprovação só é possível com a OS aguardando aprovação"
+        }
+        checkNotNull(orcamento) { "Orçamento inexistente" }.aprovar(Instant.now())
+        transitarPara(StatusOS.EM_EXECUCAO)
     }
 
     private fun transitarPara(novo: StatusOS) {

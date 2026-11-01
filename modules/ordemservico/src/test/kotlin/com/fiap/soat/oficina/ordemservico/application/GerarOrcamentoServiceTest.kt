@@ -30,7 +30,7 @@ class GerarOrcamentoServiceTest {
     private val eventos = mockk<PublicadorDeEventos>(relaxed = true)
     private val estoque = mockk<EstoquePort>(relaxed = true)
     private val notificacao = mockk<NotificacaoPort>(relaxed = true)
-    private val service = GerarOrcamentoService(repositorio, eventos, estoque, notificacao)
+    private val service = GerarOrcamentoService(repositorio, eventos, estoque, notificacao, validadeDias = 7L)
 
     private fun os(status: StatusOS, liberado: Boolean) = OrdemServico.reconstituir(
         id = 1L,

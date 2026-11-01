@@ -1,9 +1,11 @@
 package com.fiap.soat.oficina.ordemservico.adapter.config
 
+import com.fiap.soat.oficina.ordemservico.application.usecase.AprovarOrcamentoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.ConsultarOrdensService
 import com.fiap.soat.oficina.ordemservico.application.usecase.CriarOrdemServicoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.GerarOrcamentoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.RealizarDiagnosticoService
+import com.fiap.soat.oficina.ordemservico.domain.port.inbound.AprovarOrcamentoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ConsultarOrdensUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.CriarOrdemServicoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.GerarOrcamentoUseCase
@@ -12,6 +14,7 @@ import com.fiap.soat.oficina.ordemservico.domain.port.outbound.EstoquePort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.NotificacaoPort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.OrdemServicoRepository
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.PublicadorDeEventos
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -41,5 +44,12 @@ class OrdemServicoBeanConfig {
         eventos: PublicadorDeEventos,
         estoque: EstoquePort,
         notificacao: NotificacaoPort,
-    ): GerarOrcamentoUseCase = GerarOrcamentoService(repositorio, eventos, estoque, notificacao)
+        @Value("\${orcamento.validade-dias}") validadeDias: Long,
+    ): GerarOrcamentoUseCase = GerarOrcamentoService(repositorio, eventos, estoque, notificacao, validadeDias)
+
+    @Bean
+    fun aprovarOrcamentoUseCase(
+        repositorio: OrdemServicoRepository,
+        eventos: PublicadorDeEventos,
+    ): AprovarOrcamentoUseCase = AprovarOrcamentoService(repositorio, eventos)
 }

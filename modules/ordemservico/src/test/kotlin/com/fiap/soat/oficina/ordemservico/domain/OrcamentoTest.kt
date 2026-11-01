@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.time.Instant
 
 class OrcamentoTest {
 
@@ -18,6 +19,7 @@ class OrcamentoTest {
                 ItemOrcamento(TipoItem.SERVICO, "Troca de pastilhas", Dinheiro.of(BigDecimal("150.00"))),
                 ItemOrcamento(TipoItem.PECA, "Pastilha de freio", Dinheiro.of(BigDecimal("200.00"))),
             ),
+            validoAte = Instant.now().plusSeconds(3600),
         )
 
         assertThat(orcamento.total.valor).isEqualByComparingTo("350.00")
@@ -25,7 +27,7 @@ class OrcamentoTest {
 
     @Test
     fun `orcamento sem itens e invalido`() {
-        assertThatThrownBy { Orcamento(emptyList()) }
+        assertThatThrownBy { Orcamento(emptyList(), validoAte = Instant.now()) }
             .isInstanceOf(IllegalArgumentException::class.java)
     }
 }
