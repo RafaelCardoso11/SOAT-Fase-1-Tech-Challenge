@@ -11,4 +11,6 @@ class NotificacaoPortStub : NotificacaoPort {
     override fun notificarOrcamentoGerado(ordemServicoId: Long, total: Dinheiro) = Unit
 
     override fun notificarOrcamentoRejeitado(ordemServicoId: Long, motivo: String?) = Unit
+
+    override fun notificarOrcamentoExpirado(ordemServicoId: Long) = Unit
 }

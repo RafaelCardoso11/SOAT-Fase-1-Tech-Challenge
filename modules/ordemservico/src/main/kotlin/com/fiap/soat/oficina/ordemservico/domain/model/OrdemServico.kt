@@ -74,6 +74,15 @@ class OrdemServico private constructor(
         transitarPara(StatusOS.FINALIZADA)
     }
 
+    fun expirarOrcamento(agora: Instant) {
+        check(status == StatusOS.AGUARDANDO_APROVACAO) {
+            "Só expira orçamento de OS aguardando aprovação"
+        }
+        val orc = checkNotNull(orcamento) { "Orçamento inexistente" }
+        check(agora > orc.validoAte) { "Orçamento ainda dentro do prazo" }
+        transitarPara(StatusOS.FINALIZADA)
+    }
+
     private fun transitarPara(novo: StatusOS) {
         status = novo
         _transicoes.add(TransicaoStatus(novo, Instant.now()))

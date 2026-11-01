@@ -55,6 +55,10 @@ class OrdemServicoRepositoryAdapter(
 
     override fun buscarPorDocumento(documento: String): List<OrdemServico> =
         springData.findByDocumentoOrderByIdDesc(documento).map(OrdemServicoJpaEntity::toDomain)
+
+    override fun buscarExpiraveis(agora: java.time.Instant): List<OrdemServico> =
+        springData.findByStatusAndOrcamento_ValidoAteBefore(StatusOS.AGUARDANDO_APROVACAO.name, agora)
+            .map(OrdemServicoJpaEntity::toDomain)
 }
 
 private fun OrdemServicoJpaEntity.toDomain(): OrdemServico =
