@@ -30,11 +30,12 @@ class RealizarDiagnosticoService(
         if (pecaIdentificada) DiagnosticoFinalizado(ordemServicoId) else OsEncerrada(ordemServicoId)
     }
 
-    private fun aplicar(ordemServicoId: Long, acao: (OrdemServico) -> DomainEvent) {
+    private fun aplicar(ordemServicoId: Long, acao: (OrdemServico) -> DomainEvent): OrdemServico {
         val ordem = repositorio.buscarPorId(ordemServicoId)
             ?: throw NoSuchElementException("Ordem de serviço não encontrada")
         val evento = acao(ordem)
         repositorio.salvar(ordem)
         eventos.publicar(evento)
+        return ordem
     }
 }
