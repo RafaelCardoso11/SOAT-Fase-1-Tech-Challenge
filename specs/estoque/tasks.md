@@ -86,15 +86,15 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Setup
 
-- [ ] T029 Abrir a issue do PR 4 e criar a branch a partir da `main` com o PR 3 mergeado.
+- [x] T029 Abrir a issue do PR 4 e criar a branch a partir da `main` com o PR 3 mergeado.
 
 ### Domain (`…estoque/domain/`)
 
-- [ ] T030 [P] `model/SituacaoReserva.kt` (`ATIVA`, `LIBERADA`, `CONSUMIDA`), `model/Reserva.kt` (`criar(osId, itemId, quantidade)`, `liberar()`, `consumir()`; imutável depois de liberada/consumida) e `model/ResultadoReserva.kt` (sealed: `Reservada(reserva)`, `Indisponivel(disponivel)`).
-- [ ] T031 `model/ItemEstoque.kt`: acrescentar `reservar(Quantidade)`, `liberar(Quantidade)` e `baixar(Quantidade)`, mantendo os invariantes (saldo ≥ 0, reservado ≤ saldo); item inativo rejeita reservar. Depende de T030.
-- [ ] T032 [P] `event/`: `PecaReservada`, `PecaIndisponivel`, `ReservaLiberada`, `PecasBaixadas` (implementam `DomainEvent`).
-- [ ] T033 `port/outbound/ReservaRepository.kt` (`salvar`, `buscarAtivaPorOsEItem`, `listarAtivasPorOs`, `listarPorOs`) e `port/outbound/PublicadorDeEventos.kt`.
-- [ ] T034 `port/inbound/`: `ReservarPecaUseCase`, `LiberarReservaUseCase`, `BaixarPecasUseCase`, `ConsultarReservasUseCase`. Depende de T030.
+- [x] T030 [P] `model/SituacaoReserva.kt` (`ATIVA`, `LIBERADA`, `CONSUMIDA`), `model/Reserva.kt` (`criar(osId, itemId, quantidade)`, `liberar()`, `consumir()`; imutável depois de liberada/consumida) e `model/ResultadoReserva.kt` (sealed: `Reservada(reserva)`, `Indisponivel(disponivel)`).
+- [x] T031 `model/ItemEstoque.kt`: acrescentar `reservar(Quantidade)`, `liberar(Quantidade)` e `baixar(Quantidade)`, mantendo os invariantes (saldo ≥ 0, reservado ≤ saldo); item inativo rejeita reservar. Depende de T030.
+- [x] T032 [P] `event/`: `PecaReservada`, `PecaIndisponivel`, `ReservaLiberada`, `PecasBaixadas` (implementam `DomainEvent`).
+- [x] T033 `port/outbound/ReservaRepository.kt` (`salvar`, `buscarAtivaPorOsEItem`, `listarAtivasPorOs`, `listarPorOs`) e `port/outbound/PublicadorDeEventos.kt`.
+- [x] T034 `port/inbound/`: `ReservarPecaUseCase`, `LiberarReservaUseCase`, `BaixarPecasUseCase`, `ConsultarReservasUseCase`. Depende de T030.
 
 ### Application (`…estoque/application/usecase/`)
 
