@@ -19,8 +19,8 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Setup
 
-- [ ] T003 Abrir a issue do PR 2 (`enhancement`) e criar a branch a partir de `origin/main` atualizada.
-- [ ] T004 `modules/estoque/build.gradle.kts`: copiar o padrão do `cadastro` (`kotlin.spring`, `kotlin.jpa`, `spring.dependency.management` + BOM; deps `starter-web`, `starter-data-jpa`, `swagger-annotations`; manter `oficina.jacoco-convention`).
+- [x] T003 Abrir a issue do PR 2 (`enhancement`) e criar a branch a partir de `origin/main` atualizada.
+- [x] T004 `modules/estoque/build.gradle.kts`: copiar o padrão do `cadastro` (`kotlin.spring`, `kotlin.jpa`, `spring.dependency.management` + BOM; deps `starter-web`, `starter-data-jpa`, `swagger-annotations`; manter `oficina.jacoco-convention`).
 
 ### Domain (`…estoque/domain/`)
 
