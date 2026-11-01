@@ -56,7 +56,7 @@ _A definir: banco escolhido e justificativa._
 
 ## Execução
 
-Ambiente completo (app + PostgreSQL + MailHog) via Docker:
+Ambiente completo (app + PostgreSQL + Mailpit) via Docker:
 
 ```bash
 cp .env.example .env            # ajuste os valores

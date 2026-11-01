@@ -12,6 +12,21 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:1025}
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+notificacao:
+  email:
+    enabled: ${NOTIFICACAO_EMAIL_ENABLED:false}
+    remetente: ${NOTIFICACAO_EMAIL_REMETENTE:oficina@exemplo.com}
+    destinatario-padrao: ${NOTIFICACAO_EMAIL_DESTINATARIO:cliente@exemplo.com}
 
 jwt:
   secret: ${JWT_SECRET:troque-este-segredo-por-uma-chave-bem-longa-e-aleatoria}

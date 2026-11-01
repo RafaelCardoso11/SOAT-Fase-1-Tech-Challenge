@@ -21,6 +21,7 @@ dependencies {
 
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.data.jpa)
+    implementation(libs.spring.boot.starter.mail)
 
     testImplementation(libs.bundles.testing)
     testRuntimeOnly(libs.junit.platform.launcher)
