@@ -30,6 +30,10 @@ class NotificacaoPorEmail(
         enviar(remetente, "Orçamento da OS #$ordemServicoId rejeitado", "O cliente rejeitou o orçamento.$detalhe")
     }
 
+    override fun notificarOrcamentoExpirado(ordemServicoId: Long) {
+        enviar(remetente, "Orçamento da OS #$ordemServicoId expirado", "O orçamento expirou sem resposta do cliente.")
+    }
+
     private fun enviar(para: String, assunto: String, corpo: String) {
         val mensagem = SimpleMailMessage().apply {
             from = remetente

@@ -30,6 +30,7 @@ notificacao:
 
 orcamento:
   validade-dias: ${ORCAMENTO_VALIDADE_DIAS:7}
+  expiracao-cron: ${ORCAMENTO_EXPIRACAO_CRON:0 0 * * * *}
 
 jwt:
   secret: ${JWT_SECRET:troque-este-segredo-por-uma-chave-bem-longa-e-aleatoria}
