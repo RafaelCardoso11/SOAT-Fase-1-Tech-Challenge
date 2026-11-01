@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToMany
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import jakarta.persistence.Version
 
@@ -47,6 +48,10 @@ class OrdemServicoJpaEntity(
 
     @Version
     var versao: Long? = null,
+
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JoinColumn(name = "orcamento_id")
+    var orcamento: OrcamentoJpaEntity? = null,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "ordem_servico_id", nullable = false)

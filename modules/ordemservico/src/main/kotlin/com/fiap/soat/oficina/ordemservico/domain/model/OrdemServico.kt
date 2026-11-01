@@ -12,6 +12,7 @@ class OrdemServico private constructor(
     transicoes: List<TransicaoStatus>,
     observacoes: String?,
     liberadoParaOrcamento: Boolean,
+    orcamento: Orcamento?,
 ) {
     var status: StatusOS = status
         private set
@@ -23,6 +24,9 @@ class OrdemServico private constructor(
         private set
 
     var liberadoParaOrcamento: Boolean = liberadoParaOrcamento
+        private set
+
+    var orcamento: Orcamento? = orcamento
         private set
 
     fun iniciarDiagnostico() {
@@ -44,6 +48,16 @@ class OrdemServico private constructor(
         }
     }
 
+    fun gerarOrcamento(itens: List<ItemOrcamento>): Orcamento {
+        check(status == StatusOS.EM_DIAGNOSTICO && liberadoParaOrcamento) {
+            "Orçamento só pode ser gerado a partir de um diagnóstico finalizado"
+        }
+        val novo = Orcamento(itens)
+        orcamento = novo
+        transitarPara(StatusOS.AGUARDANDO_APROVACAO)
+        return novo
+    }
+
     private fun transitarPara(novo: StatusOS) {
         status = novo
         _transicoes.add(TransicaoStatus(novo, Instant.now()))
@@ -60,6 +74,7 @@ class OrdemServico private constructor(
                 transicoes = listOf(TransicaoStatus(StatusOS.RECEBIDA, Instant.now())),
                 observacoes = null,
                 liberadoParaOrcamento = false,
+                orcamento = null,
             )
 
         fun reconstituir(
@@ -71,7 +86,10 @@ class OrdemServico private constructor(
             transicoes: List<TransicaoStatus>,
             observacoes: String? = null,
             liberadoParaOrcamento: Boolean = false,
+            orcamento: Orcamento? = null,
         ): OrdemServico =
-            OrdemServico(id, documento, veiculo, relato, status, transicoes, observacoes, liberadoParaOrcamento)
+            OrdemServico(
+                id, documento, veiculo, relato, status, transicoes, observacoes, liberadoParaOrcamento, orcamento,
+            )
     }
 }
