@@ -25,7 +25,6 @@ class NotificacaoPorEmail(
         )
     }
 
-    // Rejeição notifica a oficina (remetente), não o cliente.
     override fun notificarOrcamentoRejeitado(ordemServicoId: Long, motivo: String?) {
         val detalhe = motivo?.let { " Motivo: $it." } ?: ""
         enviar(remetente, "Orçamento da OS #$ordemServicoId rejeitado", "O cliente rejeitou o orçamento.$detalhe")
