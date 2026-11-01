@@ -38,6 +38,12 @@ class OrdemServicoJpaEntity(
     @Column(nullable = false)
     var status: String = "",
 
+    @Column(nullable = true)
+    var observacoes: String? = null,
+
+    @Column(nullable = false)
+    var liberadoParaOrcamento: Boolean = false,
+
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "ordem_servico_id", nullable = false)
     var transicoes: MutableList<TransicaoStatusJpaEntity> = mutableListOf(),

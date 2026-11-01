@@ -12,4 +12,14 @@ class OrdemServicoExceptionHandler {
     fun tratarDadosInvalidos(e: IllegalArgumentException): ResponseEntity<Map<String, String>> =
         ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(mapOf("erro" to (e.message ?: "Dados inválidos")))
+
+    @ExceptionHandler(NoSuchElementException::class)
+    fun tratarNaoEncontrado(e: NoSuchElementException): ResponseEntity<Map<String, String>> =
+        ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(mapOf("erro" to (e.message ?: "Não encontrado")))
+
+    @ExceptionHandler(IllegalStateException::class)
+    fun tratarEstadoInvalido(e: IllegalStateException): ResponseEntity<Map<String, String>> =
+        ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(mapOf("erro" to (e.message ?: "Operação incompatível com o status atual")))
 }
