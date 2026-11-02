@@ -1,14 +1,13 @@
 # Documento de Arquitetura — Sistema de Gestão de Oficina Mecânica
 
 **Curso:** SOAT — Software Architecture · **Fase:** 1 (Tech Challenge FIAP)
-**Status:** Proposta para aprovação · **Data:** 2026-10-10
+**Status:** Aprovado e em implementação · **Atualizado em:** 2026-11-02
 **Stack definida:** Kotlin + Spring Boot · PostgreSQL
 **Abordagem de trabalho:** Spec-Driven Development (SDD)
 
 > Este é o **documento de arquitetura** da solução. Ele registra as decisões (no estilo ADR),
-> os *bounded contexts*, a estrutura de pastas proposta e como o projeto será conduzido via SDD.
-> **Nenhum código foi gerado ainda** — a implementação só começa após a aprovação deste documento
-> e da quebra em tarefas (`tasks.md`).
+> os *bounded contexts*, a estrutura de pastas e como o projeto é conduzido via SDD.
+> O estado de implementação de cada caso de uso e o que mudou em relação ao plano original estão no §11.
 
 ---
 
@@ -171,9 +170,11 @@ via eventos. Ver §9.
 **Decisão:** o canal de notificação ao cliente (orçamento gerado/expirado, veículo pronto — UC03, UC08,
 UC10) é **e-mail via SMTP**. Em **dev**, um container **Mailpit** no docker-compose captura os e-mails
 (sem credenciais reais, visualização por UI web); em **prod**, aponta-se para um SMTP real (ex.: AWS SES).
-A integração fica no adapter `ordemservico/adapter/outbound/notificacao/`, atrás de `NotificacaoPort`.
-**Padrão outbox:** a notificação é gravada numa tabela *outbox* e enviada de forma assíncrona, garantindo
-que uma falha de SMTP não derrube a transação de negócio (ex.: aprovar orçamento).
+A integração fica no adapter `ordemservico/adapter/outbound/notificacao/`, atrás de `NotificacaoPort`:
+`NotificacaoPorEmail` (`NOTIFICACAO_EMAIL_ENABLED=true`, ligado no compose) ou `NotificacaoPortStub` (no-op, padrão local).
+**Padrão outbox (adiado):** no MVP o envio é síncrono, logo depois de salvar a OS, e uma falha de SMTP
+ainda propaga o erro para a requisição. A tabela *outbox* com envio assíncrono, que isola a transação de
+negócio do SMTP, fica para a evolução (§10).
 **Alternativas:** SMS/WhatsApp (Twilio/SNS) — exigem credenciais de provedor, fricção alta p/ MVP;
 broker de mensageria — adia-se para a fase de microsserviços.
 **Consequências:** +demo realista sem custo/credencial, +porta trocável por SES/SMS sem tocar no domínio;
@@ -216,20 +217,25 @@ a OS protege seu modelo com uma **camada anticorrupção (ACL)** em cada porta d
 |--------|-----------|------------------------|----------------|-----|
 | **ordemservico** | Principal | `OrdemServico` (raiz), `Orcamento`, `ItemOrcamento` | `StatusOS`, `StatusOrcamento` | UC01–UC13 |
 | **cadastro** | Suporte | `Cliente` (raiz), `Veiculo`, `Servico` | `Documento` (CPF/CNPJ), `Placa`, `Dinheiro` | CRUD |
-| **estoque** | Suporte | `Peca`, `Estoque`, `ReservaPeca` | `Quantidade` | UC04, UC09 |
-| **autenticacao** | Genérico | `Usuario`, `Perfil` | `Token` | (transversal) |
+| **estoque** | Suporte | `ItemEstoque` (raiz, peça ou insumo), `Reserva` | `Quantidade`, `TipoItem`, `SituacaoReserva` | UC04, UC09 |
+| **autenticacao** | Genérico | `Usuario` | `TokenEmitido` | (transversal) |
 | _(externo)_ **Notificação** | Sistema externo | — (fora do monolito) | — | UC03, UC08, UC10 |
 
-**`shared-kernel`** (compartilhado, sem framework): VOs transversais (`Cpf`, `Cnpj`, `Documento`,
-`Placa`, `Dinheiro`), base de eventos de domínio (`DomainEvent`, `DomainEventPublisher`) e
-tratamento de erros (`DomainException`).
+**`shared-kernel`** (compartilhado, sem framework): VOs transversais (`Documento` — CPF ou CNPJ com
+dígitos verificadores —, `Placa` — antiga e Mercosul —, `Dinheiro`) e a interface `DomainEvent`. Cada
+módulo tem sua própria porta `PublicadorDeEventos` e suas exceções de domínio.
 
 **Eventos de domínio** (do Event Storming): `OrdemServicoCriada`, `DiagnosticoIniciado/Realizado/Finalizado`,
 `OrcamentoGerado/Aprovado/Rejeitado/Revisado/Expirado`, `PecaReservada`, `PecaIndisponivel`,
 `PecasBaixadas`, `ExecucaoIniciada/Finalizada`, `VeiculoEntregue`, `OsEncerrada`.
 
-> **Hotspots** ainda em aberto no Event Storming (a resolver na spec): prazo de validade do orçamento
-> (UC08), o que fazer quando a peça não é identificada (UC02) e política de peça indisponível (UC04).
+> **Hotspots do Event Storming, resolvidos nas specs:** peça não identificada no diagnóstico encerra a
+> OS (UC02); o orçamento vale 7 dias (`ORCAMENTO_VALIDADE_DIAS`) e, ao expirar, encerra a OS e libera as
+> reservas (UC08); peça indisponível avisa atendente e mecânico e deixa o orçamento para revisão, e sem
+> alternativa de fornecimento o atendente encerra a OS (UC04).
+>
+> **Modelo de status:** a OS usa só os 6 status oficiais. "Encerrada" não é um status próprio: a OS vai
+> para `FINALIZADA` e o evento `OsEncerrada` é publicado (discussão em #37).
 
 ### 5.4 Por que Cadastro é um único contexto
 O mapa funde clientes, veículos e serviços num só subdomínio de **suporte**. São dados de apoio,
@@ -278,7 +284,9 @@ Package root: `com.fiap.soat.oficina`. Build Gradle multi-módulo; `bootstrap` �
 │   ├── arquitetura.md               # ESTE documento
 │   ├── adr/                         # ADRs
 │   ├── bdd/                         # cenários BDD (.feature) por caso de uso
-│   └── ddd/                         # event-storming.pdf, diagramas.pdf, linguagem-ubiqua.md
+│   ├── c4/                          # diagramas C4 níveis 1 a 3 (Mermaid)
+│   ├── ddd/                         # fluxograma do Event Storming e mapa de contexto
+│   └── security/                    # relatório do Trivy
 │
 ├── bootstrap/                       # aplicação Spring Boot (main)
 │   └── src/main/
@@ -304,16 +312,18 @@ modules/ordemservico/
     ├── domain/
     │   ├── model/       # OrdemServico (raiz), Orcamento, ItemOrcamento, StatusOS
     │   ├── event/       # OrdemServicoCriada, OrcamentoAprovado, ...
-    │   ├── service/     # TransicaoStatusService (regras de transição)
+    │   ├── service/     # domain services (vazio: as regras de transição vivem no agregado)
     │   └── port/        # ('inbound'/'outbound' — evita as palavras reservadas 'in'/'out' do Kotlin)
     │       ├── inbound/   # *UseCase (entrada): CriarOs, GerarOrcamento, AprovarOrcamento, ...
-    │       └── outbound/  # OrdemServicoRepository, EstoquePort (ACL), CadastroPort (ACL), NotificacaoPort (externo)
+    │       └── outbound/  # OrdemServicoRepository, EstoquePort (ACL), NotificacaoPort (externo), PublicadorDeEventos
     ├── application/usecase/   # implementações dos use cases
     └── adapter/
         ├── inbound/web/   # controllers REST, DTOs, mappers, @ControllerAdvice
+        ├── inbound/scheduler/  # ExpiracaoScheduler (UC08, @Scheduled)
         └── outbound/
             ├── persistence/  # @Entity JPA, Spring Data repo, RepositoryAdapter, mappers
-            ├── acl/          # implementa EstoquePort/CadastroPort chamando a porta do outro módulo
+            ├── estoque/      # implementa EstoquePort chamando as portas de entrada do módulo estoque
+            ├── event/        # PublicadorDeEventosSpring (ApplicationEventPublisher)
             └── notificacao/  # implementa NotificacaoPort → integra com o sistema externo de notificação
 └── src/test/kotlin/...  # domain (unit), application (MockK), integration (Testcontainers), bdd (Cucumber)
 ```
@@ -323,8 +333,17 @@ modules/ordemservico/
 ## 8. Transversais
 
 **APIs REST + OpenAPI** — springdoc-openapi gera o Swagger a partir dos controllers; contratos também
-versionados em `specs/.../contracts/openapi.yaml`. Convenção de rotas: `/api/v1/admin/**` (protegidas,
-versionadas no caminho) e `/api/os/{id}/status` (consulta pública do cliente — UC12).
+documentados em cada `specs/<feature>/plan.md`. Rotas:
+
+| Prefixo | Contexto | Acesso |
+|---------|----------|--------|
+| `/api/auth/login` | autenticacao | público |
+| `/api/v1/admin/{clientes,veiculos,servicos}` | cadastro | JWT |
+| `/api/v1/admin/estoque/itens` | estoque | JWT |
+| `/api/admin/ordens/**`, `/api/admin/orcamentos/expirar` | ordemservico | JWT |
+| `/api/public/ordens/{numero}`, `/api/public/ordens?placa=&documento=` | ordemservico (UC12) | público |
+
+> As rotas da OS nasceram sem o `/v1`; padronizar o prefixo é uma pendência de baixo risco.
 
 **Segurança (JWT)** — filtro do Spring Security valida o token nas rotas administrativas; `autenticacao`
 emite/valida. Validação de dados sensíveis (CPF/CNPJ, placa) acontece nos **VOs** do `shared-kernel`,
@@ -364,10 +383,31 @@ Ordem natural de extração: `estoque` (fluxo mais assíncrono) → `cadastro` (
 
 ---
 
-## 11. Próximos passos (após aprovação deste documento)
+## 11. Estado da implementação
 
-1. **Por feature (SDD):** `/spec-specify` → `specs/<slug>/spec.md`, `/spec-plan` → `plan.md`, `/spec-tasks` → `tasks.md` (resolvendo os *hotspots* de §5 quando aplicável).
-2. **ADRs** — registrar as decisões de §4 em `docs/adr/`.
-3. **Implementação** — seguir o `tasks.md`; gate `./gradlew build` (testes + cobertura ≥ 80%).
+| UC | Caso de uso | Situação | Spec |
+|----|-------------|----------|------|
+| UC01 | Criar Ordem de Serviço | ✅ implementado | `specs/criar-ordem-servico/` |
+| UC02 | Realizar Diagnóstico | ✅ implementado | `specs/realizar-diagnostico/` |
+| UC03 | Gerar Orçamento | ✅ implementado | `specs/gerar-orcamento/` |
+| UC04 | Reservar Peça | 🟡 casos de uso no `estoque`; OS ainda usa `EstoquePortStub` | `specs/estoque/` |
+| UC05 | Aprovar Orçamento | ✅ implementado | `specs/aprovar-orcamento/` |
+| UC06 | Rejeitar Orçamento | ✅ implementado | `specs/rejeitar-orcamento/` |
+| UC07 | Revisar Orçamento | ✅ implementado | `specs/revisar-orcamento/` |
+| UC08 | Expirar Orçamento | ✅ implementado (job agendado + rota manual) | `specs/expirar-orcamento/` |
+| UC09 | Iniciar Execução | ⏳ #44 (inclui a integração real OS → estoque) | — |
+| UC10 | Finalizar Execução | ⏳ #45 | — |
+| UC11 | Entregar Veículo | ⏳ #46 | — |
+| UC12 | Consultar Status | ✅ implementado | `specs/consultar-status/` |
+| UC13 | Tempo Médio de Execução | ⏳ #48 | — |
 
-> Nada acima é implementado antes da sua aprovação deste documento.
+Transversais prontos: autenticação JWT (`specs/auth-jwt/`), CRUDs de cadastro e estoque, notificação por
+e-mail (`specs/notificacao-email/`), Docker Compose, CI com gate Jacoco e scan Trivy.
+
+**O que mudou em relação ao plano original:**
+
+- **Outbox de notificação** adiado; o envio é síncrono e uma falha de SMTP ainda chega à requisição (ADR-0010).
+- **ACL do estoque**: o adapter fica em `adapter/outbound/estoque/` em vez de `acl/`; até a #44 é um stub no-op.
+- **Sem `CadastroPort`**: a OS guarda documento e veículo como VOs próprios e não consulta o cadastro na abertura.
+- **Domain services** não foram necessários; as regras de transição ficam no agregado `OrdemServico`.
+- **ADRs** seguem resumidos no §4; `docs/adr/` ainda não tem os arquivos individuais.
