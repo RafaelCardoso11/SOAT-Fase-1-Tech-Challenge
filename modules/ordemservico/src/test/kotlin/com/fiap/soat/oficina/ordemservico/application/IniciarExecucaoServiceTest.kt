@@ -40,6 +40,7 @@ class IniciarExecucaoServiceTest {
     fun `inicia execucao baixa pecas e publica eventos`() {
         val ordem = os(StatusOS.EM_EXECUCAO)
         every { repositorio.buscarPorId(1L) } returns ordem
+        every { repositorio.salvar(ordem) } returns 1L
 
         service.iniciar(1L)
 

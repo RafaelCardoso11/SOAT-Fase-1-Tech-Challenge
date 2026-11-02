@@ -46,6 +46,12 @@ class OrdemServicoJpaEntity(
     @Column(nullable = false)
     var liberadoParaOrcamento: Boolean = false,
 
+    @Column(nullable = true)
+    var execucaoIniciadaEm: java.time.Instant? = null,
+
+    @Column(nullable = true)
+    var execucaoFinalizadaEm: java.time.Instant? = null,
+
     @Version
     var versao: Long? = null,
 

@@ -29,6 +29,8 @@ class OrdemServicoRepositoryAdapter(
         entidade.status = ordemServico.status.name
         entidade.observacoes = ordemServico.observacoes
         entidade.liberadoParaOrcamento = ordemServico.liberadoParaOrcamento
+        entidade.execucaoIniciadaEm = ordemServico.execucaoIniciadaEm
+        entidade.execucaoFinalizadaEm = ordemServico.execucaoFinalizadaEm
         val domOrcamento = ordemServico.orcamento
         if (domOrcamento != null) {
             val orcamentoEntity = entidade.orcamento
@@ -65,6 +67,10 @@ class OrdemServicoRepositoryAdapter(
     override fun buscarExpiraveis(agora: java.time.Instant): List<OrdemServico> =
         springData.findByStatusAndOrcamento_ValidoAteBefore(StatusOS.AGUARDANDO_APROVACAO.name, agora)
             .map(OrdemServicoJpaEntity::toDomain)
+
+    override fun buscarComExecucaoConcluida(): List<OrdemServico> =
+        springData.findByExecucaoIniciadaEmIsNotNullAndExecucaoFinalizadaEmIsNotNull()
+            .map(OrdemServicoJpaEntity::toDomain)
 }
 
 private fun OrdemServicoJpaEntity.toDomain(): OrdemServico =
@@ -80,6 +86,8 @@ private fun OrdemServicoJpaEntity.toDomain(): OrdemServico =
         observacoes = observacoes,
         liberadoParaOrcamento = liberadoParaOrcamento,
         orcamento = orcamento?.toDomain(),
+        execucaoIniciadaEm = execucaoIniciadaEm,
+        execucaoFinalizadaEm = execucaoFinalizadaEm,
     )
 
 private fun List<ItemOrcamentoJpaEntity>.diferemDe(itens: List<ItemOrcamento>): Boolean =

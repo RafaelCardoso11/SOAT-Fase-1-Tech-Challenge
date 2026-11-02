@@ -7,4 +7,5 @@ interface OrdemServicoSpringDataRepository : JpaRepository<OrdemServicoJpaEntity
     fun findByPlacaOrderByIdDesc(placa: String): List<OrdemServicoJpaEntity>
     fun findByDocumentoOrderByIdDesc(documento: String): List<OrdemServicoJpaEntity>
     fun findByStatusAndOrcamento_ValidoAteBefore(status: String, momento: Instant): List<OrdemServicoJpaEntity>
+    fun findByExecucaoIniciadaEmIsNotNullAndExecucaoFinalizadaEmIsNotNull(): List<OrdemServicoJpaEntity>
 }

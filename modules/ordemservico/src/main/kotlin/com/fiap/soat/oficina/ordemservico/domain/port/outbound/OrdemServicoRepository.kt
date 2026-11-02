@@ -9,4 +9,7 @@ interface OrdemServicoRepository {
     fun buscarPorPlaca(placa: String): List<OrdemServico>
     fun buscarPorDocumento(documento: String): List<OrdemServico>
     fun buscarExpiraveis(agora: Instant): List<OrdemServico>
+
+    /** OS com início e fim de execução registrados (para o tempo médio). */
+    fun buscarComExecucaoConcluida(): List<OrdemServico>
 }

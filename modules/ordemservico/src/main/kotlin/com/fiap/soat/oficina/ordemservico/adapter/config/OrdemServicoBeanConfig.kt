@@ -2,6 +2,7 @@ package com.fiap.soat.oficina.ordemservico.adapter.config
 
 import com.fiap.soat.oficina.ordemservico.application.usecase.AprovarOrcamentoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.ConsultarOrdensService
+import com.fiap.soat.oficina.ordemservico.application.usecase.ConsultarTempoMedioExecucaoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.CriarOrdemServicoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.EntregarVeiculoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.ExpirarOrcamentosService
@@ -13,6 +14,7 @@ import com.fiap.soat.oficina.ordemservico.application.usecase.RejeitarOrcamentoS
 import com.fiap.soat.oficina.ordemservico.application.usecase.RevisarOrcamentoService
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.AprovarOrcamentoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ConsultarOrdensUseCase
+import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ConsultarTempoMedioExecucaoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.CriarOrdemServicoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.EntregarVeiculoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ExpirarOrcamentosUseCase
@@ -43,6 +45,11 @@ class OrdemServicoBeanConfig {
     fun consultarOrdensUseCase(
         repositorio: OrdemServicoRepository,
     ): ConsultarOrdensUseCase = ConsultarOrdensService(repositorio)
+
+    @Bean
+    fun consultarTempoMedioExecucaoUseCase(
+        repositorio: OrdemServicoRepository,
+    ): ConsultarTempoMedioExecucaoUseCase = ConsultarTempoMedioExecucaoService(repositorio)
 
     @Bean
     fun realizarDiagnosticoUseCase(
