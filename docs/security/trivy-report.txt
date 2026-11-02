@@ -14,3 +14,18 @@ Legend:
 - '-': Not scanned
 - '0': Clean (no security findings detected)
 
+
+Java (jar)
+==========
+Total: 0 (HIGH: 0, CRITICAL: 0)
+
+
+Suppressed Vulnerabilities (Total: 2)
+=====================================
+┌───────────────────────────────────┬────────────────┬──────────┬─────────┬───────────┬──────────────┐
+│              Library              │ Vulnerability  │ Severity │ Status  │ Statement │    Source    │
+├───────────────────────────────────┼────────────────┼──────────┼─────────┼───────────┼──────────────┤
+│ org.springframework:spring-webmvc │ CVE-2026-47884 │ CRITICAL │ ignored │ N/A       │ .trivyignore │
+│                                   ├────────────────┤          │         │           │              │
+│                                   │ CVE-2026-47890 │          │         │           │              │
+└───────────────────────────────────┴────────────────┴──────────┴─────────┴───────────┴──────────────┘

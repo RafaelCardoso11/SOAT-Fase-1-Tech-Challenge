@@ -35,7 +35,7 @@ no Spring Framework 7.0.9, que exige migrar para Spring Boot 4. Nenhuma das duas
 | CVE-2026-47884 (SSRF/RCE) | Uso de `XsltView` com mapeamento `/**` que renderiza view sem nome explícito | A API é REST e só devolve JSON; não há `XsltView`, `ViewResolver` nem `ModelAndView` no código |
 | CVE-2026-47890 (corrupção de stream) | Server-Sent Events com fragmentos de view | Não há SSE (`SseEmitter`) nem fragmentos de view |
 
-Ficam no [`.trivyignore`](../../.trivyignore) e devem ser revistas na migração para Spring Boot 4.
+Ficam no [`.trivyignore`](../../.trivyignore) e devem ser revistas na migração para Spring Boot 4. O relatório lista as duas na seção *Suppressed Vulnerabilities*, para ficarem visíveis.
 
 ## Rodar localmente
 
