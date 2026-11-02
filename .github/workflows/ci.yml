@@ -32,6 +32,20 @@ jobs:
       - name: Build & check
         run: ./gradlew build --no-daemon --stacktrace
 
+      - name: Garantir que os testes de integração rodaram
+        if: always()
+        run: |
+          reports=$(ls bootstrap/build/test-results/test/TEST-*IntegrationTest.xml 2>/dev/null || true)
+          if [ -z "$reports" ]; then
+            echo "Nenhum relatório de teste de integração encontrado."
+            exit 1
+          fi
+          if grep -lE 'skipped="[1-9]' $reports; then
+            echo "ERRO: testes de integração foram ignorados (Docker/Testcontainers não detectado)."
+            exit 1
+          fi
+          echo "Testes de integração executados."
+
       - name: Upload build reports
         if: always()
         uses: actions/upload-artifact@v4

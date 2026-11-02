@@ -41,4 +41,6 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     workingDir = rootProject.projectDir
+    // docker-java (via Testcontainers) assume a API Docker 1.32 por padrão; o daemon do runner exige >= 1.40 (#60).
+    systemProperty("api.version", "1.44")
 }
