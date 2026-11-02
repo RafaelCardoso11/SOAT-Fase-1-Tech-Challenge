@@ -119,29 +119,29 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Setup
 
-- [ ] T043 Abrir a issue do PR 5 e criar a branch a partir da `main` com o PR 4 mergeado; `git fetch` e conferir a próxima versão livre de migration.
+- [x] T043 Abrir a issue do PR 5 e criar a branch a partir da `main` com o PR 4 mergeado; `git fetch` e conferir a próxima versão livre de migration.
 
 ### Data / persistence e eventos
 
-- [ ] T044 Migration `bootstrap/src/main/resources/db/migration/V<próxima>__create_estoque_reserva.sql`: `estoque.reserva` com FK para `estoque.item`, `CHECK`s, índice único parcial (`os_id`, `item_id`) onde `ATIVA` e índice em `os_id`.
-- [ ] T045 `ReservaJpaEntity.kt` e `ReservaSpringDataRepository.kt`. Depende de T044.
-- [ ] T046 `ReservaRepositoryAdapter.kt` (violação do índice parcial → `ConflitoException`). Depende de T045.
-- [ ] T047 `adapter/outbound/event/PublicadorDeEventosSpring.kt` (sobre o `ApplicationEventPublisher`, no padrão do `ordemservico`).
+- [x] T044 Migration `bootstrap/src/main/resources/db/migration/V13__create_estoque_reserva.sql`: `estoque.reserva` com FK para `estoque.item`, `CHECK`s, índice único parcial (`os_id`, `item_id`) onde `ATIVA` e índice em `os_id`.
+- [x] T045 `ReservaJpaEntity.kt` e `ReservaSpringDataRepository.kt`. Depende de T044.
+- [x] T046 `ReservaRepositoryAdapter.kt` (violação do índice parcial → `ConflitoException`). Depende de T045.
+- [x] T047 `adapter/outbound/event/PublicadorDeEventosEstoque.kt` (sobre o `ApplicationEventPublisher`, no padrão do `ordemservico`).
 
 ### Adapters — web
 
-- [ ] T048 `ReservaController.kt` + `dto/ReservaDtos.kt` (`/api/v1/admin/estoque/ordens/{osId}/reservas`: POST reservar → `201` ou `409` indisponível, GET consultar, POST `/liberar` com `?itemId=` opcional; `/api/v1/admin/estoque/ordens/{osId}/baixa`: POST; anotações OpenAPI).
-- [ ] T049 `EstoqueBeanConfig.kt`: beans dos quatro casos de uso de reserva. Depende de T035–T038.
+- [x] T048 `ReservaController.kt` + `dto/ReservaDtos.kt` (`/api/v1/admin/estoque/ordens/{osId}/reservas`: POST reservar → `201` ou `409` indisponível, GET consultar, POST `/liberar` com `?itemId=` opcional; `/api/v1/admin/estoque/ordens/{osId}/baixa`: POST; anotações OpenAPI).
+- [x] T049 `EstoqueBeanConfig.kt`: beans dos quatro casos de uso de reserva. Depende de T035–T038.
 
 ### Tests
 
-- [ ] T050 `bootstrap/src/test/kotlin/com/fiap/soat/oficina/EstoqueReservasIntegrationTest.kt` (Testcontainers + MockMvc): reservar, indisponível (409), reserva repetida, liberar item e OS, baixa com dois itens e saldo final, idempotência da baixa, inativar item com reserva ativa, 401 sem token, **disputa simultânea pela última unidade** (várias threads: exatamente uma reserva), `CHECK` do banco, eventos publicados, `/v3/api-docs`. Depende de T044–T049.
+- [x] T050 `bootstrap/src/test/kotlin/com/fiap/soat/oficina/EstoqueReservasIntegrationTest.kt` (Testcontainers + MockMvc): reservar, indisponível (409), reserva repetida, liberar item e OS, baixa com dois itens e saldo final, idempotência da baixa, inativar item com reserva ativa, 401 sem token, **disputa simultânea pela última unidade** (várias threads: exatamente uma reserva), `CHECK` do banco, eventos publicados, `/v3/api-docs`. Depende de T044–T049.
 
 ### Documentação
 
-- [ ] T051 `README.md`: seção "Estoque — reservas e baixa".
+- [x] T051 `README.md`: seção "Estoque — reservas e baixa".
 
 ### Finalize
 
-- [ ] T052 Criar `api-local/estoque-reservas.http` (fora do Git) e validar manualmente com a aplicação no ar.
+- [x] T052 Criar `api-local/estoque-reservas.http` (fora do Git) e validar manualmente com a aplicação no ar.
 - [ ] T053 Rodar `./gradlew build` (gate Jacoco); conferir o diff (~11 arquivos); preparar o PR (`Closes #<issue>`).
