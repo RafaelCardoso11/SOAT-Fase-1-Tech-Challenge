@@ -23,4 +23,10 @@ class ItemOrcamentoJpaEntity(
 
     @Column(nullable = false, precision = 12, scale = 2)
     var valor: BigDecimal = BigDecimal.ZERO,
+
+    @Column(nullable = true)
+    var itemEstoqueId: Long? = null,
+
+    @Column(nullable = true)
+    var quantidade: Int? = null,
 )

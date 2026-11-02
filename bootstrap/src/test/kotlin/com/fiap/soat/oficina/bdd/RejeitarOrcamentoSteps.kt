@@ -46,7 +46,7 @@ class RejeitarOrcamentoSteps {
     private fun prepara(status: StatusOS, peca: String?) {
         val orcamento = peca?.let {
             Orcamento(
-                listOf(ItemOrcamento(TipoItem.PECA, it, Dinheiro.of(BigDecimal("200.00")))),
+                listOf(ItemOrcamento(TipoItem.PECA, it, Dinheiro.of(BigDecimal("200.00")), itemEstoqueId = 50L, quantidade = 1)),
                 validoAte = Instant.now().plusSeconds(3600),
             )
         }
@@ -113,7 +113,7 @@ class RejeitarOrcamentoSteps {
 
     @Entao("a reserva da peça {string} deve ser liberada no estoque")
     fun reservaLiberada(peca: String) {
-        verify { estoque.liberarReserva(peca) }
+        verify { estoque.liberarReservas(1L) }
     }
 
     @Entao("a oficina deve ser notificada da rejeição")

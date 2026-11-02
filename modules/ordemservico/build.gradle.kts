@@ -18,6 +18,7 @@ dependencyManagement {
 
 dependencies {
     implementation(project(":shared-kernel"))
+    implementation(project(":modules:estoque"))
 
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.data.jpa)

@@ -4,7 +4,6 @@ import com.fiap.soat.oficina.ordemservico.domain.event.OrcamentoRejeitado
 import com.fiap.soat.oficina.ordemservico.domain.event.OsEncerrada
 import com.fiap.soat.oficina.ordemservico.domain.event.ReservaLiberada
 import com.fiap.soat.oficina.ordemservico.domain.model.OrdemServico
-import com.fiap.soat.oficina.ordemservico.domain.model.TipoItem
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.RejeitarOrcamentoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.EstoquePort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.NotificacaoPort
@@ -27,7 +26,7 @@ class RejeitarOrcamentoService(
         ordem.rejeitarOrcamento(motivo)
         repositorio.salvar(ordem)
 
-        ordem.orcamento?.itens?.filter { it.tipo == TipoItem.PECA }?.forEach { estoque.liberarReserva(it.descricao) }
+        estoque.liberarReservas(ordemServicoId)
         eventos.publicar(OrcamentoRejeitado(ordemServicoId))
         eventos.publicar(OsEncerrada(ordemServicoId))
         eventos.publicar(ReservaLiberada(ordemServicoId))

@@ -57,6 +57,7 @@ class RevisarOrcamentoSteps {
         every { repositorio.buscarPorId(1L) } returns ordem
         every { repositorio.salvar(any()) } returns 1L
         every { eventos.publicar(capture(publicados)) } just Runs
+        every { estoque.reservar(any(), any(), any()) } returns true
     }
 
     @Dado("uma OS aguardando aprovação com orçamento para revisão")
@@ -72,7 +73,10 @@ class RevisarOrcamentoSteps {
 
     @Quando("o mecânico revisar o orçamento incluindo a peça {string}")
     fun trocarPeca(peca: String) {
-        service.revisar(1L, listOf(ItemOrcamento(TipoItem.PECA, peca, Dinheiro.of(BigDecimal("180.00")))))
+        service.revisar(
+            1L,
+            listOf(ItemOrcamento(TipoItem.PECA, peca, Dinheiro.of(BigDecimal("180.00")), itemEstoqueId = 50L, quantidade = 1)),
+        )
     }
 
     @Quando("o mecânico tentar revisar o orçamento")
@@ -94,7 +98,7 @@ class RevisarOrcamentoSteps {
 
     @Entao("a reserva da peça {string} deve ser solicitada na revisão")
     fun reservaSolicitada(peca: String) {
-        verify { estoque.reservar(peca) }
+        verify { estoque.reservar(1L, 50L, 1) }
     }
 
     @Entao("o status da OS após a revisão deve continuar {string}")

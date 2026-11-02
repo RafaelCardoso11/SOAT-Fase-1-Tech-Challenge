@@ -20,7 +20,9 @@ class OrcamentoController(
 
     @PostMapping
     fun gerar(@PathVariable id: Long, @RequestBody request: GerarOrcamentoRequest): OrcamentoResponse {
-        val itens = request.itens.map { ItemOrcamento(tipoDe(it.tipo), it.descricao, Dinheiro.of(it.valor)) }
+        val itens = request.itens.map {
+            ItemOrcamento(tipoDe(it.tipo), it.descricao, Dinheiro.of(it.valor), it.itemEstoqueId, it.quantidade)
+        }
         return OrcamentoResponse.de(gerarOrcamento.gerar(id, itens))
     }
 

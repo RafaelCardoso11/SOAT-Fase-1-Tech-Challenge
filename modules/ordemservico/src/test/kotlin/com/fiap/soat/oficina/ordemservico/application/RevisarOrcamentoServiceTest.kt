@@ -66,10 +66,14 @@ class RevisarOrcamentoServiceTest {
         val ordem = os(StatusOS.AGUARDANDO_APROVACAO)
         every { repositorio.buscarPorId(1L) } returns ordem
         every { repositorio.salvar(ordem) } returns 1L
+        every { estoque.reservar(1L, 60L, 1) } returns true
 
-        service.revisar(1L, listOf(ItemOrcamento(TipoItem.PECA, "Pastilha alternativa", Dinheiro.of(BigDecimal("180.00")))))
+        service.revisar(
+            1L,
+            listOf(ItemOrcamento(TipoItem.PECA, "Pastilha alternativa", Dinheiro.of(BigDecimal("180.00")), itemEstoqueId = 60L, quantidade = 1)),
+        )
 
-        verify { estoque.reservar("Pastilha alternativa") }
+        verify { estoque.reservar(1L, 60L, 1) }
     }
 
     @Test

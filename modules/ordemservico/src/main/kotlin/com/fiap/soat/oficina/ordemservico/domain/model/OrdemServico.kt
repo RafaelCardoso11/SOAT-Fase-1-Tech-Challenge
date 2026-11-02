@@ -83,6 +83,17 @@ class OrdemServico private constructor(
         return novo
     }
 
+    fun encerrar() {
+        check(status != StatusOS.FINALIZADA && status != StatusOS.ENTREGUE) { "OS já encerrada" }
+        transitarPara(StatusOS.FINALIZADA)
+    }
+
+    fun iniciarExecucao() {
+        check(status == StatusOS.EM_EXECUCAO) {
+            "A execução só pode ser iniciada com o orçamento aprovado"
+        }
+    }
+
     fun expirarOrcamento(agora: Instant) {
         check(status == StatusOS.AGUARDANDO_APROVACAO) {
             "Só expira orçamento de OS aguardando aprovação"

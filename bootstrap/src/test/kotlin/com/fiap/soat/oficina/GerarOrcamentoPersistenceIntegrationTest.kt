@@ -51,7 +51,7 @@ class GerarOrcamentoPersistenceIntegrationTest {
             id,
             listOf(
                 ItemOrcamento(TipoItem.SERVICO, "Troca de pastilhas", Dinheiro.of(BigDecimal("150.00"))),
-                ItemOrcamento(TipoItem.PECA, "Pastilha de freio", Dinheiro.of(BigDecimal("200.00"))),
+                ItemOrcamento(TipoItem.SERVICO, "Alinhamento", Dinheiro.of(BigDecimal("200.00"))),
             ),
         )
 

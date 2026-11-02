@@ -45,7 +45,7 @@ class RejeitarOrcamentoServiceTest {
         liberadoParaOrcamento = true,
         orcamento = if (comPeca) {
             Orcamento(
-                listOf(ItemOrcamento(TipoItem.PECA, "Pastilha de freio", Dinheiro.of(BigDecimal("200.00")))),
+                listOf(ItemOrcamento(TipoItem.PECA, "Pastilha de freio", Dinheiro.of(BigDecimal("200.00")), itemEstoqueId = 50L, quantidade = 1)),
                 validoAte = Instant.now().plusSeconds(3600),
             )
         } else {
@@ -63,7 +63,7 @@ class RejeitarOrcamentoServiceTest {
 
         assertThat(ordem.status).isEqualTo(StatusOS.FINALIZADA)
         assertThat(ordem.orcamento!!.motivoRejeicao).isEqualTo("Valor acima do esperado")
-        verify { estoque.liberarReserva("Pastilha de freio") }
+        verify { estoque.liberarReservas(1L) }
         verify { eventos.publicar(OrcamentoRejeitado(1L)) }
         verify { eventos.publicar(OsEncerrada(1L)) }
         verify { eventos.publicar(ReservaLiberada(1L)) }
