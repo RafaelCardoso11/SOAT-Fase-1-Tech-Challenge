@@ -3,31 +3,25 @@
 A análise de dependências usa o **Trivy**, que varre a imagem Docker (pacotes do sistema) e as dependências
 dentro do fat jar, incluindo as transitivas, contra a base de vulnerabilidades.
 
-## Resultado
+## Situação atual
 
-Severidades HIGH e CRITICAL, no `app.jar` da aplicação. A imagem base (`eclipse-temurin:17-jre`) não tem nenhuma.
+Sem vulnerabilidades HIGH ou CRITICAL abertas na imagem nem no `app.jar`. Ficam só os dois riscos aceitos abaixo.
+O relatório versionado é [`trivy-report.txt`](trivy-report.txt).
 
-| | Spring Boot | HIGH | CRITICAL | Total |
-|---|---|---|---|---|
-| Antes (`trivy-report` de 02/11/2026) | 3.3.5 | 34 | 9 | 43 |
-| Depois | 3.5.16 + patches | 0 | 2 (riscos aceitos, abaixo) | 2 |
+Algumas bibliotecas usam versão acima da que o Spring Boot fixa, porque o patch de segurança saiu depois. As versões
+ficam em `gradle/libs.versions.toml` e valem para todos os módulos (`build.gradle.kts` raiz):
 
-O que foi feito:
+| Biblioteca (propriedade do BOM) | Motivo |
+|---|---|
+| Tomcat (`tomcat.version`) | CVE-2026-65182, CVE-2026-65637, CVE-2026-65905, CVE-2026-68525 |
+| Jackson (`jackson-bom.version`) | CVE-2026-89407, CVE-2026-89425, CVE-2026-68497, CVE-2026-91776, CVE-2026-91777 |
+| Driver PostgreSQL (`postgresql.version`) | CVE-2026-54291 |
 
-- **Spring Boot 3.3.5 → 3.5.16**, com springdoc 2.8.17 e plugin de dependency-management 1.1.7. Corrige Spring
-  Framework, Spring Security, Spring Data, Micrometer e a maior parte do Tomcat e do Jackson.
-- **Versões acima do BOM do Spring Boot**, com patches de segurança da mesma linha (em `gradle/libs.versions.toml`,
-  aplicadas a todos os módulos no `build.gradle.kts` raiz):
-
-  | Biblioteca | BOM 3.5.16 | Usada | CVEs corrigidas |
-  |---|---|---|---|
-  | Tomcat (`tomcat.version`) | 10.1.55 | 10.1.61 | 4 CRITICAL (CVE-2026-65182, CVE-2026-65637, CVE-2026-65905, CVE-2026-68525) |
-  | Jackson (`jackson-bom.version`) | 2.21.4 | 2.21.8 | 5 HIGH (CVE-2026-89407, CVE-2026-89425, CVE-2026-68497, CVE-2026-91776, CVE-2026-91777) |
-  | Driver PostgreSQL (`postgresql.version`) | 42.7.11 | 42.7.14 | 1 HIGH (CVE-2026-54291) |
+Ao subir o Spring Boot, confira se o BOM novo já traz versões iguais ou maiores; se sim, remova a sobrescrita.
 
 ## Riscos aceitos
 
-As duas CVEs restantes estão no `spring-webmvc` 6.2.19, a última versão aberta da linha 6.2. A correção só existe
+As duas CVEs estão no `spring-webmvc` 6.2.19, a última versão aberta da linha 6.2. A correção só existe
 no Spring Framework 7.0.9, que exige migrar para Spring Boot 4. Nenhuma das duas é explorável nesta aplicação:
 
 | CVE | Condição para explorar | Por que não se aplica |
