@@ -171,7 +171,7 @@ via eventos. Ver §9.
 UC10) é **e-mail via SMTP**. Em **dev**, um container **Mailpit** no docker-compose captura os e-mails
 (sem credenciais reais, visualização por UI web); em **prod**, aponta-se para um SMTP real (ex.: AWS SES).
 A integração fica no adapter `ordemservico/adapter/outbound/notificacao/`, atrás de `NotificacaoPort`:
-`NotificacaoPorEmail` (`NOTIFICACAO_EMAIL_ENABLED=true`, ligado no compose) ou `NotificacaoPortStub` (no-op, padrão local).
+`NotificacaoPorEmail` (`NOTIFICACAO_EMAIL_ENABLED=true`, ligado no compose; avisa orçamento gerado, rejeitado e expirado e veículo pronto) ou `NotificacaoPortStub` (no-op, padrão local).
 **Padrão outbox (adiado):** no MVP o envio é síncrono, logo depois de salvar a OS, e uma falha de SMTP
 ainda propaga o erro para a requisição. A tabela *outbox* com envio assíncrono, que isola a transação de
 negócio do SMTP, fica para a evolução (§10).
@@ -231,8 +231,8 @@ módulo tem sua própria porta `PublicadorDeEventos` e suas exceções de domín
 
 > **Hotspots do Event Storming, resolvidos nas specs:** peça não identificada no diagnóstico encerra a
 > OS (UC02); o orçamento vale 7 dias (`ORCAMENTO_VALIDADE_DIAS`) e, ao expirar, encerra a OS e libera as
-> reservas (UC08); peça indisponível avisa atendente e mecânico e deixa o orçamento para revisão, e sem
-> alternativa de fornecimento o atendente encerra a OS (UC04).
+> reservas (UC08); no MVP, peça indisponível na geração ou revisão do orçamento libera as reservas já
+> feitas e encerra a OS (UC04).
 >
 > **Modelo de status:** a OS usa só os 6 status oficiais. "Encerrada" não é um status próprio: a OS vai
 > para `FINALIZADA` e o evento `OsEncerrada` é publicado (discussão em #37).
@@ -322,7 +322,7 @@ modules/ordemservico/
         ├── inbound/scheduler/  # ExpiracaoScheduler (UC08, @Scheduled)
         └── outbound/
             ├── persistence/  # @Entity JPA, Spring Data repo, RepositoryAdapter, mappers
-            ├── estoque/      # implementa EstoquePort chamando as portas de entrada do módulo estoque
+            ├── estoque/      # EstoqueAdapter: implementa EstoquePort chamando ReservarPeca, LiberarReserva e BaixarPecas do módulo estoque
             ├── event/        # PublicadorDeEventosSpring (ApplicationEventPublisher)
             └── notificacao/  # implementa NotificacaoPort → integra com o sistema externo de notificação
 └── src/test/kotlin/...  # domain (unit), application (MockK), integration (Testcontainers), bdd (Cucumber)
@@ -340,7 +340,7 @@ documentados em cada `specs/<feature>/plan.md`. Rotas:
 | `/api/auth/login` | autenticacao | público |
 | `/api/v1/admin/{clientes,veiculos,servicos}` | cadastro | JWT |
 | `/api/v1/admin/estoque/itens` | estoque | JWT |
-| `/api/admin/ordens/**`, `/api/admin/orcamentos/expirar` | ordemservico | JWT |
+| `/api/admin/ordens/**`, `/api/admin/orcamentos/expirar`, `/api/admin/relatorios/tempo-medio-execucao` | ordemservico | JWT |
 | `/api/public/ordens/{numero}`, `/api/public/ordens?placa=&documento=` | ordemservico (UC12) | público |
 
 > As rotas da OS nasceram sem o `/v1`; padronizar o prefixo é uma pendência de baixo risco.
@@ -359,9 +359,12 @@ Cucumber-JVM como testes de aceitação. Gate Jacoco de **80%** sobre `domain`+`
 
 - **Dentro do contexto:** cada caso de uso roda em **uma transação** (`@Transactional` no adapter/app).
   Ex.: iniciar execução (UC09) baixa peças e muda status atomicamente dentro de `ordemservico`/`estoque`.
-- **Entre contextos:** consistência **eventual** via eventos de domínio. Ex.: `ordemservico` pede reserva
-  ao `estoque` pela porta `EstoquePort`; a resposta (`PecaReservada`/`PecaIndisponivel`) orienta o
-  fluxo. Isso evita transação distribuída e já modela a futura comunicação assíncrona entre serviços.
+- **Entre contextos (hoje):** `ordemservico` chama o `estoque` de forma **síncrona e in-process** pela
+  `EstoquePort` (ACL), com os ids da OS e do item de estoque. A reserva responde na hora se deu certo, e
+  a OS reage na mesma requisição. Os eventos de domínio são publicados in-process (`ApplicationEventPublisher`).
+- **Entre contextos (evolução):** trocar o `EstoqueAdapter` por integração orientada a eventos
+  (`PecaReservada`/`PecaIndisponivel`/`PecasBaixadas`), com consistência eventual. Em discussão na #80;
+  como o domínio só conhece a porta, a troca não toca no domínio.
 - **Idempotência/outbox:** quando a comunicação virar assíncrona (microsserviços), o publisher de
   eventos ganha um padrão *outbox* — previsto na abstração desde já, sem custo agora.
 
@@ -390,16 +393,16 @@ Ordem natural de extração: `estoque` (fluxo mais assíncrono) → `cadastro` (
 | UC01 | Criar Ordem de Serviço | ✅ implementado | `specs/criar-ordem-servico/` |
 | UC02 | Realizar Diagnóstico | ✅ implementado | `specs/realizar-diagnostico/` |
 | UC03 | Gerar Orçamento | ✅ implementado | `specs/gerar-orcamento/` |
-| UC04 | Reservar Peça | 🟡 casos de uso no `estoque`; OS ainda usa `EstoquePortStub` | `specs/estoque/` |
+| UC04 | Reservar Peça | ✅ reserva na geração/revisão do orçamento via `EstoqueAdapter` | `specs/estoque/` |
 | UC05 | Aprovar Orçamento | ✅ implementado | `specs/aprovar-orcamento/` |
 | UC06 | Rejeitar Orçamento | ✅ implementado | `specs/rejeitar-orcamento/` |
 | UC07 | Revisar Orçamento | ✅ implementado | `specs/revisar-orcamento/` |
 | UC08 | Expirar Orçamento | ✅ implementado (job agendado + rota manual) | `specs/expirar-orcamento/` |
-| UC09 | Iniciar Execução | ⏳ #44 (inclui a integração real OS → estoque) | — |
-| UC10 | Finalizar Execução | ⏳ #45 | — |
-| UC11 | Entregar Veículo | ⏳ #46 | — |
+| UC09 | Iniciar Execução | ✅ implementado (baixa das peças) | `specs/iniciar-execucao/` |
+| UC10 | Finalizar Execução | ✅ implementado (aviso de veículo pronto) | `specs/finalizar-execucao/` |
+| UC11 | Entregar Veículo | ✅ implementado (comprovante) | `specs/entregar-veiculo/` |
 | UC12 | Consultar Status | ✅ implementado | `specs/consultar-status/` |
-| UC13 | Tempo Médio de Execução | ⏳ #48 | — |
+| UC13 | Tempo Médio de Execução | ✅ implementado | `specs/tempo-medio-execucao/` |
 
 Transversais prontos: autenticação JWT (`specs/auth-jwt/`), CRUDs de cadastro e estoque, notificação por
 e-mail (`specs/notificacao-email/`), Docker Compose, CI com gate Jacoco e scan Trivy.
@@ -407,7 +410,11 @@ e-mail (`specs/notificacao-email/`), Docker Compose, CI com gate Jacoco e scan T
 **O que mudou em relação ao plano original:**
 
 - **Outbox de notificação** adiado; o envio é síncrono e uma falha de SMTP ainda chega à requisição (ADR-0010).
-- **ACL do estoque**: o adapter fica em `adapter/outbound/estoque/` em vez de `acl/`; até a #44 é um stub no-op.
+- **ACL do estoque**: o adapter fica em `adapter/outbound/estoque/` em vez de `acl/` e é síncrono; a
+  integração por eventos está em discussão (#80).
+- **Peça indisponível** encerra a OS direto, sem a etapa de aviso e revisão prevista no Event Storming.
+- **Tempo médio de execução** usa as datas de início e fim gravadas na OS (`execucao_iniciada_em` e
+  `execucao_finalizada_em`), não os eventos.
 - **Sem `CadastroPort`**: a OS guarda documento e veículo como VOs próprios e não consulta o cadastro na abertura.
 - **Domain services** não foram necessários; as regras de transição ficam no agregado `OrdemServico`.
 - **ADRs** seguem resumidos no §4; `docs/adr/` ainda não tem os arquivos individuais.

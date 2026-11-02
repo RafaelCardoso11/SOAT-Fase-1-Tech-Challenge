@@ -21,7 +21,7 @@ API REST para a gestão de Ordens de Serviço:
 
 Status da OS: `Recebida` → `Em diagnóstico` → `Aguardando aprovação` → `Em execução` → `Finalizada` → `Entregue`
 
-A OS também vai direto para `Finalizada` (encerrada) quando a peça não é identificada no diagnóstico ou quando o orçamento é rejeitado ou expira.
+A OS também vai direto para `Finalizada` (encerrada) quando a peça não é identificada no diagnóstico, quando falta peça no estoque para o orçamento ou quando o orçamento é rejeitado ou expira.
 
 ### Casos de uso
 
@@ -30,16 +30,16 @@ A OS também vai direto para `Finalizada` (encerrada) quando a peça não é ide
 | UC01 | Criar Ordem de Serviço | ✅ |
 | UC02 | Realizar Diagnóstico | ✅ |
 | UC03 | Gerar Orçamento | ✅ |
-| UC04 | Reservar Peça | 🟡 núcleo no módulo `estoque`; integração com a OS em andamento |
+| UC04 | Reservar Peça | ✅ na geração e revisão do orçamento |
 | UC05 | Aprovar Orçamento | ✅ |
 | UC06 | Rejeitar Orçamento | ✅ |
 | UC07 | Revisar Orçamento | ✅ |
 | UC08 | Expirar Orçamento | ✅ |
-| UC09 | Iniciar Execução | ⏳ #44 |
-| UC10 | Finalizar Execução | ⏳ #45 |
-| UC11 | Entregar Veículo | ⏳ #46 |
+| UC09 | Iniciar Execução | ✅ |
+| UC10 | Finalizar Execução | ✅ |
+| UC11 | Entregar Veículo | ✅ |
 | UC12 | Consultar Status | ✅ |
-| UC13 | Tempo Médio de Execução | ⏳ #48 |
+| UC13 | Tempo Médio de Execução | ✅ |
 
 ## Arquitetura
 
@@ -124,7 +124,7 @@ Cenários BDD em [`docs/bdd/`](docs/bdd/), um arquivo `.feature` por caso de uso
 
 Swagger UI: `http://localhost:8080/swagger-ui.html` · OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
-E-mails enviados em dev (orçamento gerado, rejeitado, expirado) ficam no Mailpit: `http://localhost:8025`.
+E-mails enviados em dev (orçamento gerado, rejeitado, expirado e veículo pronto) ficam no Mailpit: `http://localhost:8025`.
 
 ## Análise de vulnerabilidades
 
@@ -192,7 +192,7 @@ curl -X POST http://localhost:8080/api/v1/admin/clientes \
 
 ## Ordem de Serviço e orçamento
 
-Rotas administrativas em `/api/admin/ordens`, protegidas por JWT. Especificações em `specs/criar-ordem-servico/`, `specs/realizar-diagnostico/`, `specs/gerar-orcamento/`, `specs/aprovar-orcamento/`, `specs/rejeitar-orcamento/`, `specs/revisar-orcamento/` e `specs/expirar-orcamento/`.
+Rotas administrativas em `/api/admin/ordens`, protegidas por JWT. Especificações em `specs/criar-ordem-servico/`, `specs/realizar-diagnostico/`, `specs/gerar-orcamento/`, `specs/aprovar-orcamento/`, `specs/rejeitar-orcamento/`, `specs/revisar-orcamento/`, `specs/expirar-orcamento/`, `specs/iniciar-execucao/`, `specs/finalizar-execucao/`, `specs/entregar-veiculo/` e `specs/tempo-medio-execucao/`.
 
 | Operação | Rota |
 |----------|------|
@@ -201,12 +201,19 @@ Rotas administrativas em `/api/admin/ordens`, protegidas por JWT. Especificaçõ
 | Gerar orçamento (UC03) | `POST /api/admin/ordens/{id}/orcamento` |
 | Aprovar / rejeitar / revisar (UC05–UC07) | `POST /api/admin/ordens/{id}/orcamento/aprovar` · `/rejeitar` · `/revisar` |
 | Expirar orçamentos vencidos (UC08) | `POST /api/admin/orcamentos/expirar` |
+| Iniciar / finalizar execução (UC09, UC10) | `POST /api/admin/ordens/{id}/execucao/iniciar` · `/finalizar` com `{"todosAplicados": true}` |
+| Entregar veículo (UC11) | `POST /api/admin/ordens/{id}/entrega` → comprovante |
+| Tempo médio de execução (UC13) | `GET /api/admin/relatorios/tempo-medio-execucao` |
 
 Regras principais:
 
-- O orçamento é montado com os itens informados (serviços e peças, `{"tipo","descricao","valor"}`), tem o total calculado e vale `ORCAMENTO_VALIDADE_DIAS` dias (padrão 7).
+- O orçamento é montado com os itens informados, `{"tipo","descricao","valor"}`; item do tipo peça também leva `itemEstoqueId` e `quantidade`. O total é calculado e o orçamento vale `ORCAMENTO_VALIDADE_DIAS` dias (padrão 7).
 - Um job agendado (`ORCAMENTO_EXPIRACAO_CRON`, padrão de hora em hora) expira os orçamentos vencidos sem resposta; a rota `/expirar` dispara a mesma verificação manualmente.
+- Ao gerar ou revisar o orçamento, as peças são reservadas no estoque. Se alguma faltar, as reservas da OS são liberadas e a OS é encerrada.
 - Rejeição e expiração encerram a OS e liberam as reservas de peça; a revisão gera um novo orçamento e reinicia o prazo.
+- Ao iniciar a execução, as peças reservadas são baixadas do estoque. A finalização exige todos os itens aplicados, muda a OS para `Finalizada` e avisa o cliente que o veículo está pronto.
+- A entrega só acontece com a OS `Finalizada` e devolve o comprovante (número, veículo, documento, status e data da entrega).
+- O tempo médio de execução considera as OS com início e fim de execução registrados, em minutos.
 - Cada transição de status é registrada com data e hora (histórico da OS).
 
 Consulta pública (UC12), sem token:
