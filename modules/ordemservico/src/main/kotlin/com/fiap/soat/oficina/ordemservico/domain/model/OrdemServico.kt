@@ -100,6 +100,11 @@ class OrdemServico private constructor(
         transitarPara(StatusOS.FINALIZADA)
     }
 
+    fun entregar() {
+        check(status == StatusOS.FINALIZADA) { "O veículo só pode ser entregue com a OS finalizada" }
+        transitarPara(StatusOS.ENTREGUE)
+    }
+
     fun expirarOrcamento(agora: Instant) {
         check(status == StatusOS.AGUARDANDO_APROVACAO) {
             "Só expira orçamento de OS aguardando aprovação"
