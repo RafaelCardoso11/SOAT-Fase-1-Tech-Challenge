@@ -1,22 +1,23 @@
 # language: pt
+@implementado
 Funcionalidade: UC11 - Entregar Veículo ao Cliente
   Como atendente
   Quero registrar a entrega do veículo
   Para encerrar a OS
 
   Cenário: Entregar veículo de OS finalizada
-    Dado que existe uma OS com status "Finalizada"
+    Dado uma OS finalizada pronta para entrega
     Quando o atendente confirmar a entrega do veículo
-    Então o evento "Veículo entregue" deve ser registrado
-    E o status da OS deve ser "Entregue"
-    E o evento "OS encerrada" deve ser registrado depois de "Veículo entregue"
+    Então a entrega deve registrar o evento "Veículo entregue"
+    E o status da OS após a entrega deve ser "Entregue"
+    E a entrega deve registrar o evento "OS encerrada" depois de "Veículo entregue"
     E o comprovante de entrega deve ser disponibilizado
 
   Esquema do Cenário: Impedir entrega de OS não finalizada
-    Dado que existe uma OS com status "<status>"
+    Dado uma OS para entrega no status "<status>"
     Quando o atendente tentar confirmar a entrega do veículo
     Então a entrega não deve ser registrada
-    E o status da OS deve continuar "<status>"
+    E o status da OS após a entrega deve continuar "<status>"
 
     Exemplos:
       | status               |
