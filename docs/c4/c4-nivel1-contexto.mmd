@@ -1,22 +1,22 @@
 %% C4 Nível 1 - Contexto. Feito como flowchart (e não C4Context) para importar no Miro.
 flowchart TB
-    CLI["Cliente - Pessoa - Acompanha a OS e aprova ou rejeita orçamentos"]
-    ATD["Atendente - Pessoa - Abre a OS, faz cadastros e entrega o veículo"]
+    CLI["Cliente - Pessoa - Acompanha a OS e decide sobre o orçamento"]
+    ATD["Atendente - Pessoa - Abre a OS, faz cadastros e controla o estoque"]
     MEC["Mecânico - Pessoa - Diagnostica, orça e executa os serviços"]
 
     SYS["Sistema Oficina - Sistema de Software - Gestão de OS, orçamentos, clientes, veículos, serviços e estoque de peças"]
 
-    NOT["Serviço de Notificação - Sistema Externo - Envia e-mail ou SMS ao cliente"]
+    SMTP["Servidor de E-mail - Sistema Externo - SMTP: Mailpit em dev, provedor real em prod"]
 
-    CLI -- "Consulta status, aprova ou rejeita orçamento [HTTPS/REST]" --> SYS
-    ATD -- "Cria OS, gerencia cadastros, registra entrega [HTTPS/REST + JWT]" --> SYS
-    MEC -- "Registra diagnóstico, orçamento e execução [HTTPS/REST + JWT]" --> SYS
-    SYS -- "Envia orçamento e aviso de veículo pronto" --> NOT
-    NOT -- "Notifica" --> CLI
+    CLI -- "Consulta status da OS [HTTPS/REST, público]" --> SYS
+    ATD -- "Cria OS, gerencia cadastros e estoque [HTTPS/REST + JWT]" --> SYS
+    MEC -- "Diagnóstico, orçamento e execução [HTTPS/REST + JWT]" --> SYS
+    SYS -- "Envia avisos de orçamento gerado, rejeitado e expirado [SMTP]" --> SMTP
+    SMTP -- "Entrega e-mail" --> CLI
 
     classDef pessoa fill:#08427B,stroke:#052E56,color:#fff
     classDef sistema fill:#1168BD,stroke:#0B4884,color:#fff
     classDef externo fill:#999999,stroke:#6B6B6B,color:#fff
     class CLI,ATD,MEC pessoa
     class SYS sistema
-    class NOT externo
+    class SMTP externo

@@ -21,17 +21,45 @@ API REST para a gestão de Ordens de Serviço:
 
 Status da OS: `Recebida` → `Em diagnóstico` → `Aguardando aprovação` → `Em execução` → `Finalizada` → `Entregue`
 
+A OS também vai direto para `Finalizada` (encerrada) quando a peça não é identificada no diagnóstico ou quando o orçamento é rejeitado ou expira.
+
+### Casos de uso
+
+| UC | Caso de uso | Situação |
+|----|-------------|----------|
+| UC01 | Criar Ordem de Serviço | ✅ |
+| UC02 | Realizar Diagnóstico | ✅ |
+| UC03 | Gerar Orçamento | ✅ |
+| UC04 | Reservar Peça | 🟡 núcleo no módulo `estoque`; integração com a OS em andamento |
+| UC05 | Aprovar Orçamento | ✅ |
+| UC06 | Rejeitar Orçamento | ✅ |
+| UC07 | Revisar Orçamento | ✅ |
+| UC08 | Expirar Orçamento | ✅ |
+| UC09 | Iniciar Execução | ⏳ #44 |
+| UC10 | Finalizar Execução | ⏳ #45 |
+| UC11 | Entregar Veículo | ⏳ #46 |
+| UC12 | Consultar Status | ✅ |
+| UC13 | Tempo Médio de Execução | ⏳ #48 |
+
 ## Arquitetura
 
-Monolito em camadas, rodando em Docker:
+**Monolito modular** com arquitetura **hexagonal** (Ports & Adapters), um módulo Gradle por *bounded context*. É um único deployable em camadas, como pede o enunciado, mas cada contexto pode ser extraído como serviço sem reescrever o domínio.
 
 ```
-Controllers → Use Cases → Domain (Entities / Domain Services) → Repositories → Banco de Dados
+Adapter IN (REST, scheduler) → Application (use cases) → Domain (agregados, VOs, eventos) → Portas OUT → Adapter OUT (JPA, SMTP, outro módulo)
 ```
+
+| Módulo | Subdomínio | Responsabilidade |
+|--------|-----------|------------------|
+| `ordemservico` | Principal (core) | Ciclo de vida da OS, diagnóstico e orçamento |
+| `cadastro` | Suporte | Clientes, veículos e serviços |
+| `estoque` | Suporte | Peças e insumos, reserva, liberação e baixa |
+| `autenticacao` | Genérico | Login e emissão/validação de JWT |
+| `shared-kernel` | — | VOs `Documento` (CPF/CNPJ), `Placa`, `Dinheiro` e `DomainEvent` |
 
 Documento de arquitetura: [`docs/arquitetura.md`](docs/arquitetura.md)
 
-Diagramas C4 em [`docs/c4/`](docs/c4/):
+Diagramas C4 em [`docs/c4/`](docs/c4/) (Mermaid, importáveis no Miro):
 
 - [Nível 1 — Contexto](docs/c4/c4-nivel1-contexto.mmd)
 - [Nível 2 — Contêineres](docs/c4/c4-nivel2-conteineres.mmd)
@@ -39,15 +67,24 @@ Diagramas C4 em [`docs/c4/`](docs/c4/):
 
 ## Tecnologias
 
-- Linguagem/framework: _a definir_
-- Banco de dados: _a definir_
-- Docker e Docker Compose
-- Swagger / OpenAPI
-- JWT
+- Kotlin 1.9 (JVM 17) + Spring Boot 3.3 (Web, Data JPA, Security, Mail, Actuator)
+- PostgreSQL 16 com migrations Flyway
+- JWT (JJWT 0.12) e BCrypt
+- Swagger / OpenAPI (springdoc 2.6)
+- JUnit 5, MockK, AssertJ, Testcontainers, Cucumber-JVM e Jacoco
+- Docker e Docker Compose (app + PostgreSQL + Mailpit)
+- Trivy (scan de vulnerabilidades) e GitHub Actions
 
 ## Banco de dados
 
-_A definir: banco escolhido e justificativa._
+**PostgreSQL**, pelos motivos:
+
+- **ACID**: reserva e baixa de peças e as transições de status da OS precisam de transação forte entre várias tabelas.
+- **Integridade**: unicidade de CPF/CNPJ, placa e nome do item de estoque, chaves estrangeiras e `CHECK`s (saldo ≥ 0, reservado ≤ saldo).
+- **Concorrência**: lock pessimista de linha no item de estoque durante reserva, entrada e baixa.
+- **Isolamento por contexto**: um schema por módulo (`autenticacao`, `cadastro`, `estoque`, `ordemservico`), sem `JOIN` entre schemas; cada um pode virar o banco de um microsserviço.
+
+As migrations ficam em `bootstrap/src/main/resources/db/migration/` e rodam na subida da aplicação.
 
 ## Pré-requisitos
 
@@ -81,11 +118,13 @@ e `http://localhost:8080/actuator/health` → `{"status":"UP"}`.
 
 Roda testes unitários e de integração e aplica o gate de cobertura (Jacoco ≥ 80% nos módulos de domínio). Os testes de integração usam Testcontainers e sobem um PostgreSQL efêmero — exigem Docker em execução (são pulados automaticamente quando o Docker não está disponível).
 
-Cenários BDD em [`docs/bdd/`](docs/bdd/), um arquivo `.feature` por caso de uso (UC01 a UC13).
+Cenários BDD em [`docs/bdd/`](docs/bdd/), um arquivo `.feature` por caso de uso (UC01 a UC13). O Cucumber roda no `bootstrap` só os cenários com a tag `@implementado`.
 
 ## Documentação da API
 
 Swagger UI: `http://localhost:8080/swagger-ui.html` · OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+
+E-mails enviados em dev (orçamento gerado, rejeitado, expirado) ficam no Mailpit: `http://localhost:8025`.
 
 ## Análise de vulnerabilidades
 
@@ -100,7 +139,7 @@ Roda também no CI (workflow `Security`). Detalhes em [`docs/security/`](docs/se
 
 ## Autenticação
 
-As APIs administrativas exigem um token **JWT** no cabeçalho `Authorization: Bearer <token>`. A consulta pública de status da OS (`/api/public/**`) não exige token.
+As APIs administrativas exigem um token **JWT** no cabeçalho `Authorization: Bearer <token>`. Ficam abertas só o login (`/api/auth/**`), a consulta pública da OS (`/api/public/**`), `/api/ping`, o Swagger e `/actuator/health`.
 
 Usuários de demonstração (semeados na inicialização):
 
@@ -151,6 +190,33 @@ curl -X POST http://localhost:8080/api/v1/admin/clientes \
   -d '{"documento":"123.456.789-09","nome":"Maria Silva","email":"maria@email.com"}'
 ```
 
+## Ordem de Serviço e orçamento
+
+Rotas administrativas em `/api/admin/ordens`, protegidas por JWT. Especificações em `specs/criar-ordem-servico/`, `specs/realizar-diagnostico/`, `specs/gerar-orcamento/`, `specs/aprovar-orcamento/`, `specs/rejeitar-orcamento/`, `specs/revisar-orcamento/` e `specs/expirar-orcamento/`.
+
+| Operação | Rota |
+|----------|------|
+| Criar OS (UC01) | `POST /api/admin/ordens` |
+| Diagnóstico (UC02) | `POST /api/admin/ordens/{id}/diagnostico/iniciar` · `/inspecao` · `/finalizar` |
+| Gerar orçamento (UC03) | `POST /api/admin/ordens/{id}/orcamento` |
+| Aprovar / rejeitar / revisar (UC05–UC07) | `POST /api/admin/ordens/{id}/orcamento/aprovar` · `/rejeitar` · `/revisar` |
+| Expirar orçamentos vencidos (UC08) | `POST /api/admin/orcamentos/expirar` |
+
+Regras principais:
+
+- O orçamento é montado com os itens informados (serviços e peças, `{"tipo","descricao","valor"}`), tem o total calculado e vale `ORCAMENTO_VALIDADE_DIAS` dias (padrão 7).
+- Um job agendado (`ORCAMENTO_EXPIRACAO_CRON`, padrão de hora em hora) expira os orçamentos vencidos sem resposta; a rota `/expirar` dispara a mesma verificação manualmente.
+- Rejeição e expiração encerram a OS e liberam as reservas de peça; a revisão gera um novo orçamento e reinicia o prazo.
+- Cada transição de status é registrada com data e hora (histórico da OS).
+
+Consulta pública (UC12), sem token:
+
+```bash
+curl http://localhost:8080/api/public/ordens/{numero}
+curl "http://localhost:8080/api/public/ordens?placa=ABC1D23"
+curl "http://localhost:8080/api/public/ordens?documento=12345678909"
+```
+
 ## Estoque — peças e insumos
 
 Itens de estoque (peça ou insumo) em `/api/v1/admin/estoque/itens`, protegidos por JWT e documentados no
@@ -187,15 +253,16 @@ curl -X POST http://localhost:8080/api/v1/admin/estoque/itens \
 ├── bootstrap/      # Aplicação Spring Boot (deployable único)
 ├── shared-kernel/  # VOs e base de domínio compartilhados
 ├── modules/        # Bounded contexts: autenticacao, cadastro, estoque, ordemservico
-├── specs/          # Spec-Driven Development (spec/plan/tasks) + cenários BDD
-├── docs/           # arquitetura.md, adr/, ddd/, c4/ e enunciado
+├── buildSrc/       # convenção de build (gate Jacoco)
+├── specs/          # Spec-Driven Development: spec/plan/tasks por feature
+├── docs/           # arquitetura.md, bdd/, c4/, ddd/, security/ e enunciado
 ├── docker/         # Dockerfile e docker-compose
 └── README.md
 ```
 
 ## Documentação DDD
 
-- Event Storming: _link do Miro_
+- Event Storming: board **Tech01** no Miro
 - Fluxograma do Event Storming: [`docs/ddd/fluxograma-oficina.mmd`](docs/ddd/fluxograma-oficina.mmd)
 - Mapa de contexto: [`docs/ddd/mapa-de-contexto.jpg`](docs/ddd/mapa-de-contexto.jpg)
 

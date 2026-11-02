@@ -4,7 +4,7 @@ flowchart LR
         direction LR
         ATD1["Atendente"] --> B["Criar Ordem de Serviço"]
         B --> C["Ordem de Serviço Criada"]
-        C --> RM1["Status da OS: Aberta"]
+        C --> RM1["Status da OS: Recebida"]
     end
 
     subgraph S2["2. Diagnóstico"]
@@ -14,8 +14,8 @@ flowchart LR
         E --> F["Realizar Diagnóstico"]
         F --> G{"Peça identificada?"}
         G -- "Sim" --> H["Diagnóstico Realizado"]
-        G -- "Não" --> HS1["Peça não identificada: o que fazer?"]
-        HS1 -.-> F
+        G -- "Não" --> POL3["Sem peça identificada, encerra a OS"]
+        POL3 --> ENC1["OS Encerrada"]
         H --> I["Finalizar Diagnóstico"]
         I --> J["Diagnóstico Finalizado"]
     end
@@ -30,8 +30,9 @@ flowchart LR
         EXT1 --> O{"Peça disponível?"}
         O -- "Sim" --> P["Peça Reservada"]
         O -- "Não" --> Q["Peça Indisponível"]
-        Q --> HS2["Aguardar reposição, trocar peça ou revisar orçamento?"]
-        HS2 -.-> K
+        Q --> POL4["Avisa atendente e mecânico; orçamento fica para revisão"]
+        POL4 -.-> K
+        POL4 --> POL6["Sem alternativa de fornecimento: atendente encerra a OS"]
     end
 
     subgraph S4["4. Aprovação"]
@@ -42,14 +43,15 @@ flowchart LR
         CA --> T["Orçamento Aprovado"]
         S -- "Rejeita" --> CR["Rejeitar Orçamento"]
         CR --> U["Orçamento Rejeitado"]
-        U --> POL1["Se rejeitado, revisar"]
-        POL1 --> V["Revisar Orçamento"]
-        S -- "Pede revisão" --> V
+        U --> POL1["Rejeitado: encerra a OS e libera reservas"]
+        POL1 --> ENC2["OS Encerrada"]
+        S -- "Pede revisão" --> V["Revisar Orçamento"]
         V --> X["Orçamento Revisado"]
         X -.-> R
-        S -- "Sem resposta no prazo" --> POL2["Verificar validade"]
+        S -- "Sem resposta no prazo" --> POL2["Job agendado verifica validade (7 dias)"]
         POL2 --> W["Orçamento Expirado"]
-        W --> HS3["Qual o prazo? Libera reserva? Encerra a OS?"]
+        W --> POL5["Expirado: encerra a OS e libera reservas"]
+        POL5 --> ENC3["OS Encerrada"]
     end
 
     subgraph S5["5. Execução"]
@@ -84,12 +86,10 @@ flowchart LR
     classDef politica fill:#BBADF9,stroke:#7563C4,color:#000
     classDef readmodel fill:#6CDB8B,stroke:#2E9950,color:#000
     classDef externo fill:#F59BE6,stroke:#B8509F,color:#000
-    classDef hotspot fill:#F79C98,stroke:#C24F4A,color:#000
 
-    class C,E,H,J,L,P,Q,T,U,W,X,Z,AB,AD,AF,AH evento
+    class C,E,H,J,L,P,Q,T,U,W,X,Z,AB,AD,AF,AH,ENC1,ENC2,ENC3 evento
     class B,D,F,I,K,M,CA,CR,V,Y,AC,AE comando
     class ATD1,ATD2,MEC1,MEC2,MEC3,CLI ator
-    class POL0,POL1,POL2 politica
+    class POL0,POL1,POL2,POL3,POL4,POL5,POL6 politica
     class RM1,R,AG readmodel
     class EXT1,EXT2 externo
-    class HS1,HS2,HS3 hotspot

@@ -5,21 +5,23 @@ flowchart TB
     MEC["Mecânico - Pessoa"]
 
     subgraph SYS["Sistema Oficina - docker-compose"]
-        API["API Monolítica - Contêiner Docker - API RESTful em camadas, documentada com Swagger, autenticação JWT"]
-        DB[("Banco de Dados - Contêiner Docker - Clientes, veículos, OS, orçamentos, peças e estoque")]
+        API["API Oficina - Contêiner Docker - Kotlin + Spring Boot, monolito modular hexagonal, Swagger e JWT"]
+        DB[("PostgreSQL 16 - Contêiner Docker - Schemas autenticacao, cadastro, estoque e ordemservico, migrations Flyway")]
+        MAIL["Mailpit - Contêiner Docker - SMTP de dev com UI web na porta 8025"]
     end
 
-    NOT["Serviço de Notificação - Sistema Externo"]
+    SMTP["Servidor SMTP - Sistema Externo - usado em produção no lugar do Mailpit"]
 
-    CLI -- "Consulta status, aprova ou rejeita orçamento [HTTPS/JSON]" --> API
-    ATD -- "Cria OS, cadastros, entrega [HTTPS/JSON + JWT]" --> API
+    CLI -- "Consulta status /api/public/** [HTTPS/JSON]" --> API
+    ATD -- "Cadastros, estoque, abertura da OS [HTTPS/JSON + JWT]" --> API
     MEC -- "Diagnóstico, orçamento, execução [HTTPS/JSON + JWT]" --> API
-    API -- "Lê e grava [driver do banco]" --> DB
-    API -- "Envia notificações [HTTPS]" --> NOT
+    API -- "Lê e grava [JDBC]" --> DB
+    API -- "Envia e-mails [SMTP]" --> MAIL
+    API -. "Envia e-mails em prod [SMTP]" .-> SMTP
 
     classDef pessoa fill:#08427B,stroke:#052E56,color:#fff
     classDef conteiner fill:#438DD5,stroke:#2E6295,color:#fff
     classDef externo fill:#999999,stroke:#6B6B6B,color:#fff
     class CLI,ATD,MEC pessoa
-    class API,DB conteiner
-    class NOT externo
+    class API,DB,MAIL conteiner
+    class SMTP externo
