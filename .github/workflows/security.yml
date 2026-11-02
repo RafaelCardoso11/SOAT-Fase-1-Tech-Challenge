@@ -34,9 +34,11 @@ jobs:
           severity: HIGH,CRITICAL
           format: table
           output: docs/security/trivy-report.txt
-          exit-code: '0'
+          trivyignores: .trivyignore
+          exit-code: '1'
 
       - name: Publicar relatório como artefato
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: trivy-report

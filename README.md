@@ -132,7 +132,7 @@ Scan de dependências com Trivy:
 
 ```bash
 ./gradlew :bootstrap:bootJar
-trivy fs --scanners vuln --severity HIGH,CRITICAL bootstrap/build/libs
+trivy rootfs --scanners vuln --severity HIGH,CRITICAL bootstrap/build/libs
 ```
 
 Roda também no CI (workflow `Security`). Detalhes em [`docs/security/`](docs/security/README.md).

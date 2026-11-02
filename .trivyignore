@@ -1,0 +1,5 @@
+# Riscos aceitos, analisados em docs/security/README.md. Revisar ao migrar para Spring Boot 4 / Spring Framework 7.
+# spring-webmvc 6.2.19: exige XsltView com renderização de view; a API só devolve JSON.
+CVE-2026-47884
+# spring-webmvc 6.2.19: exige Server-Sent Events com fragmentos de view; a API não usa SSE.
+CVE-2026-47890

@@ -12,4 +12,8 @@ subprojects {
     repositories {
         mavenCentral()
     }
+
+    extra["tomcat.version"] = rootProject.libs.versions.tomcat.get()
+    extra["jackson-bom.version"] = rootProject.libs.versions.jackson.get()
+    extra["postgresql.version"] = rootProject.libs.versions.postgresql.get()
 }
