@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: security-${{ github.ref }}
@@ -36,10 +36,9 @@ jobs:
           output: docs/security/trivy-report.txt
           exit-code: '0'
 
-      - name: Commit do relatório (evidência no repo)
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/security/trivy-report.txt
-          git diff --staged --quiet || git commit -m "chore(security): atualiza relatório Trivy [skip ci]"
-          git push
+      - name: Publicar relatório como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: docs/security/trivy-report.txt
+          retention-days: 90
