@@ -3,7 +3,6 @@ kotlin = "1.9.25"
 springBoot = "3.5.16"
 springDependencyManagement = "1.1.7"
 springdoc = "2.8.17"
-# Sobrescrevem o BOM do Spring Boot com patches de segurança (ver docs/security/README.md)
 tomcat = "10.1.61"
 jackson = "2.21.8"
 postgresql = "42.7.14"
