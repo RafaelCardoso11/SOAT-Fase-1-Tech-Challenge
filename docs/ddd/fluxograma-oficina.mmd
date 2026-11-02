@@ -30,9 +30,8 @@ flowchart LR
         EXT1 --> O{"Peça disponível?"}
         O -- "Sim" --> P["Peça Reservada"]
         O -- "Não" --> Q["Peça Indisponível"]
-        Q --> POL4["Avisa atendente e mecânico; orçamento fica para revisão"]
-        POL4 -.-> K
-        POL4 --> POL6["Sem alternativa de fornecimento: atendente encerra a OS"]
+        Q --> POL4["Falta peça: libera as reservas e encerra a OS"]
+        POL4 --> ENC4["OS Encerrada"]
     end
 
     subgraph S4["4. Aprovação"]
@@ -62,6 +61,8 @@ flowchart LR
         EXT2 --> AB["Peças Baixadas"]
         AB --> AC["Finalizar Execução"]
         AC --> AD["Execução Finalizada"]
+        AD --> POL6["Avisa o cliente: veículo pronto"]
+        POL6 --> EXT3["Servidor de E-mail"]
     end
 
     subgraph S6["6. Entrega"]
@@ -87,9 +88,9 @@ flowchart LR
     classDef readmodel fill:#6CDB8B,stroke:#2E9950,color:#000
     classDef externo fill:#F59BE6,stroke:#B8509F,color:#000
 
-    class C,E,H,J,L,P,Q,T,U,W,X,Z,AB,AD,AF,AH,ENC1,ENC2,ENC3 evento
+    class C,E,H,J,L,P,Q,T,U,W,X,Z,AB,AD,AF,AH,ENC1,ENC2,ENC3,ENC4 evento
     class B,D,F,I,K,M,CA,CR,V,Y,AC,AE comando
     class ATD1,ATD2,MEC1,MEC2,MEC3,CLI ator
     class POL0,POL1,POL2,POL3,POL4,POL5,POL6 politica
     class RM1,R,AG readmodel
-    class EXT1,EXT2 externo
+    class EXT1,EXT2,EXT3 externo

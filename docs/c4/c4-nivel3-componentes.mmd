@@ -18,10 +18,10 @@ flowchart TB
 
         subgraph OS["ordemservico - principal"]
             direction TB
-            O_IN["OrdemServico, Diagnostico, Orcamento, Aprovar, Rejeitar e RevisarOrcamento Controllers, ExpiracaoController, ConsultarOrdensController (público), ExpiracaoScheduler"]
-            O_UC["CriarOrdemServico, RealizarDiagnostico, GerarOrcamento, Aprovar, Rejeitar, Revisar e ExpirarOrcamentos, ConsultarOrdens"]
+            O_IN["OrdemServico, Diagnostico, Orcamento, Aprovar, Rejeitar e RevisarOrcamento, Execucao, Entrega, Relatorio e Expiracao Controllers, ConsultarOrdensController (público), ExpiracaoScheduler"]
+            O_UC["CriarOrdemServico, RealizarDiagnostico, GerarOrcamento, Aprovar, Rejeitar, Revisar e ExpirarOrcamentos, Iniciar e FinalizarExecucao, EntregarVeiculo, ConsultarOrdens, ConsultarTempoMedioExecucao"]
             O_DOM["OrdemServico (agregado), Orcamento, ItemOrcamento, StatusOS, TransicaoStatus, eventos de domínio"]
-            O_OUT["OrdemServicoRepositoryAdapter, PublicadorDeEventosSpring, NotificacaoPorEmail, EstoquePort (ACL)"]
+            O_OUT["OrdemServicoRepositoryAdapter, PublicadorDeEventosSpring, NotificacaoPorEmail, EstoqueAdapter (ACL da EstoquePort)"]
         end
 
         subgraph CAD["cadastro - suporte"]
@@ -51,7 +51,7 @@ flowchart TB
     O_UC --> O_OUT
     C_IN --> C_UC --> C_OUT
     E_IN --> E_UC --> E_OUT
-    O_OUT -- "reserva, libera e baixa peças (porta de entrada do estoque)" --> E_UC
+    O_OUT -- "reserva, libera e baixa peças (in-process, síncrono)" --> E_UC
     O_OUT -- "SMTP" --> MAIL
     A_OUT & O_OUT & C_OUT & E_OUT -- "JPA / JDBC" --> DB
     O_DOM & C_UC & E_UC -. "usa VOs" .-> SK
