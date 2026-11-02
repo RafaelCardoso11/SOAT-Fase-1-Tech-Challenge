@@ -291,7 +291,7 @@ curl -X POST http://localhost:8080/api/v1/admin/estoque/ordens/7/reservas \
 ├── modules/        # Bounded contexts: autenticacao, cadastro, estoque, ordemservico
 ├── buildSrc/       # convenção de build (gate Jacoco)
 ├── specs/          # Spec-Driven Development: spec/plan/tasks por feature
-├── docs/           # arquitetura.md, bdd/, c4/, ddd/ e security/
+├── docs/           # arquitetura.md, bdd/, c4/, ddd/, security/ e enunciados/ (enunciado de cada fase)
 ├── docker/         # Dockerfile e docker-compose
 └── README.md
 ```
