@@ -135,13 +135,13 @@ Pacote raiz: `com.fiap.soat.oficina.estoque` (`…estoque`), em `modules/estoque
 
 ### Tests
 
-- [ ] T050 `bootstrap/src/test/kotlin/com/fiap/soat/oficina/EstoqueReservasIntegrationTest.kt` (Testcontainers + MockMvc): reservar, indisponível (409), reserva repetida, liberar item e OS, baixa com dois itens e saldo final, idempotência da baixa, inativar item com reserva ativa, 401 sem token, **disputa simultânea pela última unidade** (várias threads: exatamente uma reserva), `CHECK` do banco, eventos publicados, `/v3/api-docs`. Depende de T044–T049.
+- [x] T050 `bootstrap/src/test/kotlin/com/fiap/soat/oficina/EstoqueReservasIntegrationTest.kt` (Testcontainers + MockMvc): reservar, indisponível (409), reserva repetida, liberar item e OS, baixa com dois itens e saldo final, idempotência da baixa, inativar item com reserva ativa, 401 sem token, **disputa simultânea pela última unidade** (várias threads: exatamente uma reserva), `CHECK` do banco, eventos publicados, `/v3/api-docs`. Depende de T044–T049.
 
 ### Documentação
 
-- [ ] T051 `README.md`: seção "Estoque — reservas e baixa".
+- [x] T051 `README.md`: seção "Estoque — reservas e baixa".
 
 ### Finalize
 
-- [ ] T052 Criar `api-local/estoque-reservas.http` (fora do Git) e validar manualmente com a aplicação no ar.
+- [x] T052 Criar `api-local/estoque-reservas.http` (fora do Git) e validar manualmente com a aplicação no ar.
 - [ ] T053 Rodar `./gradlew build` (gate Jacoco); conferir o diff (~11 arquivos); preparar o PR (`Closes #<issue>`).

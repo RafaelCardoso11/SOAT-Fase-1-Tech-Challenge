@@ -253,6 +253,35 @@ curl -X POST http://localhost:8080/api/v1/admin/estoque/itens \
   -d '{"nome":"Pastilha de freio","tipo":"PECA","preco":200.00,"saldoInicial":10}'
 ```
 
+### Estoque — reservas e baixa
+
+Reserva de peças para uma OS, liberação e baixa, em `/api/v1/admin/estoque/ordens/{osId}`. O `osId` é o
+da OS (outro módulo); o estoque não valida a existência da OS.
+
+| Operação | Rota |
+|----------|------|
+| Reservar | `POST …/reservas` com `{"itemId": 1, "quantidade": 2}` → `201` ou `409` se não há disponível |
+| Consultar reservas da OS | `GET …/reservas` (ativas, liberadas e consumidas) |
+| Liberar | `POST …/reservas/liberar` (todas da OS) ou `?itemId=` (só a do item) → `204` |
+| Baixar (início da execução) | `POST …/baixa` → `200` com as reservas consumidas |
+
+Regras principais:
+
+- **Reservar** separa a quantidade para a OS: sobe o `reservado` e cai o `disponivel`, sem mexer no `saldo`. Sem disponível suficiente nada é reservado (nem parcial) e a resposta é `409`.
+- Uma unidade reservada para uma OS **não é prometida a outra**, mesmo com requisições simultâneas pela última unidade (lock de linha no item e `CHECK`s no banco).
+- Uma OS tem no máximo **uma reserva ativa por item**; depois de liberada, pode reservar de novo.
+- **Liberar** devolve ao disponível. **Baixar** diminui o `saldo` e consome as reservas ativas da OS, **tudo ou nada**. As duas operações são idempotentes.
+- Item inativo não é reservado e item com reserva ativa não pode ser inativado.
+- Os fatos `PecaReservada`, `PecaIndisponivel`, `ReservaLiberada` e `PecasBaixadas` são publicados como eventos de domínio.
+
+Exemplo:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/admin/estoque/ordens/7/reservas \
+  -H "Authorization: Bearer <jwt>" -H 'Content-Type: application/json' \
+  -d '{"itemId":1,"quantidade":2}'
+```
+
 ## Estrutura do projeto
 
 ```
