@@ -4,32 +4,34 @@ Funcionalidade: UC07 - Revisar Orçamento
   Quero ajustar um orçamento cuja revisão foi solicitada pelo cliente
   Para reenviar uma nova proposta ao cliente
 
+  @implementado
   Cenário: Revisar orçamento a pedido do cliente
-    Dado que existe uma OS com status "Aguardando aprovação"
-    E o cliente solicitou a revisão do orçamento pelo motivo "Valor acima do esperado"
-    Quando o mecânico ajustar o valor do serviço "Troca de pastilhas" para 120.00
-    Então o evento "Orçamento revisado" deve ser registrado
-    E a nova proposta deve ser reenviada ao cliente
-    E o status da OS deve continuar "Aguardando aprovação"
+    Dado uma OS aguardando aprovação com orçamento para revisão
+    Quando o mecânico ajustar o orçamento para o valor total "120.00"
+    Então a revisão deve registrar o evento "Orçamento revisado"
+    E a nova proposta deve ser reenviada ao cliente na revisão
+    E o status da OS após a revisão deve continuar "Aguardando aprovação"
 
-  Cenário: Revisar orçamento após peça indisponível
-    Dado que existe uma OS com status "Aguardando aprovação"
-    E o evento "Peça indisponível" foi registrado para a peça "Pastilha de freio"
-    Quando o mecânico substituir a peça por uma alternativa disponível
-    Então o evento "Orçamento revisado" deve ser registrado
-    E a reserva da peça alternativa deve ser solicitada ao estoque
-    E o status da OS deve continuar "Aguardando aprovação"
+  @implementado
+  Cenário: Revisar orçamento trocando a peça
+    Dado uma OS aguardando aprovação com orçamento para revisão
+    Quando o mecânico revisar o orçamento incluindo a peça "Pastilha alternativa"
+    Então a revisão deve registrar o evento "Orçamento revisado"
+    E a reserva da peça "Pastilha alternativa" deve ser solicitada na revisão
+    E o status da OS após a revisão deve continuar "Aguardando aprovação"
 
+  # Hotspot: "resposta do cliente pendente de tratamento" não modelada no MVP — cenário sem @implementado.
   Cenário: Impedir envio de revisão com resposta do cliente pendente
     Dado que existe uma OS com status "Aguardando aprovação"
     E existe uma resposta do cliente pendente de tratamento
     Quando o mecânico tentar enviar o orçamento revisado
     Então o orçamento revisado não deve ser enviado
 
+  @implementado
   Esquema do Cenário: Impedir revisão fora do status "Aguardando aprovação"
-    Dado que existe uma OS com status "<status>"
+    Dado uma OS para revisão no status "<status>"
     Quando o mecânico tentar revisar o orçamento
-    Então a revisão não deve ser registrada
+    Então a revisão não deve ser registrada na OS
 
     Exemplos:
       | status      |

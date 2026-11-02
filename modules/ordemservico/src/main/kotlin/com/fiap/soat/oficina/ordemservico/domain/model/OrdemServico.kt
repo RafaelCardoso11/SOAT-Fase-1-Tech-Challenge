@@ -74,6 +74,15 @@ class OrdemServico private constructor(
         transitarPara(StatusOS.FINALIZADA)
     }
 
+    fun revisarOrcamento(itens: List<ItemOrcamento>, validoAte: Instant): Orcamento {
+        check(status == StatusOS.AGUARDANDO_APROVACAO) {
+            "A revisão só é possível com a OS aguardando aprovação"
+        }
+        val novo = Orcamento(itens, validoAte)
+        orcamento = novo
+        return novo
+    }
+
     fun expirarOrcamento(agora: Instant) {
         check(status == StatusOS.AGUARDANDO_APROVACAO) {
             "Só expira orçamento de OS aguardando aprovação"

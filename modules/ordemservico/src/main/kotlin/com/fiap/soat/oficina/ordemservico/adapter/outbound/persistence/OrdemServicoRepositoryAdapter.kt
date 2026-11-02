@@ -35,8 +35,14 @@ class OrdemServicoRepositoryAdapter(
             if (orcamentoEntity == null) {
                 entidade.orcamento = domOrcamento.toJpa()
             } else {
+                orcamentoEntity.total = domOrcamento.total.valor
+                orcamentoEntity.validoAte = domOrcamento.validoAte
                 orcamentoEntity.aprovadoEm = domOrcamento.aprovadoEm
                 orcamentoEntity.motivoRejeicao = domOrcamento.motivoRejeicao
+                if (orcamentoEntity.itens.diferemDe(domOrcamento.itens)) {
+                    orcamentoEntity.itens.clear()
+                    orcamentoEntity.itens.addAll(domOrcamento.toJpa().itens)
+                }
             }
         }
         // shortcut: histórico append-only — anexa só as transições além das já persistidas; revisar se transições puderem ser editadas/removidas.
@@ -75,6 +81,10 @@ private fun OrdemServicoJpaEntity.toDomain(): OrdemServico =
         liberadoParaOrcamento = liberadoParaOrcamento,
         orcamento = orcamento?.toDomain(),
     )
+
+private fun List<ItemOrcamentoJpaEntity>.diferemDe(itens: List<ItemOrcamento>): Boolean =
+    map { Triple(it.tipo, it.descricao, it.valor.stripTrailingZeros()) } !=
+        itens.map { Triple(it.tipo.name, it.descricao, it.valor.valor.stripTrailingZeros()) }
 
 private fun Orcamento.toJpa(): OrcamentoJpaEntity = OrcamentoJpaEntity(
     total = total.valor,
