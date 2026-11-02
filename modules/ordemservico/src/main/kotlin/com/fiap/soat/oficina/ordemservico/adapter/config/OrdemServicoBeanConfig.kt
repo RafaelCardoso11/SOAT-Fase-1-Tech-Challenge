@@ -91,8 +91,9 @@ class OrdemServicoBeanConfig {
     fun finalizarExecucaoUseCase(
         repositorio: OrdemServicoRepository,
         eventos: PublicadorDeEventos,
+        estoque: EstoquePort,
         notificacao: NotificacaoPort,
-    ): FinalizarExecucaoUseCase = FinalizarExecucaoService(repositorio, eventos, notificacao)
+    ): FinalizarExecucaoUseCase = FinalizarExecucaoService(repositorio, eventos, estoque, notificacao)
 
     @Bean
     fun expirarOrcamentosUseCase(

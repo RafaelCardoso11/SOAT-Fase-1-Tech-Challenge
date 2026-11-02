@@ -6,6 +6,7 @@ import com.fiap.soat.oficina.ordemservico.domain.model.OrdemServico
 import com.fiap.soat.oficina.ordemservico.domain.model.StatusOS
 import com.fiap.soat.oficina.ordemservico.domain.model.TransicaoStatus
 import com.fiap.soat.oficina.ordemservico.domain.model.Veiculo
+import com.fiap.soat.oficina.ordemservico.domain.port.outbound.EstoquePort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.NotificacaoPort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.OrdemServicoRepository
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.PublicadorDeEventos
@@ -27,8 +28,9 @@ class FinalizarExecucaoSteps {
 
     private val repositorio = mockk<OrdemServicoRepository>()
     private val eventos = mockk<PublicadorDeEventos>()
+    private val estoque = mockk<EstoquePort>(relaxed = true)
     private val notificacao = mockk<NotificacaoPort>(relaxed = true)
-    private val service = FinalizarExecucaoService(repositorio, eventos, notificacao)
+    private val service = FinalizarExecucaoService(repositorio, eventos, estoque, notificacao)
 
     private lateinit var ordem: OrdemServico
     private val publicados = mutableListOf<DomainEvent>()
