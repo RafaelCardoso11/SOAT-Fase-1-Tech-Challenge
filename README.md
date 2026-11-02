@@ -298,7 +298,7 @@ curl -X POST http://localhost:8080/api/v1/admin/estoque/ordens/7/reservas \
 
 ## Documentação DDD
 
-Board do Event Storming no Miro: [Tech01](https://miro.com/app/board/uXjVHq1XvOs=/). Exportado e alinhado ao código em [`docs/ddd/`](docs/ddd/):
+Board do Event Storming no Miro: [Tech01](https://miro.com/app/board/uXjVHq1XvOs=/?share_link_id=344863119386) (público, sem login). Exportado e alinhado ao código em [`docs/ddd/`](docs/ddd/):
 
 - [`event-storming.pdf`](docs/ddd/event-storming.pdf) ([fonte](docs/ddd/fontes/event-storming.md)): criação e acompanhamento da OS, gestão de peças e insumos, com eventos, comandos, políticas, atores, read models, agregados e hotspots
 - [`diagramas.pdf`](docs/ddd/diagramas.pdf) ([fonte](docs/ddd/fontes/diagramas.md)): mapa de contexto, bounded contexts, agregados/entidades/VOs, ciclo de vida da OS, sequência do orçamento e C4
