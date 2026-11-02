@@ -29,7 +29,7 @@ Serviços, aplicando **DDD** e boas práticas de qualidade e segurança. Escopo 
   eventos "Execução iniciada" e "Execução finalizada").
 
 Os casos de uso estão descritos em BDD (`docs/bdd/uc01..uc13`): os **12** derivados
-do Event Storming (`docs/ddd/fluxograma-oficina.mmd`) mais o **UC13** (tempo médio de execução), que
+do Event Storming (`docs/ddd/event-storming.pdf`) mais o **UC13** (tempo médio de execução), que
 atende diretamente a um requisito do enunciado e não gera evento de domínio. Este documento é a ponte
 entre essa descrição de domínio e a
 implementação técnica.
@@ -184,9 +184,9 @@ broker de mensageria — adia-se para a fase de microsserviços.
 
 ## 5. Mapa de contexto e Bounded Contexts (DDD)
 
-A arquitetura segue o **mapa de contexto** oficial do domínio (`docs/ddd/mapa-de-contexto.jpg`):
+A arquitetura segue o **mapa de contexto** oficial do domínio (`docs/ddd/fontes/mapa-de-contexto.jpg`):
 
-![Mapa de contexto](ddd/mapa-de-contexto.jpg)
+![Mapa de contexto](ddd/fontes/mapa-de-contexto.jpg)
 
 ### 5.1 Classificação de subdomínios
 

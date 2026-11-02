@@ -102,7 +102,7 @@ Convenção no código: termos do domínio em português, sem acento (`Orcamento
 | Shared kernel | Modelo compartilhado entre contextos, mantido pequeno. | `shared-kernel`: `Documento`, `Placa`, `Dinheiro`, `DomainEvent` |
 | Camada anticorrupção (ACL) | Tradução entre o modelo de um contexto e o de outro. | `EstoqueAdapter` traduz a `EstoquePort` da OS para os casos de uso do Estoque |
 | Porta | Interface do domínio para entrada (caso de uso) ou saída (repositório, integração). | `domain/port/inbound`, `domain/port/outbound` |
-| Hotspot | Dúvida ou risco levantado no workshop. | "Encerrada é status?" — resolvido em [`event-storming.md`](event-storming.md#hotspots-e-decisões) |
+| Hotspot | Dúvida ou risco levantado no workshop. | "Encerrada é status?" — resolvido em [`event-storming.md`](fontes/event-storming.md#hotspots-e-decisões) |
 
 ## Mesmo termo, contextos diferentes
 

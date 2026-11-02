@@ -1,6 +1,6 @@
-"""Gera event-storming.pdf e diagramas.pdf a partir dos .md desta pasta (Chrome headless + marked + mermaid).
+"""Gera docs/ddd/event-storming.pdf e diagramas.pdf a partir dos .md desta pasta (fontes/) (Chrome headless + marked + mermaid).
 
-Uso: python3 docs/ddd/gerar-pdfs.py   (precisa do Google Chrome e de acesso à internet para o CDN)
+Uso: python3 docs/ddd/fontes/gerar-pdfs.py   (precisa do Google Chrome e de acesso à internet para o CDN)
 """
 import json
 import pathlib
@@ -59,7 +59,7 @@ def gerar(nome: str) -> None:
     html = HTML.format(base=PASTA.as_uri() + "/", md=json.dumps(md))
     with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False, encoding="utf-8") as f:
         f.write(html)
-    saida = PASTA / f"{nome}.pdf"
+    saida = PASTA.parent / f"{nome}.pdf"
     subprocess.run(
         [CHROME, "--headless=new", "--disable-gpu", "--no-pdf-header-footer", "--allow-file-access-from-files",
          "--virtual-time-budget=20000", f"--print-to-pdf={saida}", f.name],

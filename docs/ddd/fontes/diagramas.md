@@ -1,7 +1,7 @@
 # Diagramas DDD — Oficina Mecânica
 
 Diagramas do domínio e da solução, alinhados ao código da branch `main`. O Event Storming está em
-[`event-storming.md`](event-storming.md) e a linguagem ubíqua em [`linguagem-ubiqua.md`](linguagem-ubiqua.md).
+[`event-storming.md`](event-storming.md) e a linguagem ubíqua em [`linguagem-ubiqua.md`](../linguagem-ubiqua.md).
 
 ## 1. Mapa de contexto
 
@@ -282,10 +282,10 @@ sequenceDiagram
 
 ## 6. C4
 
-Mantidos em [`docs/c4/`](../c4/).
+Mantidos em [`docs/c4/`](../../c4/).
 
-[C4 Nível 1 — Contexto](../c4/c4-nivel1-contexto.mmd)
+[C4 Nível 1 — Contexto](../../c4/c4-nivel1-contexto.mmd)
 
-[C4 Nível 2 — Contêineres](../c4/c4-nivel2-conteineres.mmd)
+[C4 Nível 2 — Contêineres](../../c4/c4-nivel2-conteineres.mmd)
 
-[C4 Nível 3 — Componentes](../c4/c4-nivel3-componentes.mmd)
+[C4 Nível 3 — Componentes](../../c4/c4-nivel3-componentes.mmd)
