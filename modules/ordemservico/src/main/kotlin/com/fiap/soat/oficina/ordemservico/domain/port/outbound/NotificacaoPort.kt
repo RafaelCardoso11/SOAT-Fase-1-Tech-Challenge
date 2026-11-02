@@ -6,4 +6,5 @@ interface NotificacaoPort {
     fun notificarOrcamentoGerado(ordemServicoId: Long, total: Dinheiro)
     fun notificarOrcamentoRejeitado(ordemServicoId: Long, motivo: String?)
     fun notificarOrcamentoExpirado(ordemServicoId: Long)
+    fun notificarVeiculoPronto(ordemServicoId: Long)
 }
