@@ -7,6 +7,7 @@ import com.fiap.soat.oficina.ordemservico.application.usecase.ExpirarOrcamentosS
 import com.fiap.soat.oficina.ordemservico.application.usecase.GerarOrcamentoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.RealizarDiagnosticoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.RejeitarOrcamentoService
+import com.fiap.soat.oficina.ordemservico.application.usecase.RevisarOrcamentoService
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.AprovarOrcamentoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ConsultarOrdensUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.CriarOrdemServicoUseCase
@@ -14,6 +15,7 @@ import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ExpirarOrcamentosU
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.GerarOrcamentoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.RealizarDiagnosticoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.RejeitarOrcamentoUseCase
+import com.fiap.soat.oficina.ordemservico.domain.port.inbound.RevisarOrcamentoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.EstoquePort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.NotificacaoPort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.OrdemServicoRepository
@@ -64,6 +66,15 @@ class OrdemServicoBeanConfig {
         estoque: EstoquePort,
         notificacao: NotificacaoPort,
     ): RejeitarOrcamentoUseCase = RejeitarOrcamentoService(repositorio, eventos, estoque, notificacao)
+
+    @Bean
+    fun revisarOrcamentoUseCase(
+        repositorio: OrdemServicoRepository,
+        eventos: PublicadorDeEventos,
+        estoque: EstoquePort,
+        notificacao: NotificacaoPort,
+        @Value("\${orcamento.validade-dias}") validadeDias: Long,
+    ): RevisarOrcamentoUseCase = RevisarOrcamentoService(repositorio, eventos, estoque, notificacao, validadeDias)
 
     @Bean
     fun expirarOrcamentosUseCase(
