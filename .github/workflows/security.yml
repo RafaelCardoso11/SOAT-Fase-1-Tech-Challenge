@@ -26,6 +26,8 @@ jobs:
         run: docker build -t oficina:scan -f docker/Dockerfile .
 
       - name: Trivy — vulnerabilidades (OS + dependências)
+        env:
+          TRIVY_SHOW_SUPPRESSED: 'true'
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
           scan-type: image
@@ -34,9 +36,11 @@ jobs:
           severity: HIGH,CRITICAL
           format: table
           output: docs/security/trivy-report.txt
-          exit-code: '0'
+          trivyignores: .trivyignore
+          exit-code: '1'
 
       - name: Publicar relatório como artefato
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: trivy-report
