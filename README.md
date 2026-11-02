@@ -298,9 +298,14 @@ curl -X POST http://localhost:8080/api/v1/admin/estoque/ordens/7/reservas \
 
 ## Documentação DDD
 
-- Event Storming: board **Tech01** no Miro
-- Fluxograma do Event Storming: [`docs/ddd/fluxograma-oficina.mmd`](docs/ddd/fluxograma-oficina.mmd)
-- Mapa de contexto: [`docs/ddd/mapa-de-contexto.jpg`](docs/ddd/mapa-de-contexto.jpg)
+Board do Event Storming no Miro: [Tech01](https://miro.com/app/board/uXjVHq1XvOs=/?share_link_id=344863119386) (público, sem login). Exportado e alinhado ao código em [`docs/ddd/`](docs/ddd/):
+
+- [`event-storming.pdf`](docs/ddd/event-storming.pdf) ([fonte](docs/ddd/fontes/event-storming.md)): criação e acompanhamento da OS, gestão de peças e insumos, com eventos, comandos, políticas, atores, read models, agregados e hotspots
+- [`diagramas.pdf`](docs/ddd/diagramas.pdf) ([fonte](docs/ddd/fontes/diagramas.md)): mapa de contexto, bounded contexts, agregados/entidades/VOs, ciclo de vida da OS, sequência do orçamento e C4
+- [`linguagem-ubiqua.md`](docs/ddd/linguagem-ubiqua.md): linguagem ubíqua, glossário e relação entre documentação e código
+- [`fontes/`](docs/ddd/fontes/): fontes editáveis dos PDFs e o [mapa de contexto](docs/ddd/fontes/mapa-de-contexto.jpg) original
+
+Os PDFs são gerados das fontes `.md` com `python3 docs/ddd/fontes/gerar-pdfs.py` (Google Chrome).
 
 ## Vídeo da entrega
 
