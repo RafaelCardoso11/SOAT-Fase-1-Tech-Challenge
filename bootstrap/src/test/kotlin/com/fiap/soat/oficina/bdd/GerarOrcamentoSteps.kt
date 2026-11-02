@@ -53,6 +53,7 @@ class GerarOrcamentoSteps {
         every { repositorio.buscarPorId(1L) } returns ordem
         every { repositorio.salvar(any()) } returns 1L
         every { eventos.publicar(capture(publicados)) } just Runs
+        every { estoque.reservar(any(), any(), any()) } returns true
     }
 
     @Dado("uma OS com diagnóstico finalizado")
@@ -67,7 +68,12 @@ class GerarOrcamentoSteps {
     @Quando("o mecânico montar o orçamento com os itens:")
     fun montarOrcamento(tabela: DataTable) {
         val itens = tabela.asMaps().map {
-            ItemOrcamento(tipoDe(it["tipo"]!!), it["descrição"]!!, Dinheiro.of(BigDecimal(it["valor"]!!)))
+            val tipo = tipoDe(it["tipo"]!!)
+            val peca = tipo == TipoItem.PECA
+            ItemOrcamento(
+                tipo, it["descrição"]!!, Dinheiro.of(BigDecimal(it["valor"]!!)),
+                itemEstoqueId = if (peca) 50L else null, quantidade = if (peca) 1 else null,
+            )
         }
         service.gerar(1L, itens)
     }
@@ -101,7 +107,7 @@ class GerarOrcamentoSteps {
 
     @Entao("a reserva da peça {string} deve ser solicitada ao estoque")
     fun reservaSolicitada(peca: String) {
-        verify { estoque.reservar(peca) }
+        verify { estoque.reservar(1L, 50L, 1) }
     }
 
     @Entao("o cliente deve ser notificado do orçamento gerado")

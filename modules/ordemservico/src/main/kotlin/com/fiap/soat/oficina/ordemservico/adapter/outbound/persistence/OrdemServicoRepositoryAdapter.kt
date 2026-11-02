@@ -83,8 +83,8 @@ private fun OrdemServicoJpaEntity.toDomain(): OrdemServico =
     )
 
 private fun List<ItemOrcamentoJpaEntity>.diferemDe(itens: List<ItemOrcamento>): Boolean =
-    map { Triple(it.tipo, it.descricao, it.valor.stripTrailingZeros()) } !=
-        itens.map { Triple(it.tipo.name, it.descricao, it.valor.valor.stripTrailingZeros()) }
+    map { listOf(it.tipo, it.descricao, it.valor.stripTrailingZeros(), it.itemEstoqueId, it.quantidade) } !=
+        itens.map { listOf(it.tipo.name, it.descricao, it.valor.valor.stripTrailingZeros(), it.itemEstoqueId, it.quantidade) }
 
 private fun Orcamento.toJpa(): OrcamentoJpaEntity = OrcamentoJpaEntity(
     total = total.valor,
@@ -92,12 +92,20 @@ private fun Orcamento.toJpa(): OrcamentoJpaEntity = OrcamentoJpaEntity(
     aprovadoEm = aprovadoEm,
     motivoRejeicao = motivoRejeicao,
     itens = itens.map {
-        ItemOrcamentoJpaEntity(tipo = it.tipo.name, descricao = it.descricao, valor = it.valor.valor)
+        ItemOrcamentoJpaEntity(
+            tipo = it.tipo.name,
+            descricao = it.descricao,
+            valor = it.valor.valor,
+            itemEstoqueId = it.itemEstoqueId,
+            quantidade = it.quantidade,
+        )
     }.toMutableList(),
 )
 
 private fun OrcamentoJpaEntity.toDomain(): Orcamento = Orcamento(
-    itens = itens.map { ItemOrcamento(TipoItem.valueOf(it.tipo), it.descricao, Dinheiro.of(it.valor)) },
+    itens = itens.map {
+        ItemOrcamento(TipoItem.valueOf(it.tipo), it.descricao, Dinheiro.of(it.valor), it.itemEstoqueId, it.quantidade)
+    },
     validoAte = validoAte,
     aprovadoEm = aprovadoEm,
     motivoRejeicao = motivoRejeicao,

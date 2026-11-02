@@ -3,7 +3,6 @@ package com.fiap.soat.oficina.ordemservico.application.usecase
 import com.fiap.soat.oficina.ordemservico.domain.event.OrcamentoExpirado
 import com.fiap.soat.oficina.ordemservico.domain.event.OsEncerrada
 import com.fiap.soat.oficina.ordemservico.domain.event.ReservaLiberada
-import com.fiap.soat.oficina.ordemservico.domain.model.TipoItem
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ExpirarOrcamentosUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.EstoquePort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.NotificacaoPort
@@ -28,7 +27,7 @@ class ExpirarOrcamentosService(
             val id = ordem.id!!
             ordem.expirarOrcamento(agora)
             repositorio.salvar(ordem)
-            ordem.orcamento?.itens?.filter { it.tipo == TipoItem.PECA }?.forEach { estoque.liberarReserva(it.descricao) }
+            estoque.liberarReservas(id)
             eventos.publicar(OrcamentoExpirado(id))
             eventos.publicar(OsEncerrada(id))
             eventos.publicar(ReservaLiberada(id))

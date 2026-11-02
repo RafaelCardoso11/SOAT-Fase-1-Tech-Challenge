@@ -2,6 +2,7 @@ package com.fiap.soat.oficina.ordemservico.application
 
 import com.fiap.soat.oficina.ordemservico.application.usecase.GerarOrcamentoService
 import com.fiap.soat.oficina.ordemservico.domain.event.OrcamentoGerado
+import com.fiap.soat.oficina.ordemservico.domain.event.OsEncerrada
 import com.fiap.soat.oficina.ordemservico.domain.model.ItemOrcamento
 import com.fiap.soat.oficina.ordemservico.domain.model.OrdemServico
 import com.fiap.soat.oficina.ordemservico.domain.model.StatusOS
@@ -44,7 +45,7 @@ class GerarOrcamentoServiceTest {
 
     private val itens = listOf(
         ItemOrcamento(TipoItem.SERVICO, "Troca de pastilhas", Dinheiro.of(BigDecimal("150.00"))),
-        ItemOrcamento(TipoItem.PECA, "Pastilha de freio", Dinheiro.of(BigDecimal("200.00"))),
+        ItemOrcamento(TipoItem.PECA, "Pastilha de freio", Dinheiro.of(BigDecimal("200.00")), itemEstoqueId = 50L, quantidade = 2),
     )
 
     @Test
@@ -52,15 +53,30 @@ class GerarOrcamentoServiceTest {
         val ordem = os(StatusOS.EM_DIAGNOSTICO, liberado = true)
         every { repositorio.buscarPorId(1L) } returns ordem
         every { repositorio.salvar(ordem) } returns 1L
+        every { estoque.reservar(1L, 50L, 2) } returns true
 
         service.gerar(1L, itens)
 
         assertThat(ordem.status).isEqualTo(StatusOS.AGUARDANDO_APROVACAO)
         assertThat(ordem.orcamento!!.total.valor).isEqualByComparingTo("350.00")
-        verify { estoque.reservar("Pastilha de freio") }
-        verify(exactly = 0) { estoque.reservar("Troca de pastilhas") }
+        verify(exactly = 1) { estoque.reservar(1L, 50L, 2) }
         verify { eventos.publicar(OrcamentoGerado(1L)) }
         verify { notificacao.notificarOrcamentoGerado(1L, any()) }
+    }
+
+    @Test
+    fun `encerra a OS quando peca indisponivel`() {
+        val ordem = os(StatusOS.EM_DIAGNOSTICO, liberado = true)
+        every { repositorio.buscarPorId(1L) } returns ordem
+        every { repositorio.salvar(ordem) } returns 1L
+        every { estoque.reservar(1L, 50L, 2) } returns false
+
+        service.gerar(1L, itens)
+
+        assertThat(ordem.status).isEqualTo(StatusOS.FINALIZADA)
+        verify { estoque.liberarReservas(1L) }
+        verify { eventos.publicar(OsEncerrada(1L)) }
+        verify(exactly = 0) { eventos.publicar(OrcamentoGerado(1L)) }
     }
 
     @Test

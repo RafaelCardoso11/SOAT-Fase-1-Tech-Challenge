@@ -1,6 +1,7 @@
 package com.fiap.soat.oficina.ordemservico.application.usecase
 
 import com.fiap.soat.oficina.ordemservico.domain.event.OrcamentoGerado
+import com.fiap.soat.oficina.ordemservico.domain.event.OsEncerrada
 import com.fiap.soat.oficina.ordemservico.domain.model.ItemOrcamento
 import com.fiap.soat.oficina.ordemservico.domain.model.OrdemServico
 import com.fiap.soat.oficina.ordemservico.domain.model.TipoItem
@@ -28,9 +29,18 @@ class GerarOrcamentoService(
 
         val validoAte = Instant.now().plus(Duration.ofDays(validadeDias))
         val orcamento = ordem.gerarOrcamento(itens, validoAte)
-        repositorio.salvar(ordem)
 
-        orcamento.itens.filter { it.tipo == TipoItem.PECA }.forEach { estoque.reservar(it.descricao) }
+        val reservouTudo = orcamento.itens.filter { it.tipo == TipoItem.PECA }
+            .all { estoque.reservar(ordemServicoId, it.itemEstoqueId!!, it.quantidade!!) }
+        if (!reservouTudo) {
+            estoque.liberarReservas(ordemServicoId)
+            ordem.encerrar()
+            repositorio.salvar(ordem)
+            eventos.publicar(OsEncerrada(ordemServicoId))
+            return ordem
+        }
+
+        repositorio.salvar(ordem)
         eventos.publicar(OrcamentoGerado(ordemServicoId))
         notificacao.notificarOrcamentoGerado(ordemServicoId, orcamento.total)
         return ordem

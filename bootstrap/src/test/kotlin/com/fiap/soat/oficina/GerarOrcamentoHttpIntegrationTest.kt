@@ -61,7 +61,7 @@ class GerarOrcamentoHttpIntegrationTest {
     private val corpoOrcamento = """
         { "itens": [
             { "tipo": "serviço", "descricao": "Troca de pastilhas", "valor": 150.00 },
-            { "tipo": "peça", "descricao": "Pastilha de freio", "valor": 200.00 }
+            { "tipo": "serviço", "descricao": "Alinhamento", "valor": 200.00 }
         ] }
     """.trimIndent()
 

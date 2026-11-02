@@ -5,7 +5,13 @@ import java.math.BigDecimal
 
 data class GerarOrcamentoRequest(val itens: List<ItemOrcamentoRequest>)
 
-data class ItemOrcamentoRequest(val tipo: String, val descricao: String, val valor: BigDecimal)
+data class ItemOrcamentoRequest(
+    val tipo: String,
+    val descricao: String,
+    val valor: BigDecimal,
+    val itemEstoqueId: Long? = null,
+    val quantidade: Int? = null,
+)
 
 data class OrcamentoResponse(val status: String, val total: BigDecimal) {
     companion object {

@@ -27,7 +27,7 @@ class ExpirarOrcamentoDomainTest {
         transicoes = listOf(TransicaoStatus(status, Instant.now())),
         liberadoParaOrcamento = true,
         orcamento = Orcamento(
-            listOf(ItemOrcamento(TipoItem.PECA, "Pastilha de freio", Dinheiro.of(BigDecimal("200.00")))),
+            listOf(ItemOrcamento(TipoItem.PECA, "Pastilha de freio", Dinheiro.of(BigDecimal("200.00")), itemEstoqueId = 50L, quantidade = 1)),
             validoAte = validoAte,
         ),
     )

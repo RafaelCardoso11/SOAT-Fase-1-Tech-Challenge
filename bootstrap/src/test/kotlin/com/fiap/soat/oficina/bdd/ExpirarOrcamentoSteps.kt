@@ -52,7 +52,7 @@ class ExpirarOrcamentoSteps {
             transicoes = listOf(TransicaoStatus(status, Instant.now())),
             liberadoParaOrcamento = true,
             orcamento = Orcamento(
-                listOf(ItemOrcamento(TipoItem.PECA, peca, Dinheiro.of(BigDecimal("200.00")))),
+                listOf(ItemOrcamento(TipoItem.PECA, peca, Dinheiro.of(BigDecimal("200.00")), itemEstoqueId = 50L, quantidade = 1)),
                 validoAte = validoAte,
             ),
         )
@@ -100,7 +100,7 @@ class ExpirarOrcamentoSteps {
 
     @Entao("a reserva da peça {string} deve ser liberada na expiração")
     fun reservaLiberada(peca: String) {
-        verify { estoque.liberarReserva(peca) }
+        verify { estoque.liberarReservas(1L) }
     }
 
     @Entao("o atendente deve ser notificado da expiração")

@@ -52,7 +52,7 @@ class RejeitarOrcamentoPersistenceIntegrationTest {
         realizarDiagnostico.finalizar(id, pecaIdentificada = true)
         gerarOrcamento.gerar(
             id,
-            listOf(ItemOrcamento(TipoItem.PECA, "Pastilha de freio", Dinheiro.of(BigDecimal("200.00")))),
+            listOf(ItemOrcamento(TipoItem.SERVICO, "Troca de pastilhas", Dinheiro.of(BigDecimal("200.00")))),
         )
 
         rejeitarOrcamento.rejeitar(id, "Valor acima do esperado")

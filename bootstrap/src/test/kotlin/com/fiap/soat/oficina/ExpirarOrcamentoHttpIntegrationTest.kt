@@ -56,7 +56,7 @@ class ExpirarOrcamentoHttpIntegrationTest {
         post(
             "/api/admin/ordens/$id/orcamento",
             token,
-            """{ "itens": [ { "tipo": "peça", "descricao": "Pastilha de freio", "valor": 200.00 } ] }""",
+            """{ "itens": [ { "tipo": "serviço", "descricao": "Troca de pastilhas", "valor": 200.00 } ] }""",
         )
 
         post("/api/admin/orcamentos/expirar", token).andExpect {

@@ -43,7 +43,7 @@ class ExpirarOrcamentosServiceTest {
         transicoes = listOf(TransicaoStatus(StatusOS.AGUARDANDO_APROVACAO, Instant.now())),
         liberadoParaOrcamento = true,
         orcamento = Orcamento(
-            listOf(ItemOrcamento(TipoItem.PECA, "Pastilha de freio", Dinheiro.of(BigDecimal("200.00")))),
+            listOf(ItemOrcamento(TipoItem.PECA, "Pastilha de freio", Dinheiro.of(BigDecimal("200.00")), itemEstoqueId = 50L, quantidade = 1)),
             validoAte = Instant.now().minusSeconds(3600),
         ),
     )
@@ -58,7 +58,7 @@ class ExpirarOrcamentosServiceTest {
 
         assertThat(expirados).isEqualTo(1)
         assertThat(ordem.status).isEqualTo(StatusOS.FINALIZADA)
-        verify { estoque.liberarReserva("Pastilha de freio") }
+        verify { estoque.liberarReservas(1L) }
         verify { eventos.publicar(OrcamentoExpirado(1L)) }
         verify { eventos.publicar(OsEncerrada(1L)) }
         verify { eventos.publicar(ReservaLiberada(1L)) }

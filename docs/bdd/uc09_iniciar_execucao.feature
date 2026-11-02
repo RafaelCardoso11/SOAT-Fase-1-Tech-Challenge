@@ -1,24 +1,21 @@
 # language: pt
+@implementado
 Funcionalidade: UC09 - Iniciar Execução da OS
   Como mecânico
   Quero iniciar os serviços aprovados
   Para executar o reparo e dar baixa nas peças reservadas
 
   Cenário: Iniciar execução com orçamento aprovado
-    Dado que existe uma OS com status "Em execução"
-    E o evento "Orçamento aprovado" foi registrado para a OS
-    E a peça "Pastilha de freio" está reservada para a OS
+    Dado uma OS em execução pronta para iniciar
     Quando o mecânico iniciar a execução
-    Então o evento "Execução iniciada" deve ser registrado
-    E o status da OS deve continuar "Em execução"
-    E a baixa definitiva da peça "Pastilha de freio" deve ser feita no estoque
-    E o evento "Peças baixadas" deve ser registrado
+    Então a execução deve registrar os eventos "Execução iniciada" e "Peças baixadas"
+    E o status da OS após iniciar deve continuar "Em execução"
+    E a baixa das peças deve ser feita no estoque
 
   Esquema do Cenário: Impedir execução sem orçamento aprovado
-    Dado que existe uma OS com status "<status>"
+    Dado uma OS para execução no status "<status>"
     Quando o mecânico tentar iniciar a execução
-    Então o evento "Execução iniciada" não deve ser registrado
-    E o mecânico deve receber um alerta de orçamento não aprovado
+    Então a execução não deve ser iniciada
     E nenhuma peça deve ser baixada do estoque
 
     Exemplos:

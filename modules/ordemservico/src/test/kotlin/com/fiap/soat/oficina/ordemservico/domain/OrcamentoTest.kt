@@ -17,7 +17,7 @@ class OrcamentoTest {
         val orcamento = Orcamento(
             listOf(
                 ItemOrcamento(TipoItem.SERVICO, "Troca de pastilhas", Dinheiro.of(BigDecimal("150.00"))),
-                ItemOrcamento(TipoItem.PECA, "Pastilha de freio", Dinheiro.of(BigDecimal("200.00"))),
+                ItemOrcamento(TipoItem.PECA, "Pastilha de freio", Dinheiro.of(BigDecimal("200.00")), itemEstoqueId = 50L, quantidade = 1),
             ),
             validoAte = Instant.now().plusSeconds(3600),
         )
