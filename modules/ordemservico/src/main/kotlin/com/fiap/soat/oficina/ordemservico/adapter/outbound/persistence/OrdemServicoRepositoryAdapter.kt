@@ -12,6 +12,7 @@ import com.fiap.soat.oficina.shared.domain.vo.Dinheiro
 import com.fiap.soat.oficina.shared.domain.vo.Documento
 import com.fiap.soat.oficina.shared.domain.vo.Placa
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class OrdemServicoRepositoryAdapter(
@@ -55,19 +56,24 @@ class OrdemServicoRepositoryAdapter(
         return springData.save(entidade).id!!
     }
 
+    @Transactional(readOnly = true)
     override fun buscarPorId(id: Long): OrdemServico? =
         springData.findById(id).map(OrdemServicoJpaEntity::toDomain).orElse(null)
 
+    @Transactional(readOnly = true)
     override fun buscarPorPlaca(placa: String): List<OrdemServico> =
         springData.findByPlacaOrderByIdDesc(placa).map(OrdemServicoJpaEntity::toDomain)
 
+    @Transactional(readOnly = true)
     override fun buscarPorDocumento(documento: String): List<OrdemServico> =
         springData.findByDocumentoOrderByIdDesc(documento).map(OrdemServicoJpaEntity::toDomain)
 
+    @Transactional(readOnly = true)
     override fun buscarExpiraveis(agora: java.time.Instant): List<OrdemServico> =
         springData.findByStatusAndOrcamento_ValidoAteBefore(StatusOS.AGUARDANDO_APROVACAO.name, agora)
             .map(OrdemServicoJpaEntity::toDomain)
 
+    @Transactional(readOnly = true)
     override fun buscarComExecucaoConcluida(): List<OrdemServico> =
         springData.findByExecucaoIniciadaEmIsNotNullAndExecucaoFinalizadaEmIsNotNull()
             .map(OrdemServicoJpaEntity::toDomain)
