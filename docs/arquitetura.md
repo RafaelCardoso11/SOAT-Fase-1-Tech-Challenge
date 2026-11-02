@@ -67,7 +67,7 @@ spec.md        →   plan.md          →   tasks.md        →   implementaçã
 | `specs/<feature-slug>/spec.md` | Especificação funcional (user stories, requisitos, critérios de aceite) | O **quê** |
 | `specs/<feature-slug>/plan.md` | Plano técnico (mapeia requisitos → hexagonal, portas, migrations) | O **como** |
 | `specs/<feature-slug>/tasks.md` | Checklist ordenado e paralelizável | Em que ordem |
-| `docs/adr/NNNN-*.md` | Registro versionado de cada decisão de arquitetura | Histórico das decisões |
+| §4 deste documento | Registro de cada decisão de arquitetura (estilo ADR) | Histórico das decisões |
 | `docs/bdd/*.feature` | Cenários BDD (Gherkin) por caso de uso — aceite executável | Comportamento esperado |
 
 > As skills SDD vivem em `.claude/skills/` e escrevem sempre em `specs/<feature-slug>/`. Os `.feature`
@@ -123,7 +123,7 @@ Frameworks ficam nas bordas (adapters). Isso é o que torna o domínio testável
 
 ## 4. Decisões arquiteturais (resumo estilo ADR)
 
-Cada decisão terá um ADR detalhado em `docs/adr/`. Resumo:
+Cada decisão fica registrada aqui, no formato resumido de ADR:
 
 ### ADR-0002 — Monolito Modular + Hexagonal (decisão principal)
 **Decisão:** um único deployable dividido em módulos por *bounded context*, cada um com camadas
@@ -417,4 +417,4 @@ e-mail (`specs/notificacao-email/`), Docker Compose, CI com gate Jacoco e scan T
   `execucao_finalizada_em`), não os eventos.
 - **Sem `CadastroPort`**: a OS guarda documento e veículo como VOs próprios e não consulta o cadastro na abertura.
 - **Domain services** não foram necessários; as regras de transição ficam no agregado `OrdemServico`.
-- **ADRs** seguem resumidos no §4; `docs/adr/` ainda não tem os arquivos individuais.
+- **ADRs** ficam resumidos no §4, sem arquivos individuais.
