@@ -94,6 +94,12 @@ class OrdemServico private constructor(
         }
     }
 
+    fun finalizarExecucao(todosAplicados: Boolean) {
+        check(status == StatusOS.EM_EXECUCAO) { "A execução só pode ser finalizada com a OS em execução" }
+        check(todosAplicados) { "Há itens pendentes de aplicação" }
+        transitarPara(StatusOS.FINALIZADA)
+    }
+
     fun expirarOrcamento(agora: Instant) {
         check(status == StatusOS.AGUARDANDO_APROVACAO) {
             "Só expira orçamento de OS aguardando aprovação"

@@ -4,6 +4,7 @@ import com.fiap.soat.oficina.ordemservico.application.usecase.AprovarOrcamentoSe
 import com.fiap.soat.oficina.ordemservico.application.usecase.ConsultarOrdensService
 import com.fiap.soat.oficina.ordemservico.application.usecase.CriarOrdemServicoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.ExpirarOrcamentosService
+import com.fiap.soat.oficina.ordemservico.application.usecase.FinalizarExecucaoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.GerarOrcamentoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.IniciarExecucaoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.RealizarDiagnosticoService
@@ -13,6 +14,7 @@ import com.fiap.soat.oficina.ordemservico.domain.port.inbound.AprovarOrcamentoUs
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ConsultarOrdensUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.CriarOrdemServicoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ExpirarOrcamentosUseCase
+import com.fiap.soat.oficina.ordemservico.domain.port.inbound.FinalizarExecucaoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.GerarOrcamentoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.IniciarExecucaoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.RealizarDiagnosticoUseCase
@@ -84,6 +86,13 @@ class OrdemServicoBeanConfig {
         eventos: PublicadorDeEventos,
         estoque: EstoquePort,
     ): IniciarExecucaoUseCase = IniciarExecucaoService(repositorio, eventos, estoque)
+
+    @Bean
+    fun finalizarExecucaoUseCase(
+        repositorio: OrdemServicoRepository,
+        eventos: PublicadorDeEventos,
+        notificacao: NotificacaoPort,
+    ): FinalizarExecucaoUseCase = FinalizarExecucaoService(repositorio, eventos, notificacao)
 
     @Bean
     fun expirarOrcamentosUseCase(
