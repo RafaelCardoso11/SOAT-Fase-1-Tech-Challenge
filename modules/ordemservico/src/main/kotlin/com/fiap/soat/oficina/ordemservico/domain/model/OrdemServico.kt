@@ -13,6 +13,8 @@ class OrdemServico private constructor(
     observacoes: String?,
     liberadoParaOrcamento: Boolean,
     orcamento: Orcamento?,
+    execucaoIniciadaEm: Instant?,
+    execucaoFinalizadaEm: Instant?,
 ) {
     var status: StatusOS = status
         private set
@@ -27,6 +29,12 @@ class OrdemServico private constructor(
         private set
 
     var orcamento: Orcamento? = orcamento
+        private set
+
+    var execucaoIniciadaEm: Instant? = execucaoIniciadaEm
+        private set
+
+    var execucaoFinalizadaEm: Instant? = execucaoFinalizadaEm
         private set
 
     fun iniciarDiagnostico() {
@@ -92,11 +100,14 @@ class OrdemServico private constructor(
         check(status == StatusOS.EM_EXECUCAO) {
             "A execução só pode ser iniciada com o orçamento aprovado"
         }
+        check(execucaoIniciadaEm == null) { "Execução já iniciada" }
+        execucaoIniciadaEm = Instant.now()
     }
 
     fun finalizarExecucao(todosAplicados: Boolean) {
         check(status == StatusOS.EM_EXECUCAO) { "A execução só pode ser finalizada com a OS em execução" }
         check(todosAplicados) { "Há itens pendentes de aplicação" }
+        execucaoFinalizadaEm = Instant.now()
         transitarPara(StatusOS.FINALIZADA)
     }
 
@@ -131,6 +142,8 @@ class OrdemServico private constructor(
                 observacoes = null,
                 liberadoParaOrcamento = false,
                 orcamento = null,
+                execucaoIniciadaEm = null,
+                execucaoFinalizadaEm = null,
             )
 
         fun reconstituir(
@@ -143,9 +156,12 @@ class OrdemServico private constructor(
             observacoes: String? = null,
             liberadoParaOrcamento: Boolean = false,
             orcamento: Orcamento? = null,
+            execucaoIniciadaEm: Instant? = null,
+            execucaoFinalizadaEm: Instant? = null,
         ): OrdemServico =
             OrdemServico(
                 id, documento, veiculo, relato, status, transicoes, observacoes, liberadoParaOrcamento, orcamento,
+                execucaoIniciadaEm, execucaoFinalizadaEm,
             )
     }
 }

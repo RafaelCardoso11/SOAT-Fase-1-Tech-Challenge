@@ -21,6 +21,7 @@ class IniciarExecucaoService(
             ?: throw NoSuchElementException("Ordem de serviço não encontrada")
 
         ordem.iniciarExecucao()
+        repositorio.salvar(ordem)
         estoque.baixarPecas(ordemServicoId)
         eventos.publicar(ExecucaoIniciada(ordemServicoId))
         eventos.publicar(PecasBaixadas(ordemServicoId))

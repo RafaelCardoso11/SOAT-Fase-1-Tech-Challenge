@@ -45,6 +45,7 @@ class IniciarExecucaoSteps {
             transicoes = listOf(TransicaoStatus(status, Instant.now())),
         )
         every { repositorio.buscarPorId(1L) } returns ordem
+        every { repositorio.salvar(any()) } returns 1L
         every { eventos.publicar(capture(publicados)) } just Runs
     }
 
