@@ -19,6 +19,17 @@ class DinheiroTest {
     }
 
     @Test
+    fun `multiplica pela quantidade`() {
+        assertThat((Dinheiro.of(BigDecimal("33.33")) * 3).valor).isEqualByComparingTo("99.99")
+    }
+
+    @Test
+    fun `rejeita quantidade negativa`() {
+        assertThatThrownBy { Dinheiro.of(BigDecimal("10")) * -1 }
+            .isInstanceOf(IllegalArgumentException::class.java)
+    }
+
+    @Test
     fun `rejeita valor negativo`() {
         assertThatThrownBy { Dinheiro.of(BigDecimal("-1")) }
             .isInstanceOf(IllegalArgumentException::class.java)
