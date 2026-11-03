@@ -13,7 +13,7 @@ SAIDA = W / 'apresentacao-fase1.mp4'
 CHROME = os.environ.get('CHROME', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
 VOZ = os.environ.get('VOZ', 'Luciana')
 PIPER = os.environ.get('PIPER_MODELO', str(W / 'voz' / 'pt_BR-jeff-medium.onnx'))
-PRONUNCIA = {'JWT': 'jota dáblio tê', 'API': 'a pê i', 'CPF': 'cê pê éfe', 'CNPJ': 'cê ene pê jota', 'DDD': 'dê dê dê',
+PRONUNCIA = {'FIAP': 'fíap', 'Software Architecture': 'sófituer árquitequitcher', 'JWT': 'jota dáblio tê', 'API': 'a pê i', 'CPF': 'cê pê éfe', 'CNPJ': 'cê ene pê jota', 'DDD': 'dê dê dê',
              'SOAT': 'sôat', 'Event Storming': 'ivent stórmin', 'Miro': 'míro', 'Kotlin': 'cótlin', 'Spring Boot': 'spring but',
              'spring-webmvc': 'spring web em vê cê', 'Docker Compose': 'dóquer compôus', 'Docker': 'dóquer', 'Swagger': 'suéguer',
              'Authorize': 'ótoraize', 'README': 'ríd mi', 'bounded contexts': 'bâunded cóntexts', 'deployable': 'deplóiabol',
@@ -67,6 +67,13 @@ def slide(n):
     destino = f'{W}/img/slide{n}.png'
     foto(f'file://{SLIDES}#{n}', destino)
     return destino
+
+
+def token_do_email():
+    mensagens = json.load(urllib.request.urlopen('http://localhost:8025/api/v1/messages'))['messages']
+    corpo = json.load(urllib.request.urlopen(f"http://localhost:8025/api/v1/message/{mensagens[0]['ID']}"))
+    foto(f"http://localhost:8025/view/{mensagens[0]['ID']}", f'{W}/img/mailpit-orcamento.png', 4000)
+    return re.search(r'/api/public/orcamentos/([^/\s]+)', corpo['Text']).group(1)
 
 
 def requisicoes():
@@ -124,6 +131,8 @@ def requisicoes():
             j = t
         if nome:
             resp[nome] = j
+        if req[1].endswith('/orcamento'):
+            vs['tokenOrcamento'] = token_do_email()
         saida.append((titulo, req[0], req[1], corpo, c, j))
     return saida
 
@@ -134,7 +143,7 @@ def cartao_req(i, r, com_resposta):
     if isinstance(tela, dict) and 'token' in tela:
         tela['token'] = tela['token'][:24] + '…'
     resposta = json.dumps(tela, ensure_ascii=False, indent=2)
-    resposta = re.sub(r'\{\s+"status": ("\w+"),\s+"momento": ("[^"]+")\s+\}', r'{ "status": \1, "momento": \2 }', resposta)
+    resposta = re.sub(r'(?m)^( {4,})\{\n([^{}]*?)\n\s*\}', lambda m: m.group(1) + '{ ' + ' '.join(m.group(2).split()) + ' }', resposta)
     linhas = resposta.split('\n')
     if len(linhas) > 24:
         resposta = '\n'.join(linhas[:24]) + '\n…'
@@ -193,40 +202,43 @@ FALAS_REQ = [
     ('Agora, chamamos uma rota administrativa, a listagem de ordens de serviço, sem enviar nenhum token.', 'A resposta é quatrocentos e um: sem autenticação, o acesso é recusado.'),
     ('Fazemos o login com um usuário de demonstração.', 'O login devolve o token JWT, que vale por uma hora, ou seja, três mil e seiscentos segundos.'),
     ('Repetimos a mesma rota, agora enviando o token no cabeçalho de autorização.', 'Dessa vez, a resposta é duzentos. A lista ainda está vazia, porque o banco começou zerado.'),
-    ('Com a autenticação resolvida, preparamos o catálogo. Primeiro, cadastramos o serviço de troca de óleo, a cento e vinte reais.', 'O serviço foi criado e recebeu o identificador um.'),
+    ('Com a autenticação resolvida, cadastramos a cliente, com CPF, nome e e-mail.', 'O cadastro valida o CPF, e é nesse e-mail que ela vai receber o orçamento.'),
+    ('Depois, o catálogo. Cadastramos o serviço de troca de óleo, a cento e vinte reais.', 'O serviço foi criado no catálogo.'),
     ('Em seguida, uma peça: o filtro de óleo, a quarenta e cinco reais, com cinco unidades em estoque.', 'O estoque separa o saldo físico, o que está reservado e o que está disponível.'),
     ('E um insumo: o óleo, vendido por litro, a quarenta reais, com doze litros em estoque.', 'Peças e insumos ficam no mesmo controle de estoque, diferenciados pelo tipo.'),
-    ('Agora abrimos a Ordem de Serviço, identificando o cliente pelo CPF e informando placa, marca, modelo e ano do veículo, além do relato do problema.', 'A ordem foi criada com o número um e nasce com o status Recebida. CPF e placa são validados pelo domínio antes disso.'),
-    ('A partir daqui, o cliente já pode acompanhar a ordem pela API pública, sem token.', 'Ele vê o status e a linha do tempo, e o CPF aparece mascarado, para proteger o dado.'),
+    ('Agora abrimos a Ordem de Serviço, identificando a cliente pelo CPF e informando placa, marca, modelo e ano do veículo, além do relato do problema.', 'A ordem foi criada com o número um e nasce com o status Recebida. CPF e placa são validados pelo domínio antes disso.'),
+    ('A partir daqui, a cliente já pode acompanhar a ordem pela API pública, sem token.', 'Ela vê o status e a linha do tempo, e o CPF aparece mascarado, para proteger o dado.'),
     ('O mecânico inicia o diagnóstico.', 'O status muda automaticamente para Em diagnóstico.'),
     ('Ele registra as observações da inspeção do veículo.', 'As observações ficam na ordem, e o status continua o mesmo.'),
     ('Ao finalizar, ele informa que identificou as peças necessárias.', 'A ordem agora está liberada para receber o orçamento.'),
     ('Esta é a geração do orçamento. Repare que a requisição informa só o serviço, as peças e as quantidades. Nenhum valor é digitado.', 'O sistema buscou os preços no catálogo e calculou o total: cento e vinte do serviço, quarenta e cinco do filtro e cento e vinte dos três litros de óleo, somando duzentos e oitenta e cinco reais. As peças foram reservadas, e o status passou para Aguardando aprovação.'),
-    ('A oficina registra a aprovação do orçamento pelo cliente.', 'O status muda para Em execução.'),
+    ('Pelo link, sem login, a cliente consulta o orçamento.', 'Ela vê os itens, o total e a validade.'),
+    ('A própria cliente aprova o orçamento pelo link.', 'O status muda para Em execução.'),
     ('O mecânico inicia a execução do serviço.', 'Nesse momento, as peças reservadas são baixadas do estoque.'),
-    ('Ao terminar, ele confirma que todos os itens foram aplicados.', 'O status muda para Finalizada, e o cliente é avisado de que o veículo está pronto.'),
+    ('Ao terminar, ele confirma que todos os itens foram aplicados.', 'O status muda para Finalizada, e a cliente recebe o aviso de que o veículo está pronto.'),
     ('Por fim, a oficina registra a entrega do veículo.', 'O status muda para Entregue, e o sistema devolve o comprovante.'),
-    ('Para fechar, o cliente consulta a ordem mais uma vez.', 'Aqui está o acompanhamento completo: os seis status, cada um com data e hora.'),
+    ('Para fechar, a cliente consulta a ordem mais uma vez.', 'Aqui está o acompanhamento completo: os seis status, cada um com data e hora.'),
 ]
 
+login = urllib.request.Request('http://localhost:8080/api/auth/login', method='POST', headers={'Content-Type': 'application/json'},
+                               data=json.dumps({'nomeUsuario': 'admin', 'senha': 'admin@123'}).encode())
+capturar_swagger(json.load(urllib.request.urlopen(login))['token'])
 reqs = requisicoes()
 assert len(reqs) == len(FALAS_REQ), len(reqs)
 for r in reqs:
     print(r[4], r[0])
 
 capturar_miro()
-capturar_swagger(next(r[5]['token'] for r in reqs if isinstance(r[5], dict) and 'token' in r[5]))
-foto('http://localhost:8025', f'{W}/img/mailpit.png', 4000)
 ps = subprocess.run(['docker', 'compose', '-f', str(COMPOSE), 'ps'], capture_output=True, text=True, check=True).stdout
 trivy = '\n'.join(open(REPO / 'docs/security/trivy-report.txt', encoding='utf-8').read().split('\n')[:34])
 build = '\n'.join((W / 'build.log').read_text(encoding='utf-8').strip().split('\n')[-6:])
 img = lambda nome: f'{W}/img/{nome}.png'
 
 cenas = [
-    ('a01', slide(1), 'Olá. Somos o grupo 29 do curso de Software Architecture, Fase 1. Os integrantes são Alan Teixeira Fideles, André Rafael Cardoso Reis e Cairo Augusto de Andrade. Vamos apresentar o back-end da Oficina Mecânica, feito em Kotlin, com Spring Boot, PostgreSQL e Docker.'),
+    ('a01', slide(1), 'Olá. Somos o grupo 29 da pós-graduação em Software Architecture da FIAP, Fase 1. Os integrantes são Alan Teixeira Fideles, André Rafael Cardoso Reis e Cairo Augusto de Andrade. Vamos apresentar o back-end da Oficina Mecânica, feito em Kotlin, com Spring Boot, PostgreSQL e Docker.'),
     ('a02', slide(2), 'A solução é uma API que acompanha o veículo da abertura da Ordem de Serviço até a entrega. Ela cobre três frentes. A Ordem de Serviço, com cliente, veículo, serviços, peças, insumos e orçamento. O acompanhamento, com seis status controlados pelo sistema e consulta do cliente pela API. E a gestão administrativa, com os cadastros, o controle de estoque e o tempo médio de execução.'),
     ('a03', slide(3), 'Antes de escrever código, modelamos o domínio com um Event Storming. Vamos ver o board no Miro.'),
-    ('m01', img('miro-geral'), 'Este é o nosso board. Modelamos os três fluxos pedidos no enunciado: a criação da Ordem de Serviço, o acompanhamento e a gestão de peças e insumos.'),
+    ('m01', img('miro-geral'), 'Este é o nosso board. Modelamos os três fluxos pedidos no enunciado: a criação da Ordem de Serviço, o acompanhamento e a gestão de peças e insumos. Como aqui passamos mais por cima, o board completo pode ser visto com calma, em tempo real, pelo link disponibilizado na entrega.'),
     ('m02', img('miro-legenda'), 'A legenda mostra a notação usada. Em laranja, os eventos de domínio, sempre no passado. Em azul, os comandos que os disparam. Em amarelo, os atores e os agregados. Em roxo, as políticas, que são as regras de negócio. Em verde, os read models. E em rosa, os sistemas externos.'),
     ('m03', img('miro-etapas'), 'Cada etapa foi organizada assim. No orçamento, por exemplo, o mecânico executa o comando Gerar Orçamento, que produz os eventos Orçamento Gerado e Peça Reservada. Uma política define a regra: se faltar peça, as reservas são liberadas e a ordem é encerrada.'),
     ('m04', img('miro-criacao'), 'Depois, ligamos as etapas em um fluxo. A criação da ordem começa na recepção, com o atendente, e passa pelo diagnóstico com o mecânico, até o orçamento, a execução e a entrega.'),
@@ -254,9 +266,10 @@ def blocos_req(inicio, fim):
 
 blocos_req(0, 4)
 cenas.append(('a14', slide(10), 'Estes são os seis status do enunciado. O status não é um campo que se edita: ele muda como resultado de cada ação no sistema. Vamos percorrer todos eles.'))
-blocos_req(4, 18)
+blocos_req(4, 14)
+cenas.append(('a15', img('mailpit-orcamento'), 'O orçamento foi enviado por e-mail para a cliente. Em desenvolvimento, o Mailpit captura a mensagem. Ela traz o valor e um link exclusivo daquele orçamento.'))
+blocos_req(14, 20)
 cenas += [
-    ('a15', img('mailpit'), 'Durante esse fluxo, o sistema enviou os avisos por e-mail, aqui capturados pelo Mailpit: o orçamento gerado e o veículo pronto.'),
     ('a16', slide(11), f'A qualidade é garantida por testes automatizados. São {TESTES} testes, sem falhas: unitários no domínio e nos casos de uso, de integração com um PostgreSQL real, via Testcontainers, e cenários BDD. O Jacoco exige no mínimo 80 por cento de cobertura de linhas no domínio e na aplicação, e todos os módulos ficam entre {FAIXA}. Abaixo de 80 por cento, o build falha.'),
     ('a17', cartao('build', f'<h1>Saída do build</h1><div class="met">./gradlew build</div><pre>{html.escape(build)}</pre>'), 'Aqui está o resultado do build, com os testes e a verificação de cobertura aprovados. O CI repete tudo isso a cada pull request.'),
     ('a18', slide(12), 'Por fim, a análise de vulnerabilidades. Analisamos a imagem Docker e as dependências com o Trivy. Não há vulnerabilidades HIGH ou CRITICAL em aberto. Restam dois riscos aceitos no spring-webmvc, documentados: eles dependem de recursos que esta API não usa.'),
