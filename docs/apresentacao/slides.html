@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oficina Mecânica — Tech Challenge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --papel: #edeff1;
+    --ficha: #ffffff;
+    --grafite: #1b2128;
+    --apagado: #5a636d;
+    --linha: #c9ced4;
+    --placa: #0b3c8c;
+    --placa-claro: #e3eaf6;
+    --sinal: #f2c230;
+    --display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+    --texto: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: var(--papel); color: var(--grafite); font-family: var(--texto); }
+  body { overflow: hidden; }
+
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; gap: 4vh; padding: 7vh 6.5vw 10vh; }
+  .slide.ativo { display: flex; }
+
+  h1, h2, h3 { font-family: var(--display); font-weight: 700; margin: 0; }
+  h2 { font-size: 6.4vh; line-height: 1.02; letter-spacing: -.005em; max-width: 32ch; }
+  h3 { font-size: 3vh; line-height: 1.1; font-weight: 600; margin-bottom: 1.4vh; }
+  p, li { font-size: 2.45vh; line-height: 1.42; }
+  p { margin: 0; }
+  ul { margin: 0; padding-left: 2.2vh; }
+  li + li { margin-top: .8vh; }
+  li::marker { color: var(--apagado); }
+  code { font-family: var(--texto); font-weight: 600; font-size: .95em; background: var(--placa-claro); color: var(--placa); padding: .05em .3em; border-radius: 3px; }
+  a { color: var(--placa); text-underline-offset: .18em; }
+  a:focus-visible { outline: 3px solid var(--sinal); outline-offset: 3px; border-radius: 2px; }
+
+  .conteudo { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+  .fonte { font-size: 1.95vh; color: var(--apagado); }
+
+  .ficha { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); background: var(--ficha); border: 2px solid var(--grafite); border-radius: 6px; }
+  .campo { padding: 2.6vh 1.7vw 3vh; border-left: 1px solid var(--linha); }
+  .campo:first-child { border-left: 0; }
+  .campo .rotulo { display: block; font-size: 1.9vh; font-weight: 500; color: var(--apagado); margin-bottom: 1.2vh; }
+  .campo.nucleo { background: var(--placa-claro); box-shadow: inset 0 5px 0 var(--placa); }
+
+  .capa { flex-direction: row; align-items: center; gap: 6vw; }
+  .capa .texto { flex: 1; display: flex; flex-direction: column; gap: 3.4vh; }
+  .capa h1 { font-size: 13vh; line-height: .92; letter-spacing: -.01em; }
+  .capa .sub { font-size: 2.9vh; color: var(--apagado); max-width: 36ch; line-height: 1.3; }
+  .capa dl { display: grid; grid-template-columns: max-content 1fr; gap: 1.2vh 2.4vw; margin: 0; font-size: 2.4vh; border-top: 2px solid var(--grafite); padding-top: 2.6vh; }
+  .capa dt { color: var(--apagado); }
+  .capa dd { margin: 0; }
+  .capa dd.integrantes { display: flex; flex-direction: column; gap: .5vh; }
+
+  .placa { width: 40vw; max-width: 640px; flex: none; aspect-ratio: 400 / 130; background: #fff; border: 3px solid var(--grafite); border-radius: 1.6vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 2vh 4vh -2vh rgba(27, 33, 40, .35); }
+  .placa .faixa { background: var(--placa); color: #fff; font: 600 2.2vh var(--display); letter-spacing: .06em; padding: .9vh 1.6vh; display: flex; justify-content: space-between; }
+  .placa .caracteres { flex: 1; display: grid; place-items: center; font: 700 15vh var(--display); letter-spacing: .04em; line-height: 1; padding-bottom: .6vh; }
+
+  .mapa { width: 100%; height: 100%; max-height: 54vh; }
+  .mapa .t { font: 700 26px var(--display); fill: var(--grafite); text-anchor: middle; }
+  .mapa .s { font: 500 16px var(--texto); fill: var(--apagado); text-anchor: middle; }
+  .mapa .s.claro { fill: #cfdcf2; }
+  .mapa .t.claro { fill: #fff; }
+  .mapa .r { font: 500 16px var(--texto); fill: var(--grafite); paint-order: stroke; stroke: var(--papel); stroke-width: 6px; }
+  .mapa .ligacao { stroke: var(--grafite); stroke-width: 2; fill: none; }
+  .mapa .kernel { stroke: var(--apagado); stroke-width: 2; stroke-dasharray: 6 6; fill: none; }
+
+  .lado { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3vw; align-items: center; }
+  .camadas { display: flex; flex-direction: column; border: 2px solid var(--grafite); border-radius: 6px; background: var(--ficha); overflow: hidden; }
+  .camada { display: grid; grid-template-columns: 13vw 1fr; align-items: center; gap: 1vw; padding: 2vh 1.4vw; font-size: 2.2vh; border-top: 1px solid var(--linha); }
+  .camada:first-child { border-top: 0; }
+  .camada b { font: 600 2.6vh var(--display); }
+  .camada.dominio { background: var(--placa); color: #fff; border-top-color: var(--placa); }
+  .camada.dominio + .camada { border-top-color: var(--placa); }
+
+  table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 2.2vh; background: var(--ficha); border: 2px solid var(--grafite); border-radius: 6px; overflow: hidden; }
+  th, td { text-align: left; padding: 1.35vh 1.2vw; border-top: 1px solid var(--linha); }
+  th { border-top: 0; font-weight: 500; font-size: 1.9vh; color: var(--apagado); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.num { font: 600 2.6vh var(--display); }
+
+  .trilho { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1vw; padding-top: 5vh; }
+  .trilho::before { content: ""; position: absolute; top: 1.6vh; left: 1.6vh; right: calc(100% / 6 - .4vh); height: 3px; background: var(--grafite); }
+  .trilho li + li { margin-top: 0; }
+  .parada { position: relative; display: flex; flex-direction: column; gap: 1vh; }
+  .parada::before { content: ""; position: absolute; top: -5vh; left: 0; width: 3.2vh; height: 3.2vh; border-radius: 50%; background: var(--ficha); border: 3px solid var(--grafite); }
+  .parada b { font: 700 3.3vh var(--display); line-height: 1.05; min-height: 7vh; }
+  .parada span { font-size: 2.1vh; color: var(--apagado); line-height: 1.3; }
+  .parada.final::before { background: var(--sinal); }
+  .parada.final b { text-decoration: underline; text-decoration-color: var(--sinal); text-decoration-thickness: .7vh; text-underline-offset: .5vh; text-decoration-skip-ink: none; }
+
+  .passos { counter-reset: passo; }
+  .passos .campo::before { counter-increment: passo; content: counter(passo); display: block; font: 700 6vh var(--display); line-height: 1; color: var(--placa); margin-bottom: 1.6vh; }
+
+  .numero { font: 700 13vh var(--display); line-height: .9; letter-spacing: -.01em; margin-bottom: 1.6vh; font-variant-numeric: tabular-nums; }
+  .numero.marcado { display: inline-block; box-shadow: inset 0 -2.2vh 0 var(--sinal); padding: 0 .08em; }
+
+  #rodape { position: fixed; left: 6.5vw; right: 6.5vw; bottom: 3.4vh; display: flex; justify-content: space-between; font-size: 1.95vh; color: var(--apagado); border-top: 1px solid var(--linha); padding-top: 1.4vh; }
+  #barra { position: fixed; left: 0; bottom: 0; height: 5px; background: var(--placa); transition: width .2s ease-out; }
+
+  .slide.pausa { background: var(--placa); color: #fff; justify-content: center; gap: 4vh; }
+  .pausa h2 { font-size: 12vh; line-height: .95; max-width: 18ch; }
+  .pausa .destino { font-size: 3vh; color: #cfdcf2; max-width: 46ch; line-height: 1.35; }
+  .pausa .destino a { color: #fff; }
+  .pausa .grupos { display: flex; gap: 4vw; border-top: 2px solid rgba(255,255,255,.35); padding-top: 3vh; }
+  .pausa .grupos b { display: block; font: 700 4vh var(--display); color: var(--sinal); }
+  .pausa .grupos span { font-size: 2.4vh; color: #fff; }
+  .pausa a:focus-visible { outline-color: var(--sinal); }
+  body.em-pausa #rodape { color: #cfdcf2; border-top-color: rgba(255,255,255,.3); }
+  body.em-pausa #barra { background: var(--sinal); }
+
+  @media (prefers-reduced-motion: reduce) { #barra { transition: none; } }
+
+  @media (max-width: 760px) {
+    body { overflow: auto; }
+    .slide { position: relative; display: flex; padding: 40px 16px; min-height: 100vh; gap: 24px; border-bottom: 2px solid var(--grafite); }
+    h2 { font-size: 32px; }
+    h3 { font-size: 20px; }
+    p, li, .camada, table, .capa dl, .capa .sub, .fonte { font-size: 15px; }
+    .capa { flex-direction: column-reverse; align-items: stretch; }
+    .capa h1 { font-size: 52px; }
+    .placa { width: 100%; min-width: 0; }
+    .placa .faixa { font-size: 13px; }
+    .placa .caracteres { font-size: 48px; }
+    .ficha, .lado, .trilho, .camada { grid-template-columns: minmax(0, 1fr); }
+    .campo { border-left: 0; border-top: 1px solid var(--linha); padding: 16px; }
+    .campo:first-child { border-top: 0; }
+    .campo .rotulo, th { font-size: 13px; }
+    .camada b { font-size: 18px; }
+    .trilho { padding-top: 0; padding-left: 36px; gap: 20px; }
+    .trilho::before { top: 8px; bottom: 8px; left: 11px; right: auto; width: 3px; height: auto; }
+    .parada::before { top: 0; left: -36px; width: 22px; height: 22px; }
+    .parada b { min-height: 0; font-size: 22px; }
+    .parada span { font-size: 14px; }
+    .numero { font-size: 64px; }
+    .passos .campo::before { font-size: 36px; }
+    .mapa { max-height: none; height: auto; }
+    table { display: block; overflow-x: auto; }
+    .pausa h2 { font-size: 44px; }
+    .pausa .destino, .pausa .grupos span { font-size: 16px; }
+    .pausa .grupos { flex-direction: column; gap: 16px; }
+    .pausa .grupos b { font-size: 24px; }
+    #rodape, #barra { display: none; }
+  }
+
+  @media print {
+    @page { size: 16in 9in; margin: 0; }
+    body { overflow: visible; }
+    .slide { position: relative; display: flex; height: 100vh; break-after: page; }
+    #rodape, #barra { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<section class="slide capa" data-bloco="Identificação">
+  <div class="texto">
+    <h1>Oficina<br>Mecânica</h1>
+    <p class="sub">MVP do back-end para gestão de ordens de serviço, clientes e peças.</p>
+    <dl>
+      <dt>Grupo</dt><dd>29</dd>
+      <dt>Integrantes</dt><dd class="integrantes">
+        <span>Alan Teixeira Fideles</span>
+        <span>André Rafael Cardoso Reis</span>
+        <span>Cairo Augusto de Andrade</span>
+      </dd>
+      <dt>Tecnologias</dt><dd>Kotlin, Spring Boot, PostgreSQL e Docker</dd>
+    </dl>
+  </div>
+  <div class="placa" role="img" aria-label="Placa SOA1T29: SOAT, grupo 29">
+    <div class="faixa"><span>FIAP SOAT</span><span>Fase 1</span></div>
+    <div class="caracteres">SOA1T29</div>
+  </div>
+</section>
+
+<section class="slide" data-bloco="Proposta da solução">
+  <h2>Uma API acompanha o veículo da abertura da Ordem de Serviço até a entrega</h2>
+  <div class="conteudo">
+    <div class="ficha" style="--n:3">
+      <div class="campo nucleo">
+        <h3>Ordem de Serviço</h3>
+        <ul>
+          <li>Cliente por CPF ou CNPJ e dados do veículo</li>
+          <li>Serviços, peças e insumos</li>
+          <li>Orçamento e aprovação</li>
+        </ul>
+      </div>
+      <div class="campo">
+        <h3>Acompanhamento</h3>
+        <ul>
+          <li>Seis status controlados pelo sistema</li>
+          <li>Transições automáticas</li>
+          <li>Consulta do cliente pela API</li>
+        </ul>
+      </div>
+      <div class="campo">
+        <h3>Gestão administrativa</h3>
+        <ul>
+          <li>Clientes, veículos, serviços e peças</li>
+          <li>Controle de estoque</li>
+          <li>Tempo médio de execução</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pausa" data-bloco="Event Storming">
+  <h2>Agora, o Event Storming no Miro</h2>
+  <p class="destino">Criação e acompanhamento da Ordem de Serviço e gestão de peças e insumos, no <a href="https://miro.com/app/board/uXjVHq1XvOs=/?share_link_id=344863119386">board Tech01</a>.</p>
+</section>
+
+<section class="slide" data-bloco="DDD: bounded contexts">
+  <h2>Ordem de Serviço é o núcleo; os demais contextos o sustentam</h2>
+  <div class="conteudo">
+    <svg class="mapa" viewBox="0 0 1200 430" role="img" aria-label="Mapa de contexto. Autenticação protege as APIs. Ordem de Serviço reserva e baixa peças no Estoque e avisa o cliente pelo servidor de e-mail. Cadastro compartilha com Ordem de Serviço o shared-kernel.">
+      <defs>
+        <marker id="ponta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1b2128"/></marker>
+      </defs>
+
+      <path class="ligacao" d="M260 215 H480" marker-end="url(#ponta)"/>
+      <text class="r" x="370" y="203" style="text-anchor:middle">JWT nas APIs</text>
+
+      <path class="ligacao" d="M720 175 H800 V70 H880" marker-end="url(#ponta)"/>
+      <text class="r" x="788" y="112" style="text-anchor:end">reserva e baixa de peças</text>
+
+      <path class="ligacao" d="M720 215 H880" marker-end="url(#ponta)"/>
+      <text class="r" x="800" y="203" style="text-anchor:middle">avisa o cliente</text>
+
+      <path class="kernel" d="M720 255 H800 V360 H880"/>
+      <text class="r" x="788" y="322" style="text-anchor:end">shared-kernel</text>
+
+      <rect x="20" y="160" width="240" height="110" rx="6" fill="#ffffff" stroke="#1b2128" stroke-width="2"/>
+      <text class="t" x="140" y="210">Autenticação</text>
+      <text class="s" x="140" y="238">Genérico</text>
+
+      <rect x="480" y="140" width="240" height="150" rx="6" fill="#0b3c8c"/>
+      <text class="t claro" x="600" y="210">Ordem de Serviço</text>
+      <text class="s claro" x="600" y="238">Principal</text>
+
+      <rect x="880" y="20" width="300" height="100" rx="6" fill="#e3eaf6" stroke="#0b3c8c" stroke-width="2"/>
+      <text class="t" x="1030" y="65">Estoque</text>
+      <text class="s" x="1030" y="93">Suporte</text>
+
+      <rect x="880" y="165" width="300" height="100" rx="6" fill="#edeff1" stroke="#5a636d" stroke-width="2" stroke-dasharray="6 5"/>
+      <text class="t" x="1030" y="210">Servidor de e-mail</text>
+      <text class="s" x="1030" y="238">Sistema externo</text>
+
+      <rect x="880" y="310" width="300" height="100" rx="6" fill="#e3eaf6" stroke="#0b3c8c" stroke-width="2"/>
+      <text class="t" x="1030" y="355">Cadastro</text>
+      <text class="s" x="1030" y="383">Suporte</text>
+    </svg>
+  </div>
+  <p class="fonte">Um módulo Gradle e um schema por contexto. Fonte: <code>docs/ddd/diagramas.pdf</code></p>
+</section>
+
+<section class="slide" data-bloco="DDD: elementos táticos">
+  <h2>As regras moram no domínio e usam a linguagem da oficina</h2>
+  <div class="conteudo">
+    <div class="ficha" style="--n:3">
+      <div class="campo nucleo">
+        <span class="rotulo">Agregados</span>
+        <ul>
+          <li><code>OrdemServico</code>, com <code>Orcamento</code> e <code>TransicaoStatus</code></li>
+          <li><code>ItemEstoque</code></li>
+          <li><code>Reserva</code></li>
+          <li><code>Cliente</code>, <code>Veiculo</code>, <code>Servico</code></li>
+        </ul>
+      </div>
+      <div class="campo">
+        <span class="rotulo">Objetos de valor</span>
+        <ul>
+          <li><code>Documento</code>: CPF ou CNPJ válido</li>
+          <li><code>Placa</code>: padrão antigo e Mercosul</li>
+          <li><code>Dinheiro</code></li>
+        </ul>
+      </div>
+      <div class="campo">
+        <span class="rotulo">Eventos de domínio</span>
+        <ul>
+          <li><code>OrdemServicoCriada</code></li>
+          <li><code>OrcamentoGerado</code></li>
+          <li><code>OrcamentoAprovado</code></li>
+          <li><code>ExecucaoFinalizada</code></li>
+          <li><code>VeiculoEntregue</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <p class="fonte">Glossário ligado às classes do código: <code>docs/ddd/linguagem-ubiqua.md</code></p>
+</section>
+
+<section class="slide" data-bloco="Arquitetura">
+  <h2>Um único deployable, em camadas, com um módulo por contexto</h2>
+  <div class="conteudo lado">
+    <div class="camadas" aria-label="Camadas de cada módulo, de fora para dentro">
+      <div class="camada"><b>adapter/inbound</b><span>APIs REST e job agendado</span></div>
+      <div class="camada"><b>application</b><span>Casos de uso e transações</span></div>
+      <div class="camada dominio"><b>domain</b><span>Agregados, objetos de valor, eventos e portas, sem Spring</span></div>
+      <div class="camada"><b>adapter/outbound</b><span>JPA, e-mail e integração entre módulos, implementando as portas</span></div>
+    </div>
+    <table>
+      <tr><th>Módulo</th><th>Responsabilidade</th></tr>
+      <tr><td><code>bootstrap</code></td><td>Aplicação Spring Boot</td></tr>
+      <tr><td><code>ordemservico</code></td><td>OS, diagnóstico e orçamento</td></tr>
+      <tr><td><code>cadastro</code></td><td>Clientes, veículos e serviços</td></tr>
+      <tr><td><code>estoque</code></td><td>Peças, insumos e reservas</td></tr>
+      <tr><td><code>autenticacao</code></td><td>Login e JWT</td></tr>
+      <tr><td><code>shared-kernel</code></td><td>Objetos de valor comuns</td></tr>
+    </table>
+  </div>
+  <p class="fonte">Decisões registradas em <code>docs/arquitetura.md</code> e diagramas C4 em <code>docs/c4/</code></p>
+</section>
+
+<section class="slide" data-bloco="Banco de dados">
+  <h2>PostgreSQL, porque o fluxo da OS exige transações e integridade fortes</h2>
+  <div class="conteudo">
+    <div class="ficha" style="--n:4">
+      <div class="campo nucleo"><h3>ACID</h3><p>Reserva, baixa e mudança de status alteram várias tabelas como uma só operação.</p></div>
+      <div class="campo"><h3>Integridade</h3><p>CPF/CNPJ e placa únicos, chaves estrangeiras e <code>CHECK</code> de saldo.</p></div>
+      <div class="campo"><h3>Concorrência</h3><p>Lock de linha no estoque: a última peça não vai para duas ordens.</p></div>
+      <div class="campo"><h3>Isolamento</h3><p>Um schema por módulo, versionado com Flyway.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-bloco="Na prática">
+  <h2>Agora, a solução em funcionamento</h2>
+  <div class="conteudo">
+    <div class="ficha passos" style="--n:3">
+      <div class="campo"><h3>Execução e Swagger</h3><p>O ambiente no ar com Docker Compose e a documentação da API.</p></div>
+      <div class="campo"><h3>Autenticação</h3><p>APIs administrativas sem token e com token JWT.</p></div>
+      <div class="campo"><h3>Ordem de Serviço</h3><p>Da criação à entrega, com serviços, peças, insumos e orçamento.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pausa" data-bloco="Na prática: requisições">
+  <h2>Agora, as requisições na API</h2>
+  <p class="destino">Executadas em ordem, com o banco zerado, a partir de <code>docs/apresentacao/demo.http</code>.</p>
+  <div class="grupos">
+    <div><b>01 a 04</b><span>Autenticação JWT</span></div>
+    <div><b>05 a 17</b><span>Ordem de Serviço, da criação à entrega</span></div>
+  </div>
+</section>
+
+<section class="slide" data-bloco="Fluxo da Ordem de Serviço">
+  <h2>O status muda como resultado de cada ação no sistema</h2>
+  <div class="conteudo">
+    <ol class="trilho" style="list-style:none;margin:0;padding-left:0">
+      <li class="parada"><b>Recebida</b><span>Criação da OS</span></li>
+      <li class="parada"><b>Em diagnóstico</b><span>Início do diagnóstico</span></li>
+      <li class="parada"><b>Aguardando aprovação</b><span>Geração do orçamento</span></li>
+      <li class="parada"><b>Em execução</b><span>Aprovação do orçamento</span></li>
+      <li class="parada"><b>Finalizada</b><span>Fim da execução</span></li>
+      <li class="parada final"><b>Entregue</b><span>Entrega do veículo</span></li>
+    </ol>
+  </div>
+  <p class="fonte">Requisições da demonstração: <code>docs/apresentacao/demo.http</code></p>
+</section>
+
+<section class="slide" data-bloco="Testes automatizados">
+  <h2>Testes unitários e de integração, com mais de 80% de cobertura no domínio</h2>
+  <div class="conteudo lado">
+    <div>
+      <div class="numero marcado">455</div>
+      <p>Testes no <code>./gradlew build</code>, com 0 falhas: unitários no domínio e nos casos de uso, integração com PostgreSQL real via Testcontainers e cenários BDD.</p>
+    </div>
+    <table>
+      <tr><th>Módulo</th><th class="num">Cobertura de linhas</th></tr>
+      <tr><td><code>ordemservico</code></td><td class="num">98,6%</td></tr>
+      <tr><td><code>estoque</code></td><td class="num">96,1%</td></tr>
+      <tr><td><code>cadastro</code></td><td class="num">95,9%</td></tr>
+      <tr><td><code>autenticacao</code></td><td class="num">100,0%</td></tr>
+      <tr><td><code>shared-kernel</code></td><td class="num">88,9%</td></tr>
+    </table>
+  </div>
+  <p class="fonte">Cobertura das camadas domain e application. O build falha abaixo de 80%.</p>
+</section>
+
+<section class="slide" data-bloco="Análise de vulnerabilidades">
+  <h2>Nenhuma vulnerabilidade HIGH ou CRITICAL em aberto</h2>
+  <div class="conteudo">
+    <div class="ficha" style="--n:2">
+      <div class="campo">
+        <div class="numero marcado">0</div>
+        <p>HIGH ou CRITICAL em aberto na imagem Docker e nas dependências do <code>app.jar</code>, segundo o Trivy.</p>
+      </div>
+      <div class="campo">
+        <div class="numero">2</div>
+        <p>Riscos aceitos e documentados no <code>spring-webmvc</code>. Eles dependem de <code>XsltView</code> ou de SSE com fragmentos de view, que esta API não usa.</p>
+      </div>
+    </div>
+  </div>
+  <p class="fonte">Relatório em <code>docs/security/trivy-report.txt</code> e justificativas em <code>docs/security/README.md</code></p>
+</section>
+
+<div id="rodape"><span id="bloco"></span><span id="contagem"></span></div>
+<div id="barra"></div>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  const bloco = document.getElementById('bloco');
+  const contagem = document.getElementById('contagem');
+  const barra = document.getElementById('barra');
+
+  function mostrar(indice) {
+    const atual = Math.max(0, Math.min(slides.length - 1, indice));
+    slides.forEach((slide, i) => slide.classList.toggle('ativo', i === atual));
+    document.body.classList.toggle('em-pausa', slides[atual].classList.contains('pausa'));
+    bloco.textContent = slides[atual].dataset.bloco;
+    contagem.textContent = `${atual + 1} de ${slides.length}`;
+    barra.style.width = `${((atual + 1) / slides.length) * 100}%`;
+    history.replaceState(null, '', `#${atual + 1}`);
+    return atual;
+  }
+
+  let atual = mostrar((parseInt(location.hash.slice(1), 10) || 1) - 1);
+
+  addEventListener('keydown', (evento) => {
+    if (['ArrowRight', 'PageDown', ' '].includes(evento.key)) atual = mostrar(atual + 1);
+    if (['ArrowLeft', 'PageUp'].includes(evento.key)) atual = mostrar(atual - 1);
+    if (evento.key === 'Home') atual = mostrar(0);
+    if (evento.key === 'End') atual = mostrar(slides.length - 1);
+    if (evento.key.toLowerCase() === 'f') {
+      document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+    }
+  });
+</script>
+</body>
+</html>
