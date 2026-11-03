@@ -58,4 +58,4 @@ Comportamento (BDD):
 
 ## Open Questions
 - `[NEEDS CLARIFICATION: peça indisponível]` — a política do Event Storming é "revisar o orçamento; sem alternativa, encerrar a OS" (UC07). Assumido **fora do escopo** deste UC; o stub de estoque considera a peça disponível. Não bloqueia.
-- `[NEEDS CLARIFICATION: itens vêm do catálogo?]` — assumido **texto livre** por ora (descrição + valor informados); catálogo estruturado quando a integração com `cadastro`/`estoque` existir. Não bloqueia.
+- **Itens vêm do catálogo (resolvido, #106):** `servicoId` e `itemEstoqueId` trazem nome e preço do cadastro e do estoque; `descricao` e `valor` informados têm prioridade; serviço avulso exige os dois. Revale também para a revisão (UC07).

@@ -65,6 +65,113 @@ class GerarOrcamentoHttpIntegrationTest {
         ] }
     """.trimIndent()
 
+    private fun idCriado(url: String, token: String, corpo: String): Long {
+        val resposta = post(url, token, corpo).andReturn().response.contentAsString
+        return objectMapper.readTree(resposta).get("id").asLong()
+    }
+
+    private fun ordemProntaParaOrcamento(token: String): Long {
+        val id = criarOrdem(token)
+        post("/api/admin/ordens/$id/diagnostico/iniciar", token)
+        post("/api/admin/ordens/$id/diagnostico/finalizar", token, """{ "pecaIdentificada": true }""")
+        return id
+    }
+
+    private fun servicoCadastrado(token: String, preco: String) = idCriado(
+        "/api/v1/admin/servicos",
+        token,
+        """{ "nome": "Alinhamento ${System.nanoTime()}", "preco": $preco }""",
+    )
+
+    private fun pecaCadastrada(token: String, preco: String) = idCriado(
+        "/api/v1/admin/estoque/itens",
+        token,
+        """{ "nome": "Pastilha ${System.nanoTime()}", "tipo": "PECA", "preco": $preco, "saldoInicial": 10 }""",
+    )
+
+    @Test
+    fun `orcamento so com ids usa os precos cadastrados`() {
+        val token = token()
+        val id = ordemProntaParaOrcamento(token)
+        val servico = servicoCadastrado(token, "100.00")
+        val peca = pecaCadastrada(token, "30.00")
+
+        post(
+            "/api/admin/ordens/$id/orcamento",
+            token,
+            """{ "itens": [
+                { "tipo": "serviço", "servicoId": $servico },
+                { "tipo": "peça", "itemEstoqueId": $peca, "quantidade": 2 }
+            ] }""",
+        ).andExpect {
+            status { isOk() }
+            jsonPath("$.status") { value("AGUARDANDO_APROVACAO") }
+            jsonPath("$.total") { value(160.00) }
+        }
+    }
+
+    @Test
+    fun `valor informado tem prioridade sobre o preco cadastrado`() {
+        val token = token()
+        val id = ordemProntaParaOrcamento(token)
+        val servico = servicoCadastrado(token, "100.00")
+
+        post(
+            "/api/admin/ordens/$id/orcamento",
+            token,
+            """{ "itens": [{ "tipo": "serviço", "servicoId": $servico, "valor": 80.00 }] }""",
+        ).andExpect {
+            status { isOk() }
+            jsonPath("$.total") { value(80.00) }
+        }
+    }
+
+    @Test
+    fun `revisao tambem usa os precos cadastrados`() {
+        val token = token()
+        val id = ordemProntaParaOrcamento(token)
+        val servico = servicoCadastrado(token, "100.00")
+        post("/api/admin/ordens/$id/orcamento", token, corpoOrcamento)
+
+        post(
+            "/api/admin/ordens/$id/orcamento/revisar",
+            token,
+            """{ "itens": [{ "tipo": "serviço", "servicoId": $servico }] }""",
+        ).andExpect {
+            status { isOk() }
+            jsonPath("$.total") { value(100.00) }
+        }
+    }
+
+    @Test
+    fun `servico inexistente retorna 404`() {
+        val token = token()
+        val id = ordemProntaParaOrcamento(token)
+
+        post(
+            "/api/admin/ordens/$id/orcamento",
+            token,
+            """{ "itens": [{ "tipo": "serviço", "servicoId": 999999 }] }""",
+        ).andExpect {
+            status { isNotFound() }
+            jsonPath("$.erro") { value("Serviço 999999 não encontrado") }
+        }
+    }
+
+    @Test
+    fun `item avulso sem valor retorna 400`() {
+        val token = token()
+        val id = ordemProntaParaOrcamento(token)
+
+        post(
+            "/api/admin/ordens/$id/orcamento",
+            token,
+            """{ "itens": [{ "tipo": "serviço", "descricao": "Revisão extra" }] }""",
+        ).andExpect {
+            status { isBadRequest() }
+        }
+    }
+
     @Test
     fun `gera orcamento apos diagnostico finalizado retorna 200`() {
         val token = token()

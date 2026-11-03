@@ -9,6 +9,7 @@ import com.fiap.soat.oficina.ordemservico.application.usecase.ExpirarOrcamentosS
 import com.fiap.soat.oficina.ordemservico.application.usecase.FinalizarExecucaoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.GerarOrcamentoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.IniciarExecucaoService
+import com.fiap.soat.oficina.ordemservico.application.usecase.MontarItensOrcamentoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.RealizarDiagnosticoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.RejeitarOrcamentoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.RevisarOrcamentoService
@@ -21,9 +22,11 @@ import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ExpirarOrcamentosU
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.FinalizarExecucaoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.GerarOrcamentoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.IniciarExecucaoUseCase
+import com.fiap.soat.oficina.ordemservico.domain.port.inbound.MontarItensOrcamentoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.RealizarDiagnosticoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.RejeitarOrcamentoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.RevisarOrcamentoUseCase
+import com.fiap.soat.oficina.ordemservico.domain.port.outbound.CatalogoPort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.EstoquePort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.NotificacaoPort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.OrdemServicoRepository
@@ -117,4 +120,8 @@ class OrdemServicoBeanConfig {
         estoque: EstoquePort,
         notificacao: NotificacaoPort,
     ): ExpirarOrcamentosUseCase = ExpirarOrcamentosService(repositorio, eventos, estoque, notificacao)
+
+    @Bean
+    fun montarItensOrcamentoUseCase(catalogo: CatalogoPort): MontarItensOrcamentoUseCase =
+        MontarItensOrcamentoService(catalogo)
 }

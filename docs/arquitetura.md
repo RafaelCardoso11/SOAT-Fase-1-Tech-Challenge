@@ -415,6 +415,6 @@ e-mail (`specs/notificacao-email/`), Docker Compose, CI com gate Jacoco e scan T
 - **Peça indisponível** encerra a OS direto, sem a etapa de aviso e revisão prevista no Event Storming.
 - **Tempo médio de execução** usa as datas de início e fim gravadas na OS (`execucao_iniciada_em` e
   `execucao_finalizada_em`), não os eventos.
-- **Sem `CadastroPort`**: a OS guarda documento e veículo como VOs próprios e não consulta o cadastro na abertura.
+- **Cadastro só no orçamento**: a OS guarda documento e veículo como VOs próprios e não consulta o cadastro na abertura. O orçamento busca nome e preço de serviços e peças pela `CatalogoPort` (ACL `CatalogoAdapter`).
 - **Domain services** não foram necessários; as regras de transição ficam no agregado `OrdemServico`.
 - **ADRs** ficam resumidos no §4, sem arquivos individuais.

@@ -28,7 +28,7 @@ Convenção no código: termos do domínio em português, sem acento (`Orcamento
 | Inspeção | Observações registradas durante o diagnóstico. | `OrdemServico.registrarInspecao(observacoes)` |
 | Peça identificada | Resultado do diagnóstico que libera a OS para orçamento. Sem peça identificada, a OS é encerrada. | `finalizarDiagnostico(pecaIdentificada)` |
 | Orçamento | Proposta com os valores de serviços e peças, baseada no diagnóstico. Precisa da aprovação do cliente para a execução. | `Orcamento` (entidade dentro do agregado OS) |
-| Item do orçamento | Linha do orçamento: um serviço ou uma peça, com descrição e valor; a peça referencia o item de estoque e a quantidade. | `ItemOrcamento`, `TipoItem` (`SERVICO`, `PECA`) |
+| Item do orçamento | Linha do orçamento: um serviço ou uma peça. Descrição e valor vêm do cadastro e do estoque (peça: preço × quantidade), salvo quando informados. | `ItemOrcamento`, `TipoItem` (`SERVICO`, `PECA`), `MontarItensOrcamentoService` |
 | Total do orçamento | Soma dos valores dos itens, calculada pelo domínio. | `Orcamento.total` |
 | Validade do orçamento | Prazo para o cliente decidir: 7 dias por padrão. | `Orcamento.validoAte`, `ORCAMENTO_VALIDADE_DIAS` |
 | Aprovação | Decisão do cliente de aceitar o orçamento. Leva a OS para Em execução. | `OrdemServico.aprovarOrcamento()`, `AprovarOrcamentoService` |
