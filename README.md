@@ -67,10 +67,10 @@ Diagramas C4 em [`docs/c4/`](docs/c4/) (Mermaid, importáveis no Miro):
 
 ## Tecnologias
 
-- Kotlin 1.9 (JVM 17) + Spring Boot 3.3 (Web, Data JPA, Security, Mail, Actuator)
+- Kotlin 1.9 (JVM 17) + Spring Boot 3.5 (Web, Data JPA, Security, Mail, Actuator)
 - PostgreSQL 16 com migrations Flyway
 - JWT (JJWT 0.12) e BCrypt
-- Swagger / OpenAPI (springdoc 2.6)
+- Swagger / OpenAPI (springdoc 2.8)
 - JUnit 5, MockK, AssertJ, Testcontainers, Cucumber-JVM e Jacoco
 - Docker e Docker Compose (app + PostgreSQL + Mailpit)
 - Trivy (scan de vulnerabilidades) e GitHub Actions
@@ -197,6 +197,7 @@ Rotas administrativas em `/api/admin/ordens`, protegidas por JWT. Especificaçõ
 | Operação | Rota |
 |----------|------|
 | Criar OS (UC01) | `POST /api/admin/ordens` |
+| Listar e detalhar OS | `GET /api/admin/ordens` (filtro `?status=` com `RECEBIDA`, `EM_DIAGNOSTICO`, `AGUARDANDO_APROVACAO`, `EM_EXECUCAO`, `FINALIZADA` ou `ENTREGUE`; paginado com `?page=0&size=20`) · `GET /api/admin/ordens/{id}` (orçamento com serviços e peças, execução e histórico de status) |
 | Diagnóstico (UC02) | `POST /api/admin/ordens/{id}/diagnostico/iniciar` · `/inspecao` · `/finalizar` |
 | Gerar orçamento (UC03) | `POST /api/admin/ordens/{id}/orcamento` |
 | Aprovar / rejeitar / revisar (UC05–UC07) | `POST /api/admin/ordens/{id}/orcamento/aprovar` · `/rejeitar` · `/revisar` |
@@ -305,7 +306,7 @@ curl -X POST http://localhost:8080/api/v1/admin/estoque/ordens/7/reservas \
 ├── modules/        # Bounded contexts: autenticacao, cadastro, estoque, ordemservico
 ├── buildSrc/       # convenção de build (gate Jacoco)
 ├── specs/          # Spec-Driven Development: spec/plan/tasks por feature
-├── docs/           # arquitetura.md, bdd/, c4/, ddd/, security/ e enunciados/ (enunciado de cada fase)
+├── docs/           # arquitetura.md, apresentacao/ (roteiro, slides e demo do vídeo), bdd/, c4/, ddd/, security/ e enunciados/ (enunciado de cada fase)
 ├── docker/         # Dockerfile e docker-compose
 └── README.md
 ```
