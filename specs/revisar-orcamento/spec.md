@@ -39,6 +39,7 @@ Comportamento (BDD):
 - `FR-003`: A revisão MUST registrar o evento "Orçamento revisado" e **reenviar** a proposta ao cliente; o status MUST continuar `Aguardando aprovação`.
 - `FR-004`: Ao incluir peça na revisão, o sistema MUST solicitar a reserva ao estoque (porta; stub).
 - `FR-005`: O sistema MUST NOT revisar fora de `Aguardando aprovação`.
+- `FR-006` (#109): Antes de reservar as peças do orçamento revisado, o sistema MUST liberar as reservas anteriores da OS, para que manter a mesma peça não conflite e uma peça removida não fique reservada nem seja baixada na execução.
 
 ## Non-Functional Requirements
 - Escrita sob transação + lock otimista.

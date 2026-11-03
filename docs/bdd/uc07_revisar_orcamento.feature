@@ -20,6 +20,13 @@ Funcionalidade: UC07 - Revisar Orçamento
     E a reserva da peça "Pastilha alternativa" deve ser solicitada na revisão
     E o status da OS após a revisão deve continuar "Aguardando aprovação"
 
+  @implementado
+  Cenário: Revisar orçamento libera as reservas anteriores antes de reservar
+    Dado uma OS aguardando aprovação com orçamento para revisão
+    Quando o mecânico revisar o orçamento incluindo a peça "Pastilha de freio"
+    Então as reservas anteriores da OS devem ser liberadas antes de reservar na revisão
+    E a reserva da peça "Pastilha de freio" deve ser solicitada na revisão
+
   # Hotspot: "resposta do cliente pendente de tratamento" não modelada no MVP — cenário sem @implementado.
   Cenário: Impedir envio de revisão com resposta do cliente pendente
     Dado que existe uma OS com status "Aguardando aprovação"
