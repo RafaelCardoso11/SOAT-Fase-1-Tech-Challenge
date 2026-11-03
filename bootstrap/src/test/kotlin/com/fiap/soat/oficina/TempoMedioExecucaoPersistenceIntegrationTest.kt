@@ -1,6 +1,6 @@
 package com.fiap.soat.oficina
 
-import com.fiap.soat.oficina.ordemservico.domain.model.ItemOrcamento
+import com.fiap.soat.oficina.ordemservico.domain.model.ItemSolicitado
 import com.fiap.soat.oficina.ordemservico.domain.model.OrdemServico
 import com.fiap.soat.oficina.ordemservico.domain.model.TipoItem
 import com.fiap.soat.oficina.ordemservico.domain.model.Veiculo
@@ -48,7 +48,7 @@ class TempoMedioExecucaoPersistenceIntegrationTest {
         )
         realizarDiagnostico.iniciar(id)
         realizarDiagnostico.finalizar(id, pecaIdentificada = true)
-        gerarOrcamento.gerar(id, listOf(ItemOrcamento(TipoItem.SERVICO, "Troca de pastilhas", Dinheiro.of(BigDecimal("150.00")))))
+        gerarOrcamento.gerar(id, listOf(ItemSolicitado(TipoItem.SERVICO, "Troca de pastilhas", BigDecimal("150.00"))))
         aprovarOrcamento.aprovar(id)
         iniciarExecucao.iniciar(id)
         finalizarExecucao.finalizar(id, todosAplicados = true)

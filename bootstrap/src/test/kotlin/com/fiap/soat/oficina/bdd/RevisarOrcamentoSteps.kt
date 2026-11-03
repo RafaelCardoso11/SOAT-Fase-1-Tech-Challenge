@@ -3,13 +3,16 @@ package com.fiap.soat.oficina.bdd
 import com.fiap.soat.oficina.ordemservico.application.usecase.RevisarOrcamentoService
 import com.fiap.soat.oficina.ordemservico.domain.event.OrcamentoRevisado
 import com.fiap.soat.oficina.ordemservico.domain.model.ItemOrcamento
+import com.fiap.soat.oficina.ordemservico.domain.model.ItemSolicitado
 import com.fiap.soat.oficina.ordemservico.domain.model.Orcamento
 import com.fiap.soat.oficina.ordemservico.domain.model.OrdemServico
 import com.fiap.soat.oficina.ordemservico.domain.model.StatusOS
 import com.fiap.soat.oficina.ordemservico.domain.model.TipoItem
 import com.fiap.soat.oficina.ordemservico.domain.model.TransicaoStatus
 import com.fiap.soat.oficina.ordemservico.domain.model.Veiculo
+import com.fiap.soat.oficina.ordemservico.domain.port.outbound.CatalogoPort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.EstoquePort
+import com.fiap.soat.oficina.ordemservico.domain.port.outbound.ItemCatalogo
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.NotificacaoPort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.OrdemServicoRepository
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.PublicadorDeEventos
@@ -34,8 +37,11 @@ class RevisarOrcamentoSteps {
     private val repositorio = mockk<OrdemServicoRepository>()
     private val eventos = mockk<PublicadorDeEventos>()
     private val estoque = mockk<EstoquePort>(relaxed = true)
+    private val catalogo = mockk<CatalogoPort> {
+        every { buscarPeca(any()) } returns ItemCatalogo("Peça do estoque", Dinheiro.of(BigDecimal("100.00")))
+    }
     private val notificacao = mockk<NotificacaoPort>(relaxed = true)
-    private val service = RevisarOrcamentoService(repositorio, eventos, estoque, notificacao, validadeDias = 7L)
+    private val service = RevisarOrcamentoService(repositorio, eventos, estoque, catalogo, notificacao, validadeDias = 7L)
 
     private lateinit var ordem: OrdemServico
     private val publicados = mutableListOf<DomainEvent>()
@@ -68,21 +74,21 @@ class RevisarOrcamentoSteps {
 
     @Quando("o mecânico ajustar o orçamento para o valor total {string}")
     fun ajustarValor(total: String) {
-        service.revisar(1L, listOf(ItemOrcamento(TipoItem.SERVICO, "Troca de pastilhas", Dinheiro.of(BigDecimal(total)))))
+        service.revisar(1L, listOf(ItemSolicitado(TipoItem.SERVICO, "Troca de pastilhas", BigDecimal(total))))
     }
 
     @Quando("o mecânico revisar o orçamento incluindo a peça {string}")
     fun trocarPeca(peca: String) {
         service.revisar(
             1L,
-            listOf(ItemOrcamento(TipoItem.PECA, peca, Dinheiro.of(BigDecimal("180.00")), itemEstoqueId = 50L, quantidade = 1)),
+            listOf(ItemSolicitado(TipoItem.PECA, peca, BigDecimal("180.00"), itemEstoqueId = 50L, quantidade = 1)),
         )
     }
 
     @Quando("o mecânico tentar revisar o orçamento")
     fun tentarRevisar() {
         runCatching {
-            service.revisar(1L, listOf(ItemOrcamento(TipoItem.SERVICO, "Item", Dinheiro.of(BigDecimal("10.00")))))
+            service.revisar(1L, listOf(ItemSolicitado(TipoItem.SERVICO, "Item", BigDecimal("10.00"))))
         }
     }
 

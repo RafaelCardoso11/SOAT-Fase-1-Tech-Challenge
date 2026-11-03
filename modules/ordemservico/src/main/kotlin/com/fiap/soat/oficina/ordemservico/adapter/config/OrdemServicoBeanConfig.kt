@@ -24,6 +24,7 @@ import com.fiap.soat.oficina.ordemservico.domain.port.inbound.IniciarExecucaoUse
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.RealizarDiagnosticoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.RejeitarOrcamentoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.RevisarOrcamentoUseCase
+import com.fiap.soat.oficina.ordemservico.domain.port.outbound.CatalogoPort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.EstoquePort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.NotificacaoPort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.OrdemServicoRepository
@@ -62,9 +63,10 @@ class OrdemServicoBeanConfig {
         repositorio: OrdemServicoRepository,
         eventos: PublicadorDeEventos,
         estoque: EstoquePort,
+        catalogo: CatalogoPort,
         notificacao: NotificacaoPort,
         @Value("\${orcamento.validade-dias}") validadeDias: Long,
-    ): GerarOrcamentoUseCase = GerarOrcamentoService(repositorio, eventos, estoque, notificacao, validadeDias)
+    ): GerarOrcamentoUseCase = GerarOrcamentoService(repositorio, eventos, estoque, catalogo, notificacao, validadeDias)
 
     @Bean
     fun aprovarOrcamentoUseCase(
@@ -85,9 +87,10 @@ class OrdemServicoBeanConfig {
         repositorio: OrdemServicoRepository,
         eventos: PublicadorDeEventos,
         estoque: EstoquePort,
+        catalogo: CatalogoPort,
         notificacao: NotificacaoPort,
         @Value("\${orcamento.validade-dias}") validadeDias: Long,
-    ): RevisarOrcamentoUseCase = RevisarOrcamentoService(repositorio, eventos, estoque, notificacao, validadeDias)
+    ): RevisarOrcamentoUseCase = RevisarOrcamentoService(repositorio, eventos, estoque, catalogo, notificacao, validadeDias)
 
     @Bean
     fun iniciarExecucaoUseCase(

@@ -3,13 +3,16 @@ package com.fiap.soat.oficina.ordemservico.application
 import com.fiap.soat.oficina.ordemservico.application.usecase.RevisarOrcamentoService
 import com.fiap.soat.oficina.ordemservico.domain.event.OrcamentoRevisado
 import com.fiap.soat.oficina.ordemservico.domain.model.ItemOrcamento
+import com.fiap.soat.oficina.ordemservico.domain.model.ItemSolicitado
 import com.fiap.soat.oficina.ordemservico.domain.model.Orcamento
 import com.fiap.soat.oficina.ordemservico.domain.model.OrdemServico
 import com.fiap.soat.oficina.ordemservico.domain.model.StatusOS
 import com.fiap.soat.oficina.ordemservico.domain.model.TipoItem
 import com.fiap.soat.oficina.ordemservico.domain.model.TransicaoStatus
 import com.fiap.soat.oficina.ordemservico.domain.model.Veiculo
+import com.fiap.soat.oficina.ordemservico.domain.port.outbound.CatalogoPort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.EstoquePort
+import com.fiap.soat.oficina.ordemservico.domain.port.outbound.ItemCatalogo
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.NotificacaoPort
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.OrdemServicoRepository
 import com.fiap.soat.oficina.ordemservico.domain.port.outbound.PublicadorDeEventos
@@ -30,8 +33,13 @@ class RevisarOrcamentoServiceTest {
     private val repositorio = mockk<OrdemServicoRepository>()
     private val eventos = mockk<PublicadorDeEventos>(relaxed = true)
     private val estoque = mockk<EstoquePort>(relaxed = true)
+    private val catalogo = mockk<CatalogoPort> {
+        every { buscarPeca(any()) } returns ItemCatalogo("Peça do estoque", Dinheiro.of(BigDecimal("100.00")))
+        every { buscarServico(10L) } returns ItemCatalogo("Troca de óleo", Dinheiro.of(BigDecimal("120.00")))
+        every { buscarServico(99L) } returns null
+    }
     private val notificacao = mockk<NotificacaoPort>(relaxed = true)
-    private val service = RevisarOrcamentoService(repositorio, eventos, estoque, notificacao, validadeDias = 7L)
+    private val service = RevisarOrcamentoService(repositorio, eventos, estoque, catalogo, notificacao, validadeDias = 7L)
 
     private fun os(status: StatusOS) = OrdemServico.reconstituir(
         id = 1L,
@@ -53,12 +61,45 @@ class RevisarOrcamentoServiceTest {
         every { repositorio.buscarPorId(1L) } returns ordem
         every { repositorio.salvar(ordem) } returns 1L
 
-        service.revisar(1L, listOf(ItemOrcamento(TipoItem.SERVICO, "Troca de pastilhas", Dinheiro.of(BigDecimal("120.00")))))
+        service.revisar(1L, listOf(ItemSolicitado(TipoItem.SERVICO, "Troca de pastilhas", BigDecimal("120.00"))))
 
         assertThat(ordem.status).isEqualTo(StatusOS.AGUARDANDO_APROVACAO)
         assertThat(ordem.orcamento!!.total.valor).isEqualByComparingTo("120.00")
         verify { eventos.publicar(OrcamentoRevisado(1L)) }
         verify { notificacao.notificarOrcamentoGerado(1L, any()) }
+    }
+
+    @Test
+    fun `revisa orcamento so com ids usando os precos do catalogo`() {
+        val ordem = os(StatusOS.AGUARDANDO_APROVACAO)
+        every { repositorio.buscarPorId(1L) } returns ordem
+        every { repositorio.salvar(ordem) } returns 1L
+        every { estoque.reservar(1L, 50L, 2) } returns true
+
+        service.revisar(
+            1L,
+            listOf(
+                ItemSolicitado(TipoItem.SERVICO, servicoId = 10L),
+                ItemSolicitado(TipoItem.PECA, itemEstoqueId = 50L, quantidade = 2),
+            ),
+        )
+
+        assertThat(ordem.orcamento!!.total.valor).isEqualByComparingTo("320.00")
+        assertThat(ordem.orcamento!!.itens.map { it.descricao }).containsExactly("Troca de óleo", "Peça do estoque")
+    }
+
+    @Test
+    fun `servico inexistente na revisao nao altera a OS`() {
+        val ordem = os(StatusOS.AGUARDANDO_APROVACAO)
+        every { repositorio.buscarPorId(1L) } returns ordem
+
+        assertThatThrownBy { service.revisar(1L, listOf(ItemSolicitado(TipoItem.SERVICO, servicoId = 99L))) }
+            .isInstanceOf(NoSuchElementException::class.java)
+
+        assertThat(ordem.orcamento!!.total.valor).isEqualByComparingTo("150.00")
+        verify(exactly = 0) { repositorio.salvar(any()) }
+        verify(exactly = 0) { estoque.reservar(any(), any(), any()) }
+        verify(exactly = 0) { eventos.publicar(any()) }
     }
 
     @Test
@@ -70,7 +111,7 @@ class RevisarOrcamentoServiceTest {
 
         service.revisar(
             1L,
-            listOf(ItemOrcamento(TipoItem.PECA, "Pastilha alternativa", Dinheiro.of(BigDecimal("180.00")), itemEstoqueId = 60L, quantidade = 1)),
+            listOf(ItemSolicitado(TipoItem.PECA, "Pastilha alternativa", BigDecimal("180.00"), itemEstoqueId = 60L, quantidade = 1)),
         )
 
         verify { estoque.reservar(1L, 60L, 1) }
@@ -82,7 +123,7 @@ class RevisarOrcamentoServiceTest {
         every { repositorio.buscarPorId(1L) } returns ordem
 
         assertThatThrownBy {
-            service.revisar(1L, listOf(ItemOrcamento(TipoItem.SERVICO, "X", Dinheiro.of(BigDecimal("10.00")))))
+            service.revisar(1L, listOf(ItemSolicitado(TipoItem.SERVICO, "X", BigDecimal("10.00"))))
         }.isInstanceOf(IllegalStateException::class.java)
         verify(exactly = 0) { repositorio.salvar(any()) }
     }
@@ -92,7 +133,7 @@ class RevisarOrcamentoServiceTest {
         every { repositorio.buscarPorId(99L) } returns null
 
         assertThatThrownBy {
-            service.revisar(99L, listOf(ItemOrcamento(TipoItem.SERVICO, "X", Dinheiro.of(BigDecimal("10.00")))))
+            service.revisar(99L, listOf(ItemSolicitado(TipoItem.SERVICO, "X", BigDecimal("10.00"))))
         }.isInstanceOf(NoSuchElementException::class.java)
     }
 }
