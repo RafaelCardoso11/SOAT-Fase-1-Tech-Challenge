@@ -2,6 +2,7 @@ package com.fiap.soat.oficina.config
 
 import com.fiap.soat.oficina.autenticacao.adapter.inbound.web.JwtAuthenticationFilter
 import com.fiap.soat.oficina.autenticacao.domain.port.outbound.TokenProvider
+import jakarta.servlet.DispatcherType
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
@@ -25,6 +26,7 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .exceptionHandling { it.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) }
             .authorizeHttpRequests {
+                it.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                 it.requestMatchers(
                     "/api/auth/**",
                     "/api/public/**",
