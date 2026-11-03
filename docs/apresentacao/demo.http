@@ -1,0 +1,134 @@
+# Demonstração do fluxo principal. Execute em ordem, com o banco zerado (ver roteiro.md).
+# Sintaxe da extensão REST Client (VS Code). Todos os dados são fictícios.
+
+@baseUrl = http://localhost:8080
+@json = application/json
+
+@cpf = 529.982.247-25
+@placa = BRA2E19
+
+### 01. Aplicação no ar
+GET {{baseUrl}}/api/ping
+
+### 02. Rota administrativa sem token: 401
+GET {{baseUrl}}/api/admin/ordens
+
+### 03. Login: devolve o JWT e a expiração
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{json}}
+
+{
+  "nomeUsuario": "admin",
+  "senha": "admin@123"
+}
+
+###
+@token = {{login.response.body.token}}
+
+### 04. Mesma rota com token: 200
+GET {{baseUrl}}/api/admin/ordens
+Authorization: Bearer {{token}}
+
+### 05. Cadastro da peça
+# @name peca
+POST {{baseUrl}}/api/v1/admin/estoque/itens
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "nome": "Filtro de óleo",
+  "tipo": "PECA",
+  "preco": 45.00,
+  "saldoInicial": 5
+}
+
+### 06. Cadastro do insumo
+# @name insumo
+POST {{baseUrl}}/api/v1/admin/estoque/itens
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "nome": "Óleo 5W30 (litro)",
+  "tipo": "INSUMO",
+  "preco": 40.00,
+  "saldoInicial": 12
+}
+
+### 07. Criação da OS: status RECEBIDA
+# @name os
+POST {{baseUrl}}/api/admin/ordens
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "documento": "{{cpf}}",
+  "placa": "{{placa}}",
+  "marca": "Volkswagen",
+  "modelo": "Gol",
+  "ano": 2020,
+  "relato": "Luz do óleo acesa no painel"
+}
+
+### 08. Acompanhamento pelo cliente, sem token
+GET {{baseUrl}}/api/public/ordens/{{os.response.body.id}}
+
+### 09. Início do diagnóstico: status EM_DIAGNOSTICO
+POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/diagnostico/iniciar
+Authorization: Bearer {{token}}
+
+### 10. Registro da inspeção
+POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/diagnostico/inspecao
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "observacoes": "Óleo vencido e filtro saturado"
+}
+
+### 11. Fim do diagnóstico: libera o orçamento
+POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/diagnostico/finalizar
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "pecaIdentificada": true
+}
+
+### 12. Orçamento com serviço, peça e insumo: total 285.00 e status AGUARDANDO_APROVACAO
+POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/orcamento
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "itens": [
+    { "tipo": "servico", "descricao": "Troca de óleo", "valor": 120.00 },
+    { "tipo": "peca", "descricao": "Filtro de óleo", "valor": 45.00, "itemEstoqueId": {{peca.response.body.id}}, "quantidade": 1 },
+    { "tipo": "peca", "descricao": "Óleo 5W30 (3 litros)", "valor": 120.00, "itemEstoqueId": {{insumo.response.body.id}}, "quantidade": 3 }
+  ]
+}
+
+### 13. Aprovação do orçamento: status EM_EXECUCAO
+POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/orcamento/aprovar
+Authorization: Bearer {{token}}
+
+### 14. Início da execução
+POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/execucao/iniciar
+Authorization: Bearer {{token}}
+
+### 15. Fim da execução: status FINALIZADA
+POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/execucao/finalizar
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "todosAplicados": true
+}
+
+### 16. Entrega: status ENTREGUE
+POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/entrega
+Authorization: Bearer {{token}}
+
+### 17. Acompanhamento pelo cliente: linha do tempo com todos os status
+GET {{baseUrl}}/api/public/ordens/{{os.response.body.id}}
