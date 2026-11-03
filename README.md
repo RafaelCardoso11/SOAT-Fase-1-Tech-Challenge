@@ -90,6 +90,7 @@ As migrations ficam em `bootstrap/src/main/resources/db/migration/` e rodam na s
 
 - Docker
 - Docker Compose
+- JDK 17, só para rodar a aplicação e os testes fora do Docker (`./gradlew build`, `./gradlew :bootstrap:bootRun`)
 
 ## Execução
 
