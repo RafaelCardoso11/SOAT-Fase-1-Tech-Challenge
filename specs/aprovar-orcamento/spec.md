@@ -55,5 +55,5 @@ Comportamento (BDD):
 - [ ] Prazo de validade configurável (default 7 dias); `./gradlew build` verde.
 
 ## Open Questions
-- `[NEEDS CLARIFICATION: rota de aprovação do cliente]` — assumido **rota administrativa** (sem auth de cliente ainda); revisar quando houver acesso do cliente. Não bloqueia.
+- **Rota de aprovação do cliente (resolvido, #113):** além da rota administrativa, o cliente aprova sem login em `POST /api/public/orcamentos/{token}/aprovar`, com o token enviado no e-mail do orçamento. A revisão troca o token; depois da decisão ou da expiração, o bloqueio de status responde `409`.
 - `[NEEDS CLARIFICATION: encerrar on expiração]` — a política "expirado → encerrar + liberar reserva" é do **UC08**; no UC05 o expirado apenas **bloqueia** a aprovação. Não bloqueia.

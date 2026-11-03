@@ -84,7 +84,7 @@ flowchart LR
 
     subgraph S4["4. Aprovação"]
         direction LR
-        CLI["Cliente"] --> R["Consultar Status"]
+        CLI["Cliente (link do e-mail, sem login)"] --> R["Consultar Orçamento"]
         R --> S{"Decisão do cliente"}
         S -- "Aprova" --> CA["Aprovar Orçamento"]
         CA --> T["Orçamento Aprovado"]
@@ -293,8 +293,8 @@ CRUD, sem classe de evento.
 | Iniciar / Registrar Inspeção / Finalizar Diagnóstico | `RealizarDiagnosticoService` (UC02) | `POST /api/admin/ordens/{id}/diagnostico/{iniciar,inspecao,finalizar}` | Mecânico |
 | Gerar Orçamento | `GerarOrcamentoService` (UC03) | `POST /api/admin/ordens/{id}/orcamento` | Mecânico |
 | Reservar Peça | `ReservarPecaService` (UC04), chamado pela `EstoquePort` | `POST /api/v1/admin/estoque/ordens/{osId}/reservas` | Mecânico (via orçamento) |
-| Aprovar Orçamento | `AprovarOrcamentoService` (UC05) | `POST /api/admin/ordens/{id}/orcamento/aprovar` | Cliente |
-| Rejeitar Orçamento | `RejeitarOrcamentoService` (UC06) | `POST /api/admin/ordens/{id}/orcamento/rejeitar` | Cliente |
+| Aprovar Orçamento | `AprovarOrcamentoService` (UC05); pelo cliente via `DecidirOrcamentoPeloClienteService` | `POST /api/public/orcamentos/{token}/aprovar` (cliente) · `POST /api/admin/ordens/{id}/orcamento/aprovar` | Cliente |
+| Rejeitar Orçamento | `RejeitarOrcamentoService` (UC06); pelo cliente via `DecidirOrcamentoPeloClienteService` | `POST /api/public/orcamentos/{token}/rejeitar` (cliente) · `POST /api/admin/ordens/{id}/orcamento/rejeitar` | Cliente |
 | Revisar Orçamento | `RevisarOrcamentoService` (UC07) | `POST /api/admin/ordens/{id}/orcamento/revisar` | Mecânico, a pedido do cliente |
 | Expirar Orçamentos | `ExpirarOrcamentosService` (UC08) + `ExpiracaoScheduler` | `POST /api/admin/orcamentos/expirar` | Sistema (agendado) |
 | Iniciar / Finalizar Execução | `IniciarExecucaoService` (UC09), `FinalizarExecucaoService` (UC10) | `POST /api/admin/ordens/{id}/execucao/{iniciar,finalizar}` | Mecânico |
@@ -310,7 +310,7 @@ CRUD, sem classe de evento.
 |----------|-----------|
 | Sem peça identificada no diagnóstico, encerra a OS | `RealizarDiagnosticoService` → `OrdemServico.finalizarDiagnostico(false)` |
 | Falta peça na geração ou revisão: libera as reservas e encerra a OS | `GerarOrcamentoService`, `RevisarOrcamentoService` |
-| Orçamento gerado: envia ao cliente por e-mail | `GerarOrcamentoService` → `NotificacaoPort` |
+| Orçamento gerado ou revisado: envia ao cliente por e-mail, com o link de decisão | `GerarOrcamentoService`, `RevisarOrcamentoService` → `NotificacaoPort` |
 | Orçamento vale 7 dias; sem resposta, expira | `ExpiracaoScheduler` → `ExpirarOrcamentosService` (`ORCAMENTO_VALIDADE_DIAS`) |
 | Rejeitado ou expirado: libera reservas, encerra a OS e avisa o cliente | `RejeitarOrcamentoService`, `ExpirarOrcamentosService` |
 | Execução iniciada: baixa as peças reservadas | `IniciarExecucaoService` → `EstoquePort.baixarPecas` |
@@ -322,7 +322,7 @@ CRUD, sem classe de evento.
 
 | Tipo | Nome | No código |
 |------|------|-----------|
-| Ator | Cliente | Rotas públicas `/api/public/**`; e-mails recebidos |
+| Ator | Cliente | Rotas públicas `/api/public/**` (consulta da OS e decisão do orçamento pelo token); e-mails recebidos |
 | Ator | Atendente | Usuário autenticado (`admin`), rotas `/api/**/admin/**` |
 | Ator | Mecânico | Usuário autenticado (`mecanico`) |
 | Read model | Status da OS e Linha do tempo | `OrdemServico.status` + `TransicaoStatus`, resposta da consulta pública |

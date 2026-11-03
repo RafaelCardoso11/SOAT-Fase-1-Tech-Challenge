@@ -23,7 +23,8 @@ flowchart LR
     AUT -- "JWT" --> OS
     AUT -. "JWT" .-> CAD
     AUT -. "JWT" .-> EST
-    EST -- "U → D · reserva, libera e baixa peças<br/>ACL: EstoquePort / EstoqueAdapter" --> OS
+    CAD -- "U → D · preço dos serviços<br/>ACL: CatalogoPort / CatalogoAdapter" --> OS
+    EST -- "U → D · reserva, libera, baixa e preço das peças<br/>ACL: EstoquePort, CatalogoPort" --> OS
     NOT -- "U → D · avisa o cliente<br/>ACL: NotificacaoPort / NotificacaoPorEmail" --> OS
 
     classDef core fill:#FFB77B,stroke:#C97A3A,color:#000
@@ -36,8 +37,7 @@ flowchart LR
     class NOT externo
 ```
 
-Os contextos compartilham só o `shared-kernel` (`Documento`, `Placa`, `Dinheiro`, `DomainEvent`). No MVP a OS guarda documento, placa, marca, modelo e ano informados na abertura e não consulta o Cadastro em
-tempo de execução; a relação com o Cadastro fica no vocabulário compartilhado (`Documento`, `Placa`).
+Os contextos compartilham só o `shared-kernel` (`Documento`, `Placa`, `Dinheiro`, `DomainEvent`). No MVP a OS guarda documento, placa, marca, modelo e ano informados na abertura e não consulta o Cadastro nesse momento; o orçamento busca nome e preço pela `CatalogoPort` (ACL `CatalogoAdapter`).
 
 ## 2. Subdomínios e bounded contexts
 

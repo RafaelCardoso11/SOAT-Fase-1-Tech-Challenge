@@ -139,7 +139,7 @@ Roda também no CI (workflow `Security`). Detalhes em [`docs/security/`](docs/se
 
 ## Autenticação
 
-As APIs administrativas exigem um token **JWT** no cabeçalho `Authorization: Bearer <token>`. Ficam abertas só o login (`/api/auth/**`), a consulta pública da OS (`/api/public/**`), `/api/ping`, o Swagger e `/actuator/health`.
+As APIs administrativas exigem um token **JWT** no cabeçalho `Authorization: Bearer <token>`. Ficam abertas só o login (`/api/auth/**`), a consulta pública da OS e a decisão do orçamento pelo cliente (`/api/public/**`), `/api/ping`, o Swagger e `/actuator/health`.
 
 Usuários de demonstração (semeados na inicialização):
 
@@ -178,7 +178,7 @@ Regras principais:
 
 - CPF/CNPJ e placa são validados e **únicos** (inclusive entre cadastros inativos); o documento do cliente e a placa do veículo não podem ser alterados.
 - O veículo pertence a um cliente **ativo** e o dono pode ser trocado.
-- Não há exclusão: cadastros são **inativados** (`POST /{id}/inativar`), e um cliente só é inativado sem veículos ativos.
+- Não há exclusão física: o "excluir" do CRUD é a **inativação** (`POST /{id}/inativar`). Apagar o registro quebraria o histórico das OS que já usaram aquele cliente, veículo ou serviço; o inativo some das buscas com `?ativo=true`. Um cliente só é inativado sem veículos ativos.
 - As listagens e buscas aceitam `?ativo=true|false`; nas buscas por chave, `?ativo=true` trata cadastro inativo como não encontrado.
 - Erros: `400` dado inválido · `404` não encontrado · `409` duplicidade ou regra de negócio, com corpo `{"erro": "...", "campo": "..."}`.
 
@@ -200,6 +200,7 @@ Rotas administrativas em `/api/admin/ordens`, protegidas por JWT. Especificaçõ
 | Diagnóstico (UC02) | `POST /api/admin/ordens/{id}/diagnostico/iniciar` · `/inspecao` · `/finalizar` |
 | Gerar orçamento (UC03) | `POST /api/admin/ordens/{id}/orcamento` |
 | Aprovar / rejeitar / revisar (UC05–UC07) | `POST /api/admin/ordens/{id}/orcamento/aprovar` · `/rejeitar` · `/revisar` |
+| Cliente vê, aprova ou rejeita pelo link do e-mail (UC05, UC06) | `GET /api/public/orcamentos/{token}` · `POST …/aprovar` · `POST …/rejeitar` |
 | Expirar orçamentos vencidos (UC08) | `POST /api/admin/orcamentos/expirar` |
 | Iniciar / finalizar execução (UC09, UC10) | `POST /api/admin/ordens/{id}/execucao/iniciar` · `/finalizar` com `{"todosAplicados": true}` |
 | Entregar veículo (UC11) | `POST /api/admin/ordens/{id}/entrega` → comprovante |
@@ -224,6 +225,18 @@ curl "http://localhost:8080/api/public/ordens?placa=ABC1D23"
 curl "http://localhost:8080/api/public/ordens?documento=12345678909"
 ```
 
+Decisão do orçamento pelo cliente, sem token JWT: o e-mail do orçamento gerado ou revisado traz um link com um
+token próprio daquele orçamento. A revisão gera um token novo e invalida o anterior; depois da decisão ou da expiração,
+o token deixa de aceitar aprovação ou rejeição (`409`). Token desconhecido responde `404`. A base do link vem de
+`NOTIFICACAO_URL_BASE`.
+
+```bash
+curl http://localhost:8080/api/public/orcamentos/{token}                     # itens, total e validade
+curl -X POST http://localhost:8080/api/public/orcamentos/{token}/aprovar
+curl -X POST http://localhost:8080/api/public/orcamentos/{token}/rejeitar \
+  -H 'Content-Type: application/json' -d '{"motivo":"Muito caro"}'
+```
+
 ## Estoque — peças e insumos
 
 Itens de estoque (peça ou insumo) em `/api/v1/admin/estoque/itens`, protegidos por JWT e documentados no
@@ -241,7 +254,7 @@ Regras principais:
 - Cada item tem nome **único** (sem diferenciar maiúsculas), descrição opcional, tipo (`PECA` ou `INSUMO`), preço e saldo inicial opcional.
 - As respostas trazem `saldo` (quantidade física), `reservado` (separado para OS) e `disponivel` (saldo menos reservado).
 - O saldo só aumenta por **entrada** (quantidade inteira maior que zero); alterar o item não mexe no saldo.
-- Não há exclusão: itens são **inativados**; item inativo não é alterado nem recebe entrada, e a busca por id aceita `?ativo=true` para tratá-lo como não encontrado.
+- Não há exclusão física: itens são **inativados**, pelo mesmo motivo do cadastro (histórico das OS e reservas); item inativo não é alterado nem recebe entrada, e a busca por id aceita `?ativo=true` para tratá-lo como não encontrado.
 - A concorrência é resolvida com lock de linha no item e `CHECK`s no banco (saldo ≥ 0 e reservado ≤ saldo).
 - Erros: `400` dado inválido · `404` não encontrado · `409` nome duplicado ou item inativo, com corpo `{"erro": "...", "campo": "..."}`.
 

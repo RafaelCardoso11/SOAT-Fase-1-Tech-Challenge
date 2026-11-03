@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 @Component
 @ConditionalOnProperty(prefix = "notificacao.email", name = ["enabled"], havingValue = "false", matchIfMissing = true)
 class NotificacaoPortStub : NotificacaoPort {
-    override fun notificarOrcamentoGerado(ordemServicoId: Long, total: Dinheiro) = Unit
+    override fun notificarOrcamentoGerado(ordemServicoId: Long, total: Dinheiro, tokenAprovacao: String) = Unit
 
     override fun notificarOrcamentoRejeitado(ordemServicoId: Long, motivo: String?) = Unit
 

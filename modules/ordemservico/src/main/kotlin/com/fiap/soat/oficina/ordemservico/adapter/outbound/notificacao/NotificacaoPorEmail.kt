@@ -15,13 +15,17 @@ class NotificacaoPorEmail(
     @Value("\${notificacao.email.remetente}") private val remetente: String,
     // shortcut: e-mail real do cliente depende da integração com cadastro; usa destinatário configurável por ora.
     @Value("\${notificacao.email.destinatario-padrao}") private val destinatario: String,
+    @Value("\${notificacao.email.url-base}") private val urlBase: String,
 ) : NotificacaoPort {
 
-    override fun notificarOrcamentoGerado(ordemServicoId: Long, total: Dinheiro) {
+    override fun notificarOrcamentoGerado(ordemServicoId: Long, total: Dinheiro, tokenAprovacao: String) {
+        val link = "$urlBase/api/public/orcamentos/$tokenAprovacao"
         enviar(
             destinatario,
             "Orçamento da OS #$ordemServicoId",
-            "O orçamento da sua ordem de serviço #$ordemServicoId foi gerado no valor de R$ ${total.valor}.",
+            "O orçamento da sua ordem de serviço #$ordemServicoId foi gerado no valor de R$ ${total.valor}.\n\n" +
+                "Veja os itens em $link\n" +
+                "Para aprovar, envie POST para $link/aprovar; para rejeitar, POST para $link/rejeitar.",
         )
     }
 

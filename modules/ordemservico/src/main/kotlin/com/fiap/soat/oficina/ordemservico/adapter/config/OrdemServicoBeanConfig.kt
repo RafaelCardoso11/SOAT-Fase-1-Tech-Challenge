@@ -4,6 +4,7 @@ import com.fiap.soat.oficina.ordemservico.application.usecase.AprovarOrcamentoSe
 import com.fiap.soat.oficina.ordemservico.application.usecase.ConsultarOrdensService
 import com.fiap.soat.oficina.ordemservico.application.usecase.ConsultarTempoMedioExecucaoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.CriarOrdemServicoService
+import com.fiap.soat.oficina.ordemservico.application.usecase.DecidirOrcamentoPeloClienteService
 import com.fiap.soat.oficina.ordemservico.application.usecase.EntregarVeiculoService
 import com.fiap.soat.oficina.ordemservico.application.usecase.ExpirarOrcamentosService
 import com.fiap.soat.oficina.ordemservico.application.usecase.FinalizarExecucaoService
@@ -16,6 +17,7 @@ import com.fiap.soat.oficina.ordemservico.domain.port.inbound.AprovarOrcamentoUs
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ConsultarOrdensUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ConsultarTempoMedioExecucaoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.CriarOrdemServicoUseCase
+import com.fiap.soat.oficina.ordemservico.domain.port.inbound.DecidirOrcamentoPeloClienteUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.EntregarVeiculoUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.ExpirarOrcamentosUseCase
 import com.fiap.soat.oficina.ordemservico.domain.port.inbound.FinalizarExecucaoUseCase
@@ -120,4 +122,12 @@ class OrdemServicoBeanConfig {
         estoque: EstoquePort,
         notificacao: NotificacaoPort,
     ): ExpirarOrcamentosUseCase = ExpirarOrcamentosService(repositorio, eventos, estoque, notificacao)
+
+    @Bean
+    fun decidirOrcamentoPeloClienteUseCase(
+        repositorio: OrdemServicoRepository,
+        aprovarOrcamento: AprovarOrcamentoUseCase,
+        rejeitarOrcamento: RejeitarOrcamentoUseCase,
+    ): DecidirOrcamentoPeloClienteUseCase =
+        DecidirOrcamentoPeloClienteService(repositorio, aprovarOrcamento, rejeitarOrcamento)
 }
