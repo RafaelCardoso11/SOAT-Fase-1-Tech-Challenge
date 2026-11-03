@@ -38,6 +38,7 @@ Comportamento (BDD):
 - `FR-004`: O sistema MUST solicitar a **reserva das peças** do orçamento ao estoque (porta; stub por ora).
 - `FR-005`: O sistema MUST **notificar o cliente** da geração do orçamento (porta; stub por ora).
 - `FR-006`: O sistema MUST NOT gerar o orçamento fora das condições de `FR-001`, mantendo o status atual.
+- `FR-007` (#106): O item de serviço MAY referenciar `servicoId` e o de peça `itemEstoqueId` + `quantidade`; o sistema MUST obter nome e preço do cadastro/estoque (peça = preço × quantidade) pela `CatalogoPort`. `descricao` e `valor` informados MUST prevalecer (o valor é o da linha); item sem id MUST trazer `descricao` e `valor`. Id inexistente ou inativo → 404; item sem preço possível → 400. Vale também para a revisão (UC07).
 
 ## Non-Functional Requirements
 - Valores monetários MUST usar o VO `Dinheiro` (não-negativo, 2 casas).

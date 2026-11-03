@@ -207,7 +207,7 @@ Rotas administrativas em `/api/admin/ordens`, protegidas por JWT. Especificaçõ
 
 Regras principais:
 
-- O orçamento é montado com os itens informados, `{"tipo","descricao","valor"}`; item do tipo peça também leva `itemEstoqueId` e `quantidade`. O total é calculado e o orçamento vale `ORCAMENTO_VALIDADE_DIAS` dias (padrão 7).
+- O orçamento é montado com os itens informados e o total é calculado; ele vale `ORCAMENTO_VALIDADE_DIAS` dias (padrão 7). Serviço leva `servicoId` e peça leva `itemEstoqueId` + `quantidade`: nome e preço vêm do cadastro/estoque (peça = preço × quantidade). `descricao` e `valor`, quando enviados, prevalecem (`valor` é o da linha); sem id, o item avulso exige `descricao` e `valor`. Id inexistente ou inativo responde 404; item sem preço possível, 400. Vale para gerar e revisar.
 - Um job agendado (`ORCAMENTO_EXPIRACAO_CRON`, padrão de hora em hora) expira os orçamentos vencidos sem resposta; a rota `/expirar` dispara a mesma verificação manualmente.
 - Ao gerar ou revisar o orçamento, as peças são reservadas no estoque. Se alguma faltar, as reservas da OS são liberadas e a OS é encerrada.
 - Rejeição e expiração encerram a OS e liberam as reservas de peça; a revisão gera um novo orçamento e reinicia o prazo.
