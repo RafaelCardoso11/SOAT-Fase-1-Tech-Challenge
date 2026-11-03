@@ -100,7 +100,7 @@ class RevisarOrcamentoSteps {
 
     @Entao("a nova proposta deve ser reenviada ao cliente na revisão")
     fun reenviada() {
-        verify { notificacao.notificarOrcamentoGerado(1L, any()) }
+        verify { notificacao.notificarOrcamentoGerado(1L, any(), any(), any()) }
     }
 
     @Entao("as reservas anteriores da OS devem ser liberadas antes de reservar na revisão")

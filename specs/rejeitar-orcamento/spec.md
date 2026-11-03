@@ -54,3 +54,4 @@ Comportamento (BDD):
 ## Open Questions
 - `[NEEDS CLARIFICATION: destinatário da notificação]` — assumido notificar o endereço da **oficina** (MVP); refinar com acesso real de oficina/mecânico. Não bloqueia.
 - `[NEEDS CLARIFICATION: um evento "Reserva liberada" por peça ou por OS]` — assumido **um por OS** (BDD cita no singular). Não bloqueia.
+- **Rejeição pelo cliente (#113):** além da rota administrativa, o cliente rejeita sem login em `POST /api/public/orcamentos/{token}/rejeitar` (motivo opcional), com o token do e-mail do orçamento.

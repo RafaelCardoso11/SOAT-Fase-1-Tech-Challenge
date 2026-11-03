@@ -88,7 +88,7 @@ class FinalizarExecucaoSteps {
 
     @Entao("o cliente deve ser notificado de que o veículo está pronto")
     fun clienteNotificado() {
-        verify { notificacao.notificarVeiculoPronto(1L) }
+        verify { notificacao.notificarVeiculoPronto(1L, any()) }
     }
 
     @Entao("o mecânico deve ser informado de que há itens pendentes")

@@ -25,7 +25,7 @@ class FinalizarExecucaoService(
         repositorio.salvar(ordem)
         estoque.baixarPecas(ordemServicoId)
         eventos.publicar(ExecucaoFinalizada(ordemServicoId))
-        notificacao.notificarVeiculoPronto(ordemServicoId)
+        notificacao.notificarVeiculoPronto(ordemServicoId, ordem.documento)
         return ordem
     }
 }

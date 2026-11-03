@@ -32,6 +32,7 @@ Convenção no código: termos do domínio em português, sem acento (`Orcamento
 | Total do orçamento | Soma dos valores dos itens, calculada pelo domínio. | `Orcamento.total` |
 | Validade do orçamento | Prazo para o cliente decidir: 7 dias por padrão. | `Orcamento.validoAte`, `ORCAMENTO_VALIDADE_DIAS` |
 | Aprovação | Decisão do cliente de aceitar o orçamento. Leva a OS para Em execução. | `OrdemServico.aprovarOrcamento()`, `AprovarOrcamentoService` |
+| Token de aprovação | Código secreto de cada orçamento, enviado no e-mail, que deixa o cliente ver, aprovar ou rejeitar sem login. A revisão gera um novo. | `Orcamento.tokenAprovacao`, `/api/public/orcamentos/{token}` |
 | Rejeição | Decisão do cliente de recusar o orçamento, com motivo opcional. Encerra a OS e libera as reservas. | `rejeitarOrcamento(motivo)`, `Orcamento.motivoRejeicao` |
 | Revisão | Novo orçamento a pedido do cliente; refaz as reservas e reinicia a validade. | `revisarOrcamento(itens, validoAte)`, `RevisarOrcamentoService` |
 | Orçamento Expirado | Orçamento sem resposta dentro da validade. Encerra a OS e libera as reservas. | `expirarOrcamento(agora)`, `ExpiracaoScheduler` |
@@ -83,7 +84,7 @@ Convenção no código: termos do domínio em português, sem acento (`Orcamento
 | Termo | Definição | No código |
 |-------|-----------|-----------|
 | Notificação | Aviso ao cliente por e-mail: orçamento gerado, rejeitado, expirado e veículo pronto. | `NotificacaoPort`, `NotificacaoPorEmail` |
-| Consulta pública | Acompanhamento da OS pelo cliente, sem login. | `ConsultarOrdensController`, `/api/public/ordens` |
+| Consulta pública | Acompanhamento da OS e decisão do orçamento pelo cliente, sem login. | `ConsultarOrdensController`, `OrcamentoClienteController`, `/api/public/**` |
 | Token JWT | Credencial das APIs administrativas, obtida no login. | `TokenEmitido`, `JwtTokenProvider`, `POST /api/auth/login` |
 
 ## Termos de DDD usados no projeto

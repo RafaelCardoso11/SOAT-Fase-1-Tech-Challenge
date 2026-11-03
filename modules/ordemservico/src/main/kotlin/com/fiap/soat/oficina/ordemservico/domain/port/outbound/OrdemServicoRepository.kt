@@ -9,6 +9,7 @@ import java.time.Instant
 interface OrdemServicoRepository {
     fun salvar(ordemServico: OrdemServico): Long
     fun buscarPorId(id: Long): OrdemServico?
+    fun buscarPorTokenAprovacao(token: String): OrdemServico?
     fun buscarPorPlaca(placa: String): List<OrdemServico>
     fun buscarPorDocumento(documento: String): List<OrdemServico>
     fun buscarExpiraveis(agora: Instant): List<OrdemServico>

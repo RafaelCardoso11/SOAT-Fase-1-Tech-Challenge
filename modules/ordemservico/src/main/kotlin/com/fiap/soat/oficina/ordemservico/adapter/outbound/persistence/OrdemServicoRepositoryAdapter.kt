@@ -46,6 +46,7 @@ class OrdemServicoRepositoryAdapter(
                 orcamentoEntity.validoAte = domOrcamento.validoAte
                 orcamentoEntity.aprovadoEm = domOrcamento.aprovadoEm
                 orcamentoEntity.motivoRejeicao = domOrcamento.motivoRejeicao
+                orcamentoEntity.tokenAprovacao = domOrcamento.tokenAprovacao
                 if (orcamentoEntity.itens.diferemDe(domOrcamento.itens)) {
                     orcamentoEntity.itens.clear()
                     orcamentoEntity.itens.addAll(domOrcamento.toJpa().itens)
@@ -63,6 +64,10 @@ class OrdemServicoRepositoryAdapter(
     @Transactional(readOnly = true)
     override fun buscarPorId(id: Long): OrdemServico? =
         springData.findById(id).map(OrdemServicoJpaEntity::toDomain).orElse(null)
+
+    @Transactional(readOnly = true)
+    override fun buscarPorTokenAprovacao(token: String): OrdemServico? =
+        springData.findByOrcamento_TokenAprovacao(token)?.toDomain()
 
     @Transactional(readOnly = true)
     override fun buscarPorPlaca(placa: String): List<OrdemServico> =
@@ -128,6 +133,7 @@ private fun Orcamento.toJpa(): OrcamentoJpaEntity = OrcamentoJpaEntity(
     validoAte = validoAte,
     aprovadoEm = aprovadoEm,
     motivoRejeicao = motivoRejeicao,
+    tokenAprovacao = tokenAprovacao,
     itens = itens.map {
         ItemOrcamentoJpaEntity(
             tipo = it.tipo.name,
@@ -146,4 +152,5 @@ private fun OrcamentoJpaEntity.toDomain(): Orcamento = Orcamento(
     validoAte = validoAte,
     aprovadoEm = aprovadoEm,
     motivoRejeicao = motivoRejeicao,
+    tokenAprovacao = tokenAprovacao,
 )
