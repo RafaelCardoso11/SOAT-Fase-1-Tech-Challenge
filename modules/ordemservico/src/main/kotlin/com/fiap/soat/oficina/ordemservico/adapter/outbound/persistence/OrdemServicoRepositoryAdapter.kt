@@ -3,6 +3,8 @@ package com.fiap.soat.oficina.ordemservico.adapter.outbound.persistence
 import com.fiap.soat.oficina.ordemservico.domain.model.ItemOrcamento
 import com.fiap.soat.oficina.ordemservico.domain.model.Orcamento
 import com.fiap.soat.oficina.ordemservico.domain.model.OrdemServico
+import com.fiap.soat.oficina.ordemservico.domain.model.Pagina
+import com.fiap.soat.oficina.ordemservico.domain.model.ResumoOrdemServico
 import com.fiap.soat.oficina.ordemservico.domain.model.StatusOS
 import com.fiap.soat.oficina.ordemservico.domain.model.TipoItem
 import com.fiap.soat.oficina.ordemservico.domain.model.TransicaoStatus
@@ -11,6 +13,8 @@ import com.fiap.soat.oficina.ordemservico.domain.port.outbound.OrdemServicoRepos
 import com.fiap.soat.oficina.shared.domain.vo.Dinheiro
 import com.fiap.soat.oficina.shared.domain.vo.Documento
 import com.fiap.soat.oficina.shared.domain.vo.Placa
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
@@ -77,7 +81,26 @@ class OrdemServicoRepositoryAdapter(
     override fun buscarComExecucaoConcluida(): List<OrdemServico> =
         springData.findByExecucaoIniciadaEmIsNotNullAndExecucaoFinalizadaEmIsNotNull()
             .map(OrdemServicoJpaEntity::toDomain)
+
+    @Transactional(readOnly = true)
+    override fun listar(status: StatusOS?, pagina: Int, tamanho: Int): Pagina<ResumoOrdemServico> {
+        val ordenacao = PageRequest.of(pagina, tamanho, Sort.by(Sort.Direction.DESC, "id"))
+        val resultado = if (status == null) {
+            springData.findAllBy(ordenacao)
+        } else {
+            springData.findByStatus(status.name, ordenacao)
+        }
+        return Pagina(resultado.content.map { it.toResumo() }, pagina, tamanho, resultado.totalElements)
+    }
 }
+
+private fun OrdemServicoResumoView.toResumo() = ResumoOrdemServico(
+    numero = id,
+    status = StatusOS.valueOf(status),
+    documento = Documento.of(documento),
+    veiculo = Veiculo(Placa.of(placa), marca, modelo, ano),
+    relato = relato,
+)
 
 private fun OrdemServicoJpaEntity.toDomain(): OrdemServico =
     OrdemServico.reconstituir(
