@@ -273,6 +273,18 @@ class ConsultarOrdensAdminHttpIntegrationTest {
         assertThat(paths.get("/api/admin/ordens/{id}").has("get")).isTrue()
     }
 
+    @Test
+    fun `documentacao openapi exige jwt nas rotas administrativas e nao nas publicas`() {
+        val resposta = mockMvc.get("/v3/api-docs").andExpect { status { isOk() } }.andReturn().response.contentAsString
+        val paths = objectMapper.readTree(resposta).get("paths")
+        val operacoes = paths.properties().flatMap { (rota, metodos) -> metodos.elements().asSequence().map { rota to it } }
+        val (administrativas, demais) = operacoes.partition { (rota, _) -> "/admin/" in rota }
+
+        assertThat(administrativas).isNotEmpty()
+        assertThat(administrativas.filterNot { (_, operacao) -> operacao.has("security") }).isEmpty()
+        assertThat(demais.filter { (rota, _) -> "/public/" in rota && paths.get(rota).any { it.has("security") } }).isEmpty()
+    }
+
     companion object {
         private val sequencia = AtomicInteger(1000)
 
