@@ -104,6 +104,17 @@
   #rodape { position: fixed; left: 6.5vw; right: 6.5vw; bottom: 3.4vh; display: flex; justify-content: space-between; font-size: 1.95vh; color: var(--apagado); border-top: 1px solid var(--linha); padding-top: 1.4vh; }
   #barra { position: fixed; left: 0; bottom: 0; height: 5px; background: var(--placa); transition: width .2s ease-out; }
 
+  .slide.pausa { background: var(--placa); color: #fff; justify-content: center; gap: 4vh; }
+  .pausa h2 { font-size: 12vh; line-height: .95; max-width: 18ch; }
+  .pausa .destino { font-size: 3vh; color: #cfdcf2; max-width: 46ch; line-height: 1.35; }
+  .pausa .destino a { color: #fff; }
+  .pausa .grupos { display: flex; gap: 4vw; border-top: 2px solid rgba(255,255,255,.35); padding-top: 3vh; }
+  .pausa .grupos b { display: block; font: 700 4vh var(--display); color: var(--sinal); }
+  .pausa .grupos span { font-size: 2.4vh; color: #fff; }
+  .pausa a:focus-visible { outline-color: var(--sinal); }
+  body.em-pausa #rodape { color: #cfdcf2; border-top-color: rgba(255,255,255,.3); }
+  body.em-pausa #barra { background: var(--sinal); }
+
   @media (prefers-reduced-motion: reduce) { #barra { transition: none; } }
 
   @media (max-width: 760px) {
@@ -131,6 +142,10 @@
     .passos .campo::before { font-size: 36px; }
     .mapa { max-height: none; height: auto; }
     table { display: block; overflow-x: auto; }
+    .pausa h2 { font-size: 44px; }
+    .pausa .destino, .pausa .grupos span { font-size: 16px; }
+    .pausa .grupos { flex-direction: column; gap: 16px; }
+    .pausa .grupos b { font-size: 24px; }
     #rodape, #barra { display: none; }
   }
 
@@ -195,7 +210,11 @@
       </div>
     </div>
   </div>
-  <p class="fonte">Em seguida, o Event Storming no <a href="https://miro.com/app/board/uXjVHq1XvOs=/?share_link_id=344863119386">board Tech01, no Miro</a>.</p>
+</section>
+
+<section class="slide pausa" data-bloco="Event Storming">
+  <h2>Agora, o Event Storming no Miro</h2>
+  <p class="destino">Criação e acompanhamento da Ordem de Serviço e gestão de peças e insumos, no <a href="https://miro.com/app/board/uXjVHq1XvOs=/?share_link_id=344863119386">board Tech01</a>.</p>
 </section>
 
 <section class="slide" data-bloco="DDD: bounded contexts">
@@ -323,6 +342,15 @@
   </div>
 </section>
 
+<section class="slide pausa" data-bloco="Na prática: requisições">
+  <h2>Agora, as requisições na API</h2>
+  <p class="destino">Executadas em ordem, com o banco zerado, a partir de <code>docs/apresentacao/demo.http</code>.</p>
+  <div class="grupos">
+    <div><b>01 a 04</b><span>Autenticação JWT</span></div>
+    <div><b>05 a 17</b><span>Ordem de Serviço, da criação à entrega</span></div>
+  </div>
+</section>
+
 <section class="slide" data-bloco="Fluxo da Ordem de Serviço">
   <h2>O status muda como resultado de cada ação no sistema</h2>
   <div class="conteudo">
@@ -386,6 +414,7 @@
   function mostrar(indice) {
     const atual = Math.max(0, Math.min(slides.length - 1, indice));
     slides.forEach((slide, i) => slide.classList.toggle('ativo', i === atual));
+    document.body.classList.toggle('em-pausa', slides[atual].classList.contains('pausa'));
     bloco.textContent = slides[atual].dataset.bloco;
     contagem.textContent = `${atual + 1} de ${slides.length}`;
     barra.style.width = `${((atual + 1) / slides.length) * 100}%`;
