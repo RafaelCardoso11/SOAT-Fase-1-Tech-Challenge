@@ -34,6 +34,8 @@ class RevisarOrcamentoService(
         val validoAte = Instant.now().plus(Duration.ofDays(validadeDias))
         val orcamento = ordem.revisarOrcamento(montador.montar(itens), validoAte)
 
+        // O orçamento revisado substitui o anterior: as reservas antigas saem antes de reservar de novo.
+        estoque.liberarReservas(ordemServicoId)
         val reservouTudo = orcamento.itens.filter { it.tipo == TipoItem.PECA }
             .all { estoque.reservar(ordemServicoId, it.itemEstoqueId!!, it.quantidade!!) }
         if (!reservouTudo) {

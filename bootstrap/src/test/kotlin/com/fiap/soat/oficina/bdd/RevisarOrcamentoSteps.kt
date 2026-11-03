@@ -28,6 +28,7 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
 import java.math.BigDecimal
 import java.time.Instant
@@ -100,6 +101,14 @@ class RevisarOrcamentoSteps {
     @Entao("a nova proposta deve ser reenviada ao cliente na revisão")
     fun reenviada() {
         verify { notificacao.notificarOrcamentoGerado(1L, any()) }
+    }
+
+    @Entao("as reservas anteriores da OS devem ser liberadas antes de reservar na revisão")
+    fun reservasLiberadasAntes() {
+        verifyOrder {
+            estoque.liberarReservas(1L)
+            estoque.reservar(1L, 50L, 1)
+        }
     }
 
     @Entao("a reserva da peça {string} deve ser solicitada na revisão")

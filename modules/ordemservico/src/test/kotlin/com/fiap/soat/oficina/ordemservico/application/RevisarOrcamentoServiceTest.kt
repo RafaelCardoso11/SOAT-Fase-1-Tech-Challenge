@@ -2,6 +2,7 @@ package com.fiap.soat.oficina.ordemservico.application
 
 import com.fiap.soat.oficina.ordemservico.application.usecase.RevisarOrcamentoService
 import com.fiap.soat.oficina.ordemservico.domain.event.OrcamentoRevisado
+import com.fiap.soat.oficina.ordemservico.domain.event.OsEncerrada
 import com.fiap.soat.oficina.ordemservico.domain.model.ItemOrcamento
 import com.fiap.soat.oficina.ordemservico.domain.model.ItemSolicitado
 import com.fiap.soat.oficina.ordemservico.domain.model.Orcamento
@@ -22,6 +23,7 @@ import com.fiap.soat.oficina.shared.domain.vo.Placa
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -115,6 +117,41 @@ class RevisarOrcamentoServiceTest {
         )
 
         verify { estoque.reservar(1L, 60L, 1) }
+    }
+
+    @Test
+    fun `libera as reservas anteriores antes de reservar as pecas revisadas`() {
+        val ordem = os(StatusOS.AGUARDANDO_APROVACAO)
+        every { repositorio.buscarPorId(1L) } returns ordem
+        every { repositorio.salvar(ordem) } returns 1L
+        every { estoque.reservar(1L, 50L, 1) } returns true
+
+        service.revisar(
+            1L,
+            listOf(ItemSolicitado(TipoItem.PECA, "Pastilha de freio", BigDecimal("200.00"), itemEstoqueId = 50L, quantidade = 1)),
+        )
+
+        verifyOrder {
+            estoque.liberarReservas(1L)
+            estoque.reservar(1L, 50L, 1)
+        }
+    }
+
+    @Test
+    fun `peca indisponivel na revisao encerra a OS e libera as reservas`() {
+        val ordem = os(StatusOS.AGUARDANDO_APROVACAO)
+        every { repositorio.buscarPorId(1L) } returns ordem
+        every { repositorio.salvar(ordem) } returns 1L
+        every { estoque.reservar(1L, 50L, 1) } returns false
+
+        service.revisar(
+            1L,
+            listOf(ItemSolicitado(TipoItem.PECA, "Pastilha de freio", BigDecimal("200.00"), itemEstoqueId = 50L, quantidade = 1)),
+        )
+
+        assertThat(ordem.status).isEqualTo(StatusOS.FINALIZADA)
+        verify { eventos.publicar(OsEncerrada(1L)) }
+        verify(exactly = 0) { eventos.publicar(OrcamentoRevisado(1L)) }
     }
 
     @Test
