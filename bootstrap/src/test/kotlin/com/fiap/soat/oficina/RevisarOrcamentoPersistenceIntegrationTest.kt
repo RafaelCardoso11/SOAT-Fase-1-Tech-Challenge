@@ -1,6 +1,6 @@
 package com.fiap.soat.oficina
 
-import com.fiap.soat.oficina.ordemservico.domain.model.ItemOrcamento
+import com.fiap.soat.oficina.ordemservico.domain.model.ItemSolicitado
 import com.fiap.soat.oficina.ordemservico.domain.model.OrdemServico
 import com.fiap.soat.oficina.ordemservico.domain.model.StatusOS
 import com.fiap.soat.oficina.ordemservico.domain.model.TipoItem
@@ -52,12 +52,12 @@ class RevisarOrcamentoPersistenceIntegrationTest {
         realizarDiagnostico.finalizar(id, pecaIdentificada = true)
         gerarOrcamento.gerar(
             id,
-            listOf(ItemOrcamento(TipoItem.SERVICO, "Troca de pastilhas", Dinheiro.of(BigDecimal("150.00")))),
+            listOf(ItemSolicitado(TipoItem.SERVICO, "Troca de pastilhas", BigDecimal("150.00"))),
         )
 
         revisarOrcamento.revisar(
             id,
-            listOf(ItemOrcamento(TipoItem.SERVICO, "Troca de pastilhas", Dinheiro.of(BigDecimal("120.00")))),
+            listOf(ItemSolicitado(TipoItem.SERVICO, "Troca de pastilhas", BigDecimal("120.00"))),
         )
 
         val atualizada = repositorio.buscarPorId(id)!!

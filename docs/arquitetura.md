@@ -315,13 +315,14 @@ modules/ordemservico/
     │   ├── service/     # domain services (vazio: as regras de transição vivem no agregado)
     │   └── port/        # ('inbound'/'outbound' — evita as palavras reservadas 'in'/'out' do Kotlin)
     │       ├── inbound/   # *UseCase (entrada): CriarOs, GerarOrcamento, AprovarOrcamento, ...
-    │       └── outbound/  # OrdemServicoRepository, EstoquePort (ACL), NotificacaoPort (externo), PublicadorDeEventos
+    │       └── outbound/  # OrdemServicoRepository, EstoquePort e CatalogoPort (ACL), NotificacaoPort (externo), PublicadorDeEventos
     ├── application/usecase/   # implementações dos use cases
     └── adapter/
         ├── inbound/web/   # controllers REST, DTOs, mappers, @ControllerAdvice
         ├── inbound/scheduler/  # ExpiracaoScheduler (UC08, @Scheduled)
         └── outbound/
             ├── persistence/  # @Entity JPA, Spring Data repo, RepositoryAdapter, mappers
+            ├── catalogo/     # CatalogoAdapter: implementa CatalogoPort consultando serviços (cadastro) e itens (estoque) ativos, para nome e preço do orçamento
             ├── estoque/      # EstoqueAdapter: implementa EstoquePort chamando ReservarPeca, LiberarReserva e BaixarPecas do módulo estoque
             ├── event/        # PublicadorDeEventosSpring (ApplicationEventPublisher)
             └── notificacao/  # implementa NotificacaoPort → integra com o sistema externo de notificação
@@ -360,7 +361,8 @@ Cucumber-JVM como testes de aceitação. Gate Jacoco de **80%** sobre `domain`+`
 - **Dentro do contexto:** cada caso de uso roda em **uma transação** (`@Transactional` no adapter/app).
   Ex.: iniciar execução (UC09) baixa peças e muda status atomicamente dentro de `ordemservico`/`estoque`.
 - **Entre contextos (hoje):** `ordemservico` chama o `estoque` de forma **síncrona e in-process** pela
-  `EstoquePort` (ACL), com os ids da OS e do item de estoque. A reserva responde na hora se deu certo, e
+  `EstoquePort` (ACL), com os ids da OS e do item de estoque. Para o orçamento, o nome e o preço dos serviços
+  (`cadastro`) e das peças (`estoque`) vêm da `CatalogoPort` (ACL), que só enxerga itens ativos. A reserva responde na hora se deu certo, e
   a OS reage na mesma requisição. Os eventos de domínio são publicados in-process (`ApplicationEventPublisher`).
 - **Entre contextos (evolução):** trocar o `EstoqueAdapter` por integração orientada a eventos
   (`PecaReservada`/`PecaIndisponivel`/`PecasBaixadas`), com consistência eventual. Em discussão na #80;

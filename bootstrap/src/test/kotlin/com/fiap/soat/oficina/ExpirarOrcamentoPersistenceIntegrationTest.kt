@@ -1,6 +1,6 @@
 package com.fiap.soat.oficina
 
-import com.fiap.soat.oficina.ordemservico.domain.model.ItemOrcamento
+import com.fiap.soat.oficina.ordemservico.domain.model.ItemSolicitado
 import com.fiap.soat.oficina.ordemservico.domain.model.OrdemServico
 import com.fiap.soat.oficina.ordemservico.domain.model.StatusOS
 import com.fiap.soat.oficina.ordemservico.domain.model.TipoItem
@@ -52,7 +52,7 @@ class ExpirarOrcamentoPersistenceIntegrationTest {
         realizarDiagnostico.finalizar(id, pecaIdentificada = true)
         gerarOrcamento.gerar(
             id,
-            listOf(ItemOrcamento(TipoItem.SERVICO, "Troca de pastilhas", Dinheiro.of(BigDecimal("200.00")))),
+            listOf(ItemSolicitado(TipoItem.SERVICO, "Troca de pastilhas", BigDecimal("200.00"))),
         )
 
         val expirados = expirarOrcamentos.executar()
