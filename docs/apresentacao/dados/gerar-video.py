@@ -13,7 +13,7 @@ SAIDA = W / 'apresentacao-fase1.mp4'
 CHROME = os.environ.get('CHROME', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
 VOZ = os.environ.get('VOZ', 'Luciana')
 PIPER = os.environ.get('PIPER_MODELO', str(W / 'voz' / 'pt_BR-jeff-medium.onnx'))
-PRONUNCIA = {'FIAP': 'fíap', 'Software Architecture': 'sófituer árquitequitcher', 'JWT': 'jota dáblio tê', 'API': 'a pê i', 'CPF': 'cê pê éfe', 'CNPJ': 'cê ene pê jota', 'DDD': 'dê dê dê',
+PRONUNCIA = {'FIAP': 'fíap', 'JWT': 'jota dáblio tê', 'API': 'a pê i', 'CPF': 'cê pê éfe', 'CNPJ': 'cê ene pê jota', 'DDD': 'dê dê dê',
              'SOAT': 'sôat', 'Event Storming': 'ivent stórmin', 'Miro': 'míro', 'Kotlin': 'cótlin', 'Spring Boot': 'spring but',
              'spring-webmvc': 'spring web em vê cê', 'Docker Compose': 'dóquer compôus', 'Docker': 'dóquer', 'Swagger': 'suéguer',
              'Authorize': 'ótoraize', 'README': 'ríd mi', 'bounded contexts': 'bâunded cóntexts', 'deployable': 'deplóiabol',
@@ -24,13 +24,14 @@ PRONUNCIA = {'FIAP': 'fíap', 'Software Architecture': 'sófituer árquitequitch
              'Trivy': 'trívi', 'HIGH': 'rai', 'CRITICAL': 'crítical', 'Mailpit': 'mêilpit', 'e-mail': 'imeio', 'C4': 'cê quatro'}
 
 
-def falar(texto, destino):
+def falar(texto, destino, abertura=False):
     if not PIPER:
         subprocess.run(['say', '-v', VOZ, '-o', destino, texto], check=True)
         return
     for termo, som in PRONUNCIA.items():
         texto = re.sub(rf'\b{re.escape(termo)}\b', som, texto)
-    subprocess.run([sys.executable, '-m', 'piper', '-m', PIPER, '-f', destino, '--sentence-silence', '0.35'],
+    subprocess.run([sys.executable, '-m', 'piper', '-m', PIPER, '-f', destino, '--length-scale', '1.22' if abertura else '1.08',
+                    '--sentence-silence', '0.7' if abertura else '0.45'],
                    input=texto, text=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
 TESTES, FAIXA = sys.argv[1], sys.argv[2]
@@ -235,7 +236,7 @@ build = '\n'.join((W / 'build.log').read_text(encoding='utf-8').strip().split('\
 img = lambda nome: f'{W}/img/{nome}.png'
 
 cenas = [
-    ('a01', slide(1), 'Olá. Somos o grupo 29 da pós-graduação em Software Architecture da FIAP, Fase 1. Os integrantes são Alan Teixeira Fideles, André Rafael Cardoso Reis e Cairo Augusto de Andrade. Vamos apresentar o back-end da Oficina Mecânica, feito em Kotlin, com Spring Boot, PostgreSQL e Docker.'),
+    ('a01', slide(1), 'Olá. Somos o grupo 29 da pós-graduação em Arquitetura de Software da FIAP, Fase 1. Os integrantes são Alan Teixeira Fideles, André Rafael Cardoso Reis e Cairo Augusto de Andrade. Vamos apresentar o back-end da Oficina Mecânica, feito em Kotlin, com Spring Boot, PostgreSQL e Docker.'),
     ('a02', slide(2), 'A solução é uma API que acompanha o veículo da abertura da Ordem de Serviço até a entrega. Ela cobre três frentes. A Ordem de Serviço, com cliente, veículo, serviços, peças, insumos e orçamento. O acompanhamento, com seis status controlados pelo sistema e consulta do cliente pela API. E a gestão administrativa, com os cadastros, o controle de estoque e o tempo médio de execução.'),
     ('a03', slide(3), 'Antes de escrever código, modelamos o domínio com um Event Storming. Vamos ver o board no Miro.'),
     ('m01', img('miro-geral'), 'Este é o nosso board. Modelamos os três fluxos pedidos no enunciado: a criação da Ordem de Serviço, o acompanhamento e a gestão de peças e insumos. Como aqui passamos mais por cima, o board completo pode ser visto com calma, em tempo real, pelo link disponibilizado na entrega.'),
@@ -279,7 +280,7 @@ cenas += [
 lista, total = [], 0.0
 for nome, imagem, fala in cenas:
     aud = f'{W}/aud/{nome}.wav'
-    falar(fala, aud)
+    falar(fala, aud, abertura=nome in ('a01', 'a02', 'a03'))
     info = subprocess.run(['afinfo', aud], capture_output=True, text=True).stdout
     dur = float(re.search(r'estimated duration: ([\d.]+)', info).group(1)) + 1.2
     total += dur
