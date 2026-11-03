@@ -30,7 +30,19 @@ Content-Type: {{json}}
 GET {{baseUrl}}/api/admin/ordens
 Authorization: Bearer {{token}}
 
-### 05. Cadastro da peça
+### 05. Cadastro do serviço
+# @name servico
+POST {{baseUrl}}/api/v1/admin/servicos
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "nome": "Troca de óleo",
+  "descricao": "Troca do óleo do motor e do filtro",
+  "preco": 120.00
+}
+
+### 06. Cadastro da peça
 # @name peca
 POST {{baseUrl}}/api/v1/admin/estoque/itens
 Authorization: Bearer {{token}}
@@ -43,7 +55,7 @@ Content-Type: {{json}}
   "saldoInicial": 5
 }
 
-### 06. Cadastro do insumo
+### 07. Cadastro do insumo
 # @name insumo
 POST {{baseUrl}}/api/v1/admin/estoque/itens
 Authorization: Bearer {{token}}
@@ -56,7 +68,7 @@ Content-Type: {{json}}
   "saldoInicial": 12
 }
 
-### 07. Criação da OS: status RECEBIDA
+### 08. Criação da OS: status RECEBIDA
 # @name os
 POST {{baseUrl}}/api/admin/ordens
 Authorization: Bearer {{token}}
@@ -71,14 +83,14 @@ Content-Type: {{json}}
   "relato": "Luz do óleo acesa no painel"
 }
 
-### 08. Acompanhamento pelo cliente, sem token
+### 09. Acompanhamento pelo cliente, sem token
 GET {{baseUrl}}/api/public/ordens/{{os.response.body.id}}
 
-### 09. Início do diagnóstico: status EM_DIAGNOSTICO
+### 10. Início do diagnóstico: status EM_DIAGNOSTICO
 POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/diagnostico/iniciar
 Authorization: Bearer {{token}}
 
-### 10. Registro da inspeção
+### 11. Registro da inspeção
 POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/diagnostico/inspecao
 Authorization: Bearer {{token}}
 Content-Type: {{json}}
@@ -87,7 +99,7 @@ Content-Type: {{json}}
   "observacoes": "Óleo vencido e filtro saturado"
 }
 
-### 11. Fim do diagnóstico: libera o orçamento
+### 12. Fim do diagnóstico: libera o orçamento
 POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/diagnostico/finalizar
 Authorization: Bearer {{token}}
 Content-Type: {{json}}
@@ -96,28 +108,28 @@ Content-Type: {{json}}
   "pecaIdentificada": true
 }
 
-### 12. Orçamento com serviço, peça e insumo: total 285.00 e status AGUARDANDO_APROVACAO
+### 13. Orçamento montado com os preços do catálogo: total 285.00 e status AGUARDANDO_APROVACAO
 POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/orcamento
 Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
   "itens": [
-    { "tipo": "servico", "descricao": "Troca de óleo", "valor": 120.00 },
-    { "tipo": "peca", "descricao": "Filtro de óleo", "valor": 45.00, "itemEstoqueId": {{peca.response.body.id}}, "quantidade": 1 },
-    { "tipo": "peca", "descricao": "Óleo 5W30 (3 litros)", "valor": 120.00, "itemEstoqueId": {{insumo.response.body.id}}, "quantidade": 3 }
+    { "tipo": "servico", "servicoId": {{servico.response.body.id}} },
+    { "tipo": "peca", "itemEstoqueId": {{peca.response.body.id}}, "quantidade": 1 },
+    { "tipo": "peca", "itemEstoqueId": {{insumo.response.body.id}}, "quantidade": 3 }
   ]
 }
 
-### 13. Aprovação do orçamento: status EM_EXECUCAO
+### 14. Aprovação do orçamento: status EM_EXECUCAO
 POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/orcamento/aprovar
 Authorization: Bearer {{token}}
 
-### 14. Início da execução
+### 15. Início da execução
 POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/execucao/iniciar
 Authorization: Bearer {{token}}
 
-### 15. Fim da execução: status FINALIZADA
+### 16. Fim da execução: status FINALIZADA
 POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/execucao/finalizar
 Authorization: Bearer {{token}}
 Content-Type: {{json}}
@@ -126,9 +138,9 @@ Content-Type: {{json}}
   "todosAplicados": true
 }
 
-### 16. Entrega: status ENTREGUE
+### 17. Entrega: status ENTREGUE
 POST {{baseUrl}}/api/admin/ordens/{{os.response.body.id}}/entrega
 Authorization: Bearer {{token}}
 
-### 17. Acompanhamento pelo cliente: linha do tempo com todos os status
+### 18. Acompanhamento pelo cliente: linha do tempo com todos os status
 GET {{baseUrl}}/api/public/ordens/{{os.response.body.id}}

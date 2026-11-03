@@ -345,7 +345,7 @@
   <p class="destino">Executadas em ordem, com o banco zerado, a partir de <code>docs/apresentacao/demo.http</code>.</p>
   <div class="grupos">
     <div><b>01 a 04</b><span>Autenticação JWT</span></div>
-    <div><b>05 a 17</b><span>Ordem de Serviço, da criação à entrega</span></div>
+    <div><b>05 a 18</b><span>Ordem de Serviço, da criação à entrega</span></div>
   </div>
 </section>
 
@@ -368,16 +368,16 @@
   <h2>Testes unitários e de integração, com mais de 80% de cobertura no domínio</h2>
   <div class="conteudo lado">
     <div>
-      <div class="numero marcado">455</div>
+      <div class="numero marcado">503</div>
       <p>Testes no <code>./gradlew build</code>, com 0 falhas: unitários no domínio e nos casos de uso, integração com PostgreSQL real via Testcontainers e cenários BDD.</p>
     </div>
     <table>
       <tr><th>Módulo</th><th class="num">Cobertura de linhas</th></tr>
-      <tr><td><code>ordemservico</code></td><td class="num">98,6%</td></tr>
+      <tr><td><code>ordemservico</code></td><td class="num">99,5%</td></tr>
       <tr><td><code>estoque</code></td><td class="num">96,1%</td></tr>
       <tr><td><code>cadastro</code></td><td class="num">95,9%</td></tr>
       <tr><td><code>autenticacao</code></td><td class="num">100,0%</td></tr>
-      <tr><td><code>shared-kernel</code></td><td class="num">88,9%</td></tr>
+      <tr><td><code>shared-kernel</code></td><td class="num">89,7%</td></tr>
     </table>
   </div>
   <p class="fonte">Cobertura das camadas domain e application. O build falha abaixo de 80%.</p>
