@@ -16,7 +16,7 @@ Agenda do vídeo, com cada tema ligado aos itens pedidos no enunciado. Duração
 | 05:30 | Banco de dados | 0:30 | Slide 7 | Escolha e justificativa do banco |
 | 06:00 | Execução e Swagger | 1:00 | Slide 8, terminal e Swagger UI | Execução da aplicação; Swagger ou OpenAPI |
 | 07:00 | Autenticação | 1:00 | Slide 9 e `demo.http`, requisições 01 a 04 | Autenticação das APIs administrativas |
-| 08:00 | Ordem de Serviço | 3:00 | Slide 10 e `demo.http`, requisições 05 a 17 | Criação e acompanhamento da OS; serviços, peças e insumos; geração e aprovação do orçamento; alteração dos status |
+| 08:00 | Ordem de Serviço | 3:00 | Slide 10 e `demo.http`, requisições 05 a 20 | Criação e acompanhamento da OS; serviços, peças e insumos; geração e aprovação do orçamento; alteração dos status |
 | 11:00 | Testes automatizados | 1:00 | Slide 11, saída do `./gradlew build` e CI | Testes automatizados |
 | 12:00 | Análise de vulnerabilidades | 0:30 | Slide 12 e [`trivy-report.txt`](../security/trivy-report.txt) | Resultado da análise de vulnerabilidades |
 
@@ -32,10 +32,10 @@ docker compose -f docker/docker-compose.yml up -d --build
 | Requisições | Resultado esperado |
 |-------------|--------------------|
 | 01 a 04 | Aplicação no ar; `401` sem token; login; `200` com token |
-| 05 e 06 | Peça e insumo cadastrados |
-| 07 e 08 | OS `RECEBIDA`; consulta pública do andamento |
-| 09 a 11 | OS `EM_DIAGNOSTICO`; orçamento liberado |
-| 12 | Orçamento com serviço, peça e insumo; OS `AGUARDANDO_APROVACAO` |
-| 13 e 14 | Orçamento aprovado; OS `EM_EXECUCAO` |
-| 15 e 16 | OS `FINALIZADA` e depois `ENTREGUE` |
-| 17 | Linha do tempo com todos os status |
+| 05 a 08 | Cliente, serviço, peça e insumo cadastrados |
+| 09 e 10 | OS `RECEBIDA`; consulta pública do andamento |
+| 11 a 13 | OS `EM_DIAGNOSTICO`; orçamento liberado |
+| 14 | Orçamento montado com os preços do catálogo; OS `AGUARDANDO_APROVACAO`; e-mail no Mailpit |
+| 15 e 16 | Cliente consulta e aprova o orçamento pelo link do e-mail; OS `EM_EXECUCAO` |
+| 17 a 19 | Baixa das peças; OS `FINALIZADA` e depois `ENTREGUE` |
+| 20 | Linha do tempo com todos os status |
