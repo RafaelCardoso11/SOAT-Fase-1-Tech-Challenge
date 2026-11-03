@@ -323,4 +323,4 @@ Os PDFs são gerados das fontes `.md` com `python3 docs/ddd/fontes/gerar-pdfs.py
 
 ## Vídeo da entrega
 
-_Link do vídeo_
+https://www.youtube.com/watch?v=l6qo31qtMqE
