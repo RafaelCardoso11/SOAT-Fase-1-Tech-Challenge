@@ -68,7 +68,7 @@ class GerarOrcamentoServiceTest {
         assertThat(ordem.orcamento!!.total.valor).isEqualByComparingTo("350.00")
         verify(exactly = 1) { estoque.reservar(1L, 50L, 2) }
         verify { eventos.publicar(OrcamentoGerado(1L)) }
-        verify { notificacao.notificarOrcamentoGerado(1L, any(), any()) }
+        verify { notificacao.notificarOrcamentoGerado(1L, any(), any(), any()) }
     }
 
     @Test

@@ -48,7 +48,7 @@ class RevisarOrcamentoService(
 
         repositorio.salvar(ordem)
         eventos.publicar(OrcamentoRevisado(ordemServicoId))
-        notificacao.notificarOrcamentoGerado(ordemServicoId, orcamento.total, orcamento.tokenAprovacao)
+        notificacao.notificarOrcamentoGerado(ordemServicoId, ordem.documento, orcamento.total, orcamento.tokenAprovacao)
         return ordem
     }
 }

@@ -117,7 +117,7 @@ class GerarOrcamentoSteps {
 
     @Entao("o cliente deve ser notificado do orçamento gerado")
     fun clienteNotificado() {
-        verify { notificacao.notificarOrcamentoGerado(1L, any(), any()) }
+        verify { notificacao.notificarOrcamentoGerado(1L, any(), any(), any()) }
     }
 
     @Entao("o orçamento não deve ser gerado")

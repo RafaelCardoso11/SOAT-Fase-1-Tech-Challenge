@@ -33,6 +33,7 @@ dependencies {
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.cucumber.java)
+    testImplementation(libs.spring.boot.starter.mail)
     testImplementation(libs.cucumber.junit.platform.engine)
     testImplementation(libs.junit.platform.suite)
     testImplementation(libs.mockk)

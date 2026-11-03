@@ -227,8 +227,9 @@ curl "http://localhost:8080/api/public/ordens?documento=12345678909"
 
 Decisão do orçamento pelo cliente, sem token JWT: o e-mail do orçamento gerado ou revisado traz um link com um
 token próprio daquele orçamento. A revisão gera um token novo e invalida o anterior; depois da decisão ou da expiração,
-o token deixa de aceitar aprovação ou rejeição (`409`). Token desconhecido responde `404`. A base do link vem de
-`NOTIFICACAO_URL_BASE`.
+o token deixa de aceitar aprovação ou rejeição (`409`). Token desconhecido responde `404`. O link usa o endereço pelo qual a API foi chamada ao gerar o
+orçamento. O e-mail vai para o cliente cadastrado com o documento da OS; se a OS não tiver cliente no cadastro, vai para
+`NOTIFICACAO_EMAIL_DESTINATARIO`.
 
 ```bash
 curl http://localhost:8080/api/public/orcamentos/{token}                     # itens, total e validade

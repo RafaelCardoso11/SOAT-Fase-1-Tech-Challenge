@@ -48,7 +48,7 @@ class FinalizarExecucaoServiceTest {
         assertThat(ordem.status).isEqualTo(StatusOS.FINALIZADA)
         verify { estoque.baixarPecas(1L) }
         verify { eventos.publicar(ExecucaoFinalizada(1L)) }
-        verify { notificacao.notificarVeiculoPronto(1L) }
+        verify { notificacao.notificarVeiculoPronto(1L, any()) }
     }
 
     @Test

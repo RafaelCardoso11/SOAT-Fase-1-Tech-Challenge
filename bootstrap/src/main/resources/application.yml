@@ -27,7 +27,6 @@ notificacao:
     enabled: ${NOTIFICACAO_EMAIL_ENABLED:false}
     remetente: ${NOTIFICACAO_EMAIL_REMETENTE:oficina@exemplo.com}
     destinatario-padrao: ${NOTIFICACAO_EMAIL_DESTINATARIO:cliente@exemplo.com}
-    url-base: ${NOTIFICACAO_URL_BASE:http://localhost:8080}
 
 orcamento:
   validade-dias: ${ORCAMENTO_VALIDADE_DIAS:7}

@@ -68,7 +68,7 @@ class RevisarOrcamentoServiceTest {
         assertThat(ordem.status).isEqualTo(StatusOS.AGUARDANDO_APROVACAO)
         assertThat(ordem.orcamento!!.total.valor).isEqualByComparingTo("120.00")
         verify { eventos.publicar(OrcamentoRevisado(1L)) }
-        verify { notificacao.notificarOrcamentoGerado(1L, any(), any()) }
+        verify { notificacao.notificarOrcamentoGerado(1L, any(), any(), any()) }
     }
 
     @Test
